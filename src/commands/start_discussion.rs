@@ -1,41 +1,57 @@
-use crate::globals::records_id::RecordsId;
-use serenity::framework::standard::{macros::command, Args, CommandResult};
-use serenity::{model::channel::*, prelude::*};
+use serenity::{
+    framework::standard::{macros::command, Args, CommandResult},
+    model::{channel::*, id::ChannelId},
+    prelude::*,
+    utils::Colour,
+};
 use std::sync::atomic::Ordering;
+
+use crate::{domains::redmine, globals::records_id::RecordsId};
+
+// TODO: エラーをまとめる
 
 #[command]
 #[aliases("sid")]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
+    // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
     let records_id = match args.single::<u16>() {
-        Ok(id) if id > 0 => id,
-        Ok(_) => {
-            // TODO: 指定された議事録チケットがないことをRedmine経由で確認
-            // そのとき、プロジェクトとトラッカーを必要条件とする
+        Ok(id) => id,
+        Err(_) => {
             message
-                .reply(
-                    ctx,
-                    "指定された番号は議事録のチケット番号として適切ではありません。",
-                )
-                .await?;
-            return Ok(());
-        }
-    let text_channel = match message.channel(&ctx.cache).await {
-        Some(channel) => channel,
-        None => {
-            println!("テキストチャンネルを取得できませんでした。");
-            message
-                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+                .reply(ctx, "議事録のチケット番号が指定されていません。")
                 .await?;
 
             return Ok(());
         }
     };
-    let vc_channel = match ctx.cache.guild_channel(vc_channel_id).await {
-        Some(channel) => channel,
+    // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
+    // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
+    let records_id = {
+        match redmine::fetch_issue(records_id).await {
+            Ok(issue) => {
+                if records_id > 0
+                    && issue.project.name == "アイデア会議議事録"
+                    && issue.tracker.name == "アイデア会議"
+                    && issue.status.name == "新規"
+                {
+                    Some(issue.id)
+                } else {
+                    None
+                }
+            }
+            Err(err) => {
+                println!("Redmineでのアクセス中にエラーが発生しました。: {}", err);
+
+                None
+            }
+        }
+    };
+    // 番号が適切ではない場合のみ通知し、処理を中止。
+    let records_id = match records_id {
+        Some(id) => id,
         None => {
-            println!("VCチャンネルを取得できませんでした。");
             message
-                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+                .reply(ctx, "指定された番号の議事録チケットが存在しません。")
                 .await?;
 
             return Ok(());
