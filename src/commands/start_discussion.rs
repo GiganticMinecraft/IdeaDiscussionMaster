@@ -67,12 +67,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     format!("https://redmine.seichi.click/issues/{}", records_id),
                     false,
                 );
-                embed.field(
-                    "テキストCh.",
-                    MessageBuilder::new().mention(&text_channel),
-                    true,
-                );
-                embed.field("VCCh.", MessageBuilder::new().mention(&vc_channel), true);
                 embed.colour(Colour::from_rgb(87, 199, 255));
 
                 embed
