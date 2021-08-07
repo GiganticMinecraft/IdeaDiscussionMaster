@@ -58,6 +58,45 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
 
+    let guild_id = message.guild_id;
+    if guild_id.is_none() {
+        println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
+        message
+            .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+            .await?;
+
+        return Ok(());
+    }
+
+    let guild = ctx.cache.guild(guild_id.unwrap()).await;
+    if guild.is_none() {
+        println!(
+            "会議を開始しようとしましたが、guildが見つかりませんでした。（guild_id: {}）",
+            guild_id.unwrap()
+        );
+        message
+            .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+            .await?;
+
+        return Ok(());
+    }
+
+    match guild
+        .unwrap()
+        .voice_states
+        .get(&message.author.id)
+        .and_then(|state| state.channel_id)
+    {
+        Some(id) => id,
+        None => {
+            message
+                .reply(ctx, "会議を開始するにはVCに参加してください。")
+                .await?;
+
+            return Ok(());
+        }
+    };
+
     let cached_records_id = {
         let data_read = ctx.data.read().await;
         data_read
