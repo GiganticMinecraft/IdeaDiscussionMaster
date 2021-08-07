@@ -9,12 +9,13 @@ use std::sync::atomic::Ordering;
 use crate::{domains::redmine, globals::record_id::RecordId};
 
 // TODO: エラーをまとめる
+// TODO: 長くない？
 
 #[command]
 #[aliases("sid")]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
-    let records_id = match args.single::<u16>() {
+    let record_id = match args.single::<u16>() {
         Ok(id) => id,
         Err(_) => {
             message
@@ -26,15 +27,15 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
-    let records_id = {
-        match redmine::fetch_issue(records_id).await {
+    let record = {
+        match redmine::fetch_issue(record_id).await {
             Ok(issue) => {
-                if records_id > 0
+                if record_id > 0
                     && issue.project.name == "アイデア会議議事録"
                     && issue.tracker.name == "アイデア会議"
                     && issue.status.name == "新規"
                 {
-                    Some(issue.id)
+                    Some(issue)
                 } else {
                     None
                 }
@@ -47,8 +48,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
     // 番号が適切ではない場合のみ通知し、処理を中止。
-    let records_id = match records_id {
-        Some(id) => id,
+    let record = match record {
+        Some(issue) => issue,
         None => {
             message
                 .reply(ctx, "指定された番号の議事録チケットが存在しません。")
@@ -111,7 +112,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
         return Ok(());
     }
-    cached_records_id.store(records_id, Ordering::Relaxed);
+    cached_record_id.store(record.id, Ordering::Relaxed);
 
     message
         .channel_id
@@ -120,7 +121,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 embed.title("会議を開始しました。");
                 embed.field(
                     "議事録チケット",
-                    format!("https://redmine.seichi.click/issues/{}", records_id),
+                    format!("https://redmine.seichi.click/issues/{}", record.id),
                     false,
                 );
                 embed.colour(Colour::from_rgb(87, 199, 255));
