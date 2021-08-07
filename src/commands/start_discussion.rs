@@ -55,6 +55,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
         return Ok(());
     }
+    cached_records_id.store(records_id, Ordering::Relaxed);
+
     message
         .channel_id
         .send_message(&ctx.http, |msg| {
