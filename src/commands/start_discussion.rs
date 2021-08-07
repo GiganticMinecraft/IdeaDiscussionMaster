@@ -58,21 +58,24 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
 
-    let guild_id = message.guild_id;
-    if guild_id.is_none() {
-        println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
-        message
-            .reply(ctx, "内部エラーにより会議を開始できませんでした。")
-            .await?;
+    // FIXME: コメントアウト
+    let guild_id = match message.guild_id {
+        Some(id) => id,
+        None => {
+            println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
+            message
+                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+                .await?;
 
-        return Ok(());
-    }
+            return Ok(());
+        }
+    };
 
-    let guild = ctx.cache.guild(guild_id.unwrap()).await;
+    let guild = ctx.cache.guild(guild_id).await;
     if guild.is_none() {
         println!(
             "会議を開始しようとしましたが、guildが見つかりませんでした。（guild_id: {}）",
-            guild_id.unwrap()
+            guild_id
         );
         message
             .reply(ctx, "内部エラーにより会議を開始できませんでした。")
@@ -80,7 +83,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
         return Ok(());
     }
-
     match guild
         .unwrap()
         .voice_states
