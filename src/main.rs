@@ -19,7 +19,7 @@ use tokio::sync::RwLock;
 
 use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*},
-    globals::{records_id::RecordId, CommandCounter, MessageCount},
+    globals::{record_id::RecordId, CommandCounter, MessageCount},
     listeners::ready::ReadyEventHandler,
 };
 

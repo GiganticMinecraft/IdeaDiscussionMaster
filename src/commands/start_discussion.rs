@@ -6,7 +6,7 @@ use serenity::{
 };
 use std::sync::atomic::Ordering;
 
-use crate::{domains::redmine, globals::records_id::RecordsId};
+use crate::{domains::redmine, globals::record_id::RecordId};
 
 // TODO: エラーをまとめる
 
@@ -99,14 +99,14 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
 
-    let cached_records_id = {
+    let cached_record_id = {
         let data_read = ctx.data.read().await;
         data_read
-            .get::<RecordsId>()
-            .expect("Expected RecordsId in TypeMap.")
+            .get::<RecordId>()
+            .expect("Expected RecordId in TypeMap.")
             .clone()
     };
-    if cached_records_id.load(Ordering::Relaxed) != 0 {
+    if cached_record_id.load(Ordering::Relaxed) != 0 {
         message.reply(ctx, "会議はすでに始まっています。").await?;
 
         return Ok(());
