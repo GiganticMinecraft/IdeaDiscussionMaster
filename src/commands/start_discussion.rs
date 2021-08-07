@@ -54,9 +54,28 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
         return Ok(());
     }
+    message
+        .channel_id
+        .send_message(&ctx.http, |msg| {
+            msg.embed(|embed| {
+                embed.title("会議を開始しました。");
+                embed.field(
+                    "議事録チケット",
+                    format!("https://redmine.seichi.click/issues/{}", records_id),
+                    false,
+                );
+                embed.field(
+                    "テキストCh.",
+                    MessageBuilder::new().mention(&text_channel),
+                    true,
+                );
+                embed.field("VCCh.", MessageBuilder::new().mention(&vc_channel), true);
+                embed.colour(Colour::from_rgb(87, 199, 255));
 
-    cached_records_id.store(records_id, Ordering::Relaxed);
-    message.reply(ctx, "会議を開始しました。").await?;
+                embed
+            })
+        })
+        .await?;
 
     Ok(())
 }
