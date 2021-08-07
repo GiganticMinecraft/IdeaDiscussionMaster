@@ -1,7 +1,7 @@
+use crate::globals::records_id::RecordId;
 use serenity::framework::standard::{macros::command, CommandResult};
 use serenity::{model::prelude::*, prelude::*};
 use std::sync::atomic::Ordering;
-use crate::globals::records_id::RecordsId;
 
 #[command]
 #[aliases("eid")]
@@ -9,8 +9,8 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     let cached_records_id = {
         let data_read = ctx.data.read().await;
         data_read
-            .get::<RecordsId>()
-            .expect("Expected RecordsId in TypeMap.")
+            .get::<RecordId>()
+            .expect("Expected RecordId in TypeMap.")
             .clone()
     };
 

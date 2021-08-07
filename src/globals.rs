@@ -5,7 +5,7 @@ use std::{
 };
 use tokio::sync::RwLock;
 
-pub mod records_id;
+pub mod record_id;
 
 pub struct CommandCounter;
 
