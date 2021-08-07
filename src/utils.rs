@@ -1,4 +1,6 @@
 use std::{collections::HashMap, error};
+use serde::de;
+
 pub async fn fetch(
     url: String,
     query: Option<HashMap<String, String>>,
@@ -9,4 +11,8 @@ pub async fn fetch(
         .send()
         .await?;
     Ok(response)
+}
+
+pub async fn deserialize<T: de::DeserializeOwned>(response: reqwest::Response) -> Result<T, Box<(dyn error::Error)>> {
+    Ok(response.json::<T>().await?)
 }
