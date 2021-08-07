@@ -1,6 +1,6 @@
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
-    model::{channel::*, id::ChannelId},
+    model::channel::*,
     prelude::*,
     utils::Colour,
 };
