@@ -19,10 +19,14 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 .await?;
             return Ok(());
         }
-        Err(_) => {
+    let text_channel = match message.channel(&ctx.cache).await {
+        Some(channel) => channel,
+        None => {
+            println!("テキストチャンネルを取得できませんでした。");
             message
-                .reply(ctx, "議事録のチケット番号が指定されていません。")
+                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
                 .await?;
+
             return Ok(());
         }
     };
