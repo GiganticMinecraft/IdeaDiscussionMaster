@@ -26,20 +26,17 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             return Ok(());
         }
     };
+    let vc_channel = match ctx.cache.guild_channel(vc_channel_id).await {
+        Some(channel) => channel,
+        None => {
+            println!("VCチャンネルを取得できませんでした。");
+            message
+                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+                .await?;
 
-    let is_author_joined_to_vc = ctx
-        .cache
-        .guild(message.guild_id.unwrap())
-        .await
-        .map(|guild| guild.voice_states.contains_key(&message.author.id))
-        .unwrap_or(false);
-    if !is_author_joined_to_vc {
-        message
-            .reply(ctx, "会議を開始するにはVCに参加してください。")
-            .await?;
-
-        return Ok(());
-    }
+            return Ok(());
+        }
+    };
 
     let cached_records_id = {
         let data_read = ctx.data.read().await;
