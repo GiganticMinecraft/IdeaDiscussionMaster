@@ -141,6 +141,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         };
         let mut agendas = cached_agendas.write().await;
 
+        agendas.clear();
         record_relations.iter().for_each(|agenda_id| {
             agendas.insert(agenda_id.to_owned(), AgendaStatus::New);
         });
