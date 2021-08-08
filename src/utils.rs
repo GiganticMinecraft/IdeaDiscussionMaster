@@ -3,7 +3,7 @@ use serde::de;
 
 pub async fn fetch(
     url: String,
-    query: Option<HashMap<String, String>>,
+    query: Option<HashMap<&str, &str>>,
 ) -> Result<reqwest::Response, Box<dyn error::Error>> {
     let response = reqwest::Client::new()
         .get(url)
