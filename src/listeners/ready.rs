@@ -1,4 +1,8 @@
-use serenity::{async_trait, model::gateway::Ready, prelude::*};
+use serenity::{
+    async_trait,
+    model::gateway::Ready,
+    prelude::{Context, EventHandler},
+};
 
 pub struct ReadyEventHandler;
 

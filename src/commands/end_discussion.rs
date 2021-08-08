@@ -1,6 +1,6 @@
 use crate::globals::record_id::RecordId;
 use serenity::framework::standard::{macros::command, CommandResult};
-use serenity::{model::prelude::*, prelude::*};
+use serenity::{model::prelude::Message, prelude::Context};
 use std::sync::atomic::Ordering;
 
 #[command]

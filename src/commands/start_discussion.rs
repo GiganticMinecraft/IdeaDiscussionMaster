@@ -1,7 +1,7 @@
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
-    model::channel::*,
-    prelude::*,
+    model::channel::Message,
+    prelude::Context,
     utils::Colour,
 };
 use std::sync::atomic::Ordering;
