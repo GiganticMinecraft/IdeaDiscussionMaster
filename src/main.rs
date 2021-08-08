@@ -1,11 +1,7 @@
 use serenity::{
-    framework::{
-        standard::macros::{group, hook},
-        StandardFramework,
-    },
+    framework::{standard::macros::group, StandardFramework},
     http::Http,
-    model::channel::Message,
-    prelude::{Context, Client},
+    prelude::Client,
 };
 use std::{
     collections::{HashMap, HashSet},
@@ -17,23 +13,12 @@ use tokio::sync::RwLock;
 use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*},
     globals::{agendas::Agendas, record_id::RecordId},
-    listeners::ready::ReadyEventHandler,
+    listeners::{before_commands::before, ready::ReadyEventHandler},
 };
 
 #[group]
 #[commands(start_discussion, end_discussion)]
 struct General;
-
-#[hook]
-async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
-    println!(
-        "Running command '{}' invoked by '{}'",
-        command_name,
-        msg.author.tag()
-    );
-
-    true
-}
 
 #[tokio::main]
 async fn main() {
