@@ -39,7 +39,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 if record_id > 0
                     && issue.project.name == "アイデア会議議事録"
                     && issue.tracker.name == "アイデア会議"
-                    && issue.status.name == "新規"
+                    // && issue.status.name == "新規" FIXME: コメントアウト
                 {
                     Some(issue)
                 } else {
@@ -66,45 +66,45 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     };
 
     // FIXME: コメントアウト
-    let guild_id = match message.guild_id {
-        Some(id) => id,
-        None => {
-            println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
-            message
-                .reply(ctx, "内部エラーにより会議を開始できませんでした。")
-                .await?;
+    // let guild_id = match message.guild_id {
+    //     Some(id) => id,
+    //     None => {
+    //         println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
+    //         message
+    //             .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+    //             .await?;
 
-            return Ok(());
-        }
-    };
+    //         return Ok(());
+    //     }
+    // };
 
-    let guild = ctx.cache.guild(guild_id).await;
-    if guild.is_none() {
-        println!(
-            "会議を開始しようとしましたが、guildが見つかりませんでした。（guild_id: {}）",
-            guild_id
-        );
-        message
-            .reply(ctx, "内部エラーにより会議を開始できませんでした。")
-            .await?;
+    // let guild = ctx.cache.guild(guild_id).await;
+    // if guild.is_none() {
+    //     println!(
+    //         "会議を開始しようとしましたが、guildが見つかりませんでした。（guild_id: {}）",
+    //         guild_id
+    //     );
+    //     message
+    //         .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+    //         .await?;
 
-        return Ok(());
-    }
-    match guild
-        .unwrap()
-        .voice_states
-        .get(&message.author.id)
-        .and_then(|state| state.channel_id)
-    {
-        Some(id) => id,
-        None => {
-            message
-                .reply(ctx, "会議を開始するにはVCに参加してください。")
-                .await?;
+    //     return Ok(());
+    // }
+    // match guild
+    //     .unwrap()
+    //     .voice_states
+    //     .get(&message.author.id)
+    //     .and_then(|state| state.channel_id)
+    // {
+    //     Some(id) => id,
+    //     None => {
+    //         message
+    //             .reply(ctx, "会議を開始するにはVCに参加してください。")
+    //             .await?;
 
-            return Ok(());
-        }
-    };
+    //         return Ok(());
+    //     }
+    // };
 
     let cached_record_id = {
         let data_read = ctx.data.read().await;
