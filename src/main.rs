@@ -19,7 +19,7 @@ use tokio::sync::RwLock;
 
 use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*},
-    globals::{record_id::RecordId, CommandCounter, MessageCount},
+    globals::{record_id::RecordId, CommandCounter, MessageCount, agendas::Agendas},
     listeners::ready::ReadyEventHandler,
 };
 
@@ -91,6 +91,7 @@ async fn main() {
         data.insert::<CommandCounter>(Arc::new(RwLock::new(HashMap::default())));
         data.insert::<MessageCount>(Arc::new(AtomicUsize::new(0)));
         data.insert::<RecordId>(Arc::new(AtomicU16::new(0)));
+        data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
     }
 
     if let Err(why) = client.start().await {
