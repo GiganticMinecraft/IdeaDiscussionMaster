@@ -7,6 +7,7 @@ pub mod utils;
 #[cfg(test)]
 mod test {
     use crate::domains::redmine;
+
     #[tokio::test]
     async fn fetch_issue() {
         match redmine::fetch_record_issue(9690).await {
