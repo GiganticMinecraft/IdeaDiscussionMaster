@@ -5,21 +5,18 @@ use serenity::{
     },
     http::Http,
     model::channel::Message,
-    prelude::*,
+    prelude::{Context, Client},
 };
 use std::{
     collections::{HashMap, HashSet},
     env,
-    sync::{
-        atomic::{AtomicU16, AtomicUsize},
-        Arc,
-    },
+    sync::{atomic::AtomicU16, Arc},
 };
 use tokio::sync::RwLock;
 
 use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*},
-    globals::{record_id::RecordId, CommandCounter, MessageCount, agendas::Agendas},
+    globals::{agendas::Agendas, record_id::RecordId},
     listeners::ready::ReadyEventHandler,
 };
 
@@ -28,28 +25,12 @@ use idea_discussion_master::{
 struct General;
 
 #[hook]
-async fn before(ctx: &Context, msg: &Message, command_name: &str) -> bool {
+async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
     println!(
         "Running command '{}' invoked by '{}'",
         command_name,
         msg.author.tag()
     );
-
-    let counter_lock = {
-        let data_read = ctx.data.read().await;
-
-        data_read
-            .get::<CommandCounter>()
-            .expect("Expected CommandCounter in TypeMap.")
-            .clone()
-    };
-
-    {
-        let mut counter = counter_lock.write().await;
-
-        let entry = counter.entry(command_name.to_string()).or_insert(0);
-        *entry += 1;
-    }
 
     true
 }
@@ -88,8 +69,6 @@ async fn main() {
     {
         let mut data = client.data.write().await;
 
-        data.insert::<CommandCounter>(Arc::new(RwLock::new(HashMap::default())));
-        data.insert::<MessageCount>(Arc::new(AtomicUsize::new(0)));
         data.insert::<RecordId>(Arc::new(AtomicU16::new(0)));
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
     }
