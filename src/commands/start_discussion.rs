@@ -106,39 +106,39 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     //     }
     // };
 
-    let cached_record_id = {
-        let data_read = ctx.data.read().await;
-        data_read
-            .get::<RecordId>()
-            .expect("Expected RecordId in TypeMap.")
-            .clone()
-    };
-    if cached_record_id.load(Ordering::Relaxed) != 0 {
-        message.reply(ctx, "会議はすでに始まっています。").await?;
-
-        return Ok(());
-    }
-    cached_record_id.store(record.id, Ordering::Relaxed);
-
-    let cached_agendas = {
-        let data_read = ctx.data.read().await;
-        data_read
-            .get::<Agendas>()
-            .expect("Expected Agendas in TypeMap.")
-            .clone()
-    };
     {
+        let cached_record_id = {
+            let data_read = ctx.data.read().await;
+            data_read
+                .get::<RecordId>()
+                .expect("Expected RecordId in TypeMap.")
+                .clone()
+        };
+        if cached_record_id.load(Ordering::Relaxed) != 0 {
+            message.reply(ctx, "会議はすでに始まっています。").await?;
+
+            return Ok(());
+        }
+        cached_record_id.store(record.id, Ordering::Relaxed);
+    }
+
+    {
+        let cached_agendas = {
+            let data_read = ctx.data.read().await;
+            data_read
+                .get::<Agendas>()
+                .expect("Expected Agendas in TypeMap.")
+                .clone()
+        };
         let mut agendas = cached_agendas.write().await;
         // TODO: 議題をフィルタしてsort
         record.relations.iter().for_each(|agenda| {
             agendas.insert(agenda.issue_id, AgendaStatus::New);
-        })
-    }
-    {
-        let map = cached_agendas.read().await;
-        map.iter().for_each(|(id, status)| {
+        });
+        let cached_agendas_lock = cached_agendas.read().await;
+        cached_agendas_lock.iter().for_each(|(id, status)| {
             println!("{} {:#?}", id, status);
-        })
+        });
     }
 
     message
