@@ -44,14 +44,14 @@ async fn main() {
 
     let http = Http::new_with_token(&token);
 
-    let (owners, _bot_id) = match http.get_current_application_info().await {
+    let owners = match http.get_current_application_info().await {
         Ok(info) => {
             let mut owners = HashSet::new();
             owners.insert(info.owner.id);
 
-            (owners, info.id)
+            owners
         }
-        Err(why) => panic!("Could not access application info: {:?}", why),
+        Err(reason) => panic!("Could not access application info: {:?}", reason),
     };
 
     let framework = StandardFramework::new()
@@ -73,7 +73,7 @@ async fn main() {
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
     }
 
-    if let Err(why) = client.start().await {
-        println!("Client error: {:?}", why);
+    if let Err(reason) = client.start().await {
+        println!("Client error: {:?}", reason);
     }
 }
