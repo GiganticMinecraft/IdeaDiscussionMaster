@@ -12,7 +12,7 @@ mod test {
     async fn fetch_issue() {
         match redmine::fetch_record_issue(9690).await {
             Ok(issue) => {
-                // TODO test
+                // TODO: test
                 println!("{:#?}", issue.relations);
             },
             Err(err) => {
