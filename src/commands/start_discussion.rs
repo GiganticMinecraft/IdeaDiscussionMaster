@@ -148,8 +148,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         });
     }
 
-    discussion::go_to_next_agenda(ctx).await;
-
     message
         .channel_id
         .send_message(&ctx.http, |msg| {
@@ -168,5 +166,37 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         })
         .await?;
 
+    let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
+
+    message
+        .channel_id
+        .send_message(&ctx.http, |msg| {
+            msg.embed(|embed| match next_agenda_id {
+                Some(id) => create_default_embed(embed, record_id)
+                    .title(format!("次の議題は#{}です", id))
+                    .field(
+                        "議題チケット",
+                        format!("{}{}", redmine::REDMINE_ISSUE_URL, id),
+                        false,
+                    )
+                    .colour(Colour::from_rgb(87, 199, 255)),
+                None => create_default_embed(embed, record_id)
+                    .title("次の議題はありません")
+                    .description("Redmine上で提起されていた議題は全て処理されました。")
+                    .colour(Colour::from_rgb(245, 93, 93)),
+            })
+        })
+        .await?;
+
     Ok(())
+}
+
+// TODO: 他にもつくれそう
+fn create_default_embed(
+    embed: &mut serenity::builder::CreateEmbed,
+    record_id: u16,
+) -> &mut serenity::builder::CreateEmbed {
+    embed
+        .timestamp(Utc::now().to_rfc3339())
+        .footer(|footer| footer.text(format!("アイデア会議: #{}", record_id)))
 }
