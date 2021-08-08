@@ -7,7 +7,7 @@ use serenity::{
 use std::sync::atomic::Ordering;
 
 use crate::{
-    domains::redmine,
+    domains::{discussion, redmine},
     globals::{
         agendas::{AgendaStatus, Agendas},
         record_id::RecordId,
@@ -22,8 +22,8 @@ use crate::{
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
     let record_id = match args.single::<u16>() {
-        Ok(id) => id,
-        Err(_) => {
+        Ok(id) if id > 0 => id,
+        _ => {
             message
                 .reply(ctx, "議事録のチケット番号が指定されていません。")
                 .await?;
@@ -32,16 +32,24 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
+    // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をSomeで包んでVecで返す。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
-    let record = {
+    let record_relations = {
         match redmine::fetch_record_issue(record_id).await {
             Ok(issue) => {
-                if record_id > 0
-                    && issue.project.name == "アイデア会議議事録"
+                if issue.project.name == "アイデア会議議事録"
                     && issue.tracker.name == "アイデア会議"
-                // && issue.status.name == "新規" FIXME: コメントアウト
+                // && issue.status.name == "新規" // FIXME: コメントアウト
                 {
-                    Some(issue)
+                    let relations = issue
+                        .relations
+                        .iter()
+                        .filter(|rel| rel.relation_type == "relates")
+                        .flat_map(|rel| [rel.issue_id, rel.issue_to_id])
+                        .filter(|num| num != &issue.id)
+                        .collect::<Vec<_>>();
+
+                    Some(relations)
                 } else {
                     None
                 }
@@ -54,8 +62,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         }
     };
     // 番号が適切ではない場合のみ通知し、処理を中止。
-    let record = match record {
-        Some(issue) => issue,
+    let record_relations = match record_relations {
+        Some(relations) => relations,
         None => {
             message
                 .reply(ctx, "指定された番号の議事録チケットが存在しません。")
@@ -119,7 +127,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
             return Ok(());
         }
-        cached_record_id.store(record.id, Ordering::Relaxed);
+        cached_record_id.store(record_id, Ordering::Relaxed);
     }
 
     {
@@ -131,15 +139,13 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 .clone()
         };
         let mut agendas = cached_agendas.write().await;
-        // TODO: 議題をフィルタしてsort
-        record.relations.iter().for_each(|agenda| {
-            agendas.insert(agenda.issue_id, AgendaStatus::New);
-        });
-        let cached_agendas_lock = cached_agendas.read().await;
-        cached_agendas_lock.iter().for_each(|(id, status)| {
-            println!("{} {:#?}", id, status);
+
+        record_relations.iter().for_each(|agenda_id| {
+            agendas.insert(agenda_id.to_owned(), AgendaStatus::New);
         });
     }
+
+    discussion::go_to_next_agenda(ctx).await;
 
     message
         .channel_id
@@ -148,7 +154,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 embed.title("会議を開始しました。");
                 embed.field(
                     "議事録チケット",
-                    format!("https://redmine.seichi.click/issues/{}", record.id),
+                    format!("https://redmine.seichi.click/issues/{}", record_id),
                     false,
                 );
                 embed.colour(Colour::from_rgb(87, 199, 255));
