@@ -39,7 +39,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 if record_id > 0
                     && issue.project.name == "アイデア会議議事録"
                     && issue.tracker.name == "アイデア会議"
-                    // && issue.status.name == "新規" FIXME: コメントアウト
+                // && issue.status.name == "新規" FIXME: コメントアウト
                 {
                     Some(issue)
                 } else {
