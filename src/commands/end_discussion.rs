@@ -3,6 +3,8 @@ use serenity::framework::standard::{macros::command, CommandResult};
 use serenity::{model::prelude::Message, prelude::Context};
 use std::sync::atomic::Ordering;
 
+// TODO: embed
+
 #[command]
 #[aliases("eid")]
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
