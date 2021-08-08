@@ -155,10 +155,10 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
                 embed
-                    .title("会議を開始しました。")
+                    .title("会議を開始しました")
                     .field(
                         "議事録チケット",
-                        format!("https://redmine.seichi.click/issues/{}", record_id),
+                        format!("{}{}", redmine::REDMINE_ISSUE_URL, record_id),
                         false,
                     )
                     .colour(Colour::from_rgb(87, 199, 255))
