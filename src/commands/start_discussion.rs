@@ -132,6 +132,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     }
 
     {
+        // TODO: writeだけにできるのでは？
         let cached_agendas = {
             let data_read = ctx.data.read().await;
             data_read
