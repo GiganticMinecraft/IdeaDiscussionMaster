@@ -35,15 +35,19 @@ struct RedmineIssueResult {
 
 const REDMINE_URL: &str = "https://redmine.seichi.click/";
 
-pub async fn fetch_issue(issue_id: u16) -> Result<RedmineIssue, Box<(dyn error::Error)>> {
-    let mut query = HashMap::new();
-    query.insert("include", "relations");
+pub async fn fetch_issue(issue_id: u16, query: Option<HashMap<&str, &str>>) -> Result<RedmineIssue, Box<(dyn error::Error)>> {
     let response = utils::fetch(
         format!("{}/issues/{}.json", REDMINE_URL, issue_id),
-        Some(query),
+        query,
     )
     .await?;
     utils::deserialize::<RedmineIssueResult>(response)
         .await
         .map(|result| result.issue)
+}
+
+pub async fn fetch_record_issue(issue_id: u16) -> Result<RedmineIssue, Box<(dyn error::Error)>> {
+    let mut query = HashMap::new();
+    query.insert("include", "relations");
+    fetch_issue(issue_id, Some(query)).await
 }

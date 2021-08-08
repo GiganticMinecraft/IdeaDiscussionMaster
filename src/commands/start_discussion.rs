@@ -34,7 +34,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
     let record = {
-        match redmine::fetch_issue(record_id).await {
+        match redmine::fetch_record_issue(record_id).await {
             Ok(issue) => {
                 if record_id > 0
                     && issue.project.name == "アイデア会議議事録"
