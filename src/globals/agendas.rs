@@ -4,7 +4,7 @@ use tokio::sync::RwLock;
 
 pub struct Agendas;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum AgendaStatus {
     New,
     Approved,
