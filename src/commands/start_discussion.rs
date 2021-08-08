@@ -1,3 +1,4 @@
+use chrono::Utc;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::channel::Message,
@@ -159,6 +160,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                         false,
                     )
                     .colour(Colour::from_rgb(87, 199, 255))
+                    .timestamp(Utc::now().to_rfc3339())
+                    .footer(|footer| footer.text(format!("アイデア会議: #{}", record_id)))
             })
         })
         .await?;
