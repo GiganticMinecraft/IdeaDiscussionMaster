@@ -33,11 +33,11 @@ struct RedmineIssueResult {
     issue: RedmineIssue,
 }
 
-const REDMINE_URL: &str = "https://redmine.seichi.click/";
+pub const REDMINE_ISSUE_URL: &str = "https://redmine.seichi.click/issues/";
 
 pub async fn fetch_issue(issue_id: u16, query: Option<HashMap<&str, &str>>) -> Result<RedmineIssue, Box<(dyn error::Error)>> {
     let response = utils::fetch(
-        format!("{}/issues/{}.json", REDMINE_URL, issue_id),
+        format!("{}{}.json", REDMINE_ISSUE_URL, issue_id),
         query,
     )
     .await?;
