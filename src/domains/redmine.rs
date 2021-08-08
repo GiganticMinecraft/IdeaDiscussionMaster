@@ -1,6 +1,6 @@
 use crate::utils;
 use serde::Deserialize;
-use std::error;
+use std::{collections::HashMap, error};
 
 #[derive(Debug, Deserialize)]
 pub struct RedmineProject {
@@ -36,7 +36,13 @@ struct RedmineIssueResult {
 const REDMINE_URL: &str = "https://redmine.seichi.click/";
 
 pub async fn fetch_issue(issue_id: u16) -> Result<RedmineIssue, Box<(dyn error::Error)>> {
-    let response = utils::fetch(format!("{}/issues/{}.json", REDMINE_URL, issue_id), None).await?;
+    let mut query = HashMap::new();
+    query.insert("include", "relations");
+    let response = utils::fetch(
+        format!("{}/issues/{}.json", REDMINE_URL, issue_id),
+        Some(query),
+    )
+    .await?;
     utils::deserialize::<RedmineIssueResult>(response)
         .await
         .map(|result| result.issue)
