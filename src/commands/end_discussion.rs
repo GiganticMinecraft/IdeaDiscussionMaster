@@ -15,13 +15,6 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
             .expect("Expected RecordId in TypeMap.")
             .clone()
     };
-
-    if cached_record_id.load(Ordering::Relaxed) == 0 {
-        message.reply(ctx, "会議が開始されていません。").await?;
-
-        return Ok(());
-    }
-
     cached_record_id.store(0, Ordering::Relaxed);
     message.reply(ctx, "会議を終了しました。").await?;
 
