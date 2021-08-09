@@ -14,12 +14,12 @@ pub fn default_success_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
 ) -> &mut builder::CreateEmbed {
-    default_embed(embed, record_id).color(Color::from_rgb(245, 93, 93))
+    default_embed(embed, record_id).color(Color::from_rgb(87, 199, 255))
 }
 
 pub fn default_failure_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
 ) -> &mut builder::CreateEmbed {
-    default_embed(embed, record_id).color(Color::from_rgb(87, 199, 255))
+    default_embed(embed, record_id).color(Color::from_rgb(245, 93, 93))
 }
