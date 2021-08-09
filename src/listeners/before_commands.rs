@@ -21,10 +21,14 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
 
         cached_record_id.load(Ordering::Relaxed)
     };
-    if cached_record_id != 0 {
+    if command_name == "start_discussion" && cached_record_id != 0 {
         message.reply(ctx, "会議はすでに始まっています。").await;
 
-        return false
+        return false;
+    } else if command_name != "start_discussion" && cached_record_id == 0 {
+        message.reply(ctx, "会議が始まっていません。").await;
+
+        return false;
     }
 
     true
