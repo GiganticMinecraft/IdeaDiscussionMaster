@@ -13,7 +13,7 @@ use tokio::sync::RwLock;
 use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*, start_votes::*},
     globals::{agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId},
-    listeners::{before_commands::before, ready::ReadyEventHandler},
+    listeners::{before_commands::before, ready::ReadyEventHandler, reactions::ReactionAddedEventHandler},
 };
 
 #[group]
@@ -48,6 +48,7 @@ async fn main() {
     let mut client = Client::builder(&token)
         .framework(framework)
         .event_handler(ReadyEventHandler)
+        .event_handler(ReactionAddedEventHandler)
         .await
         .expect("Err creating client");
 
