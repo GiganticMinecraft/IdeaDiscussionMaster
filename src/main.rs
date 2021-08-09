@@ -11,13 +11,13 @@ use std::{
 use tokio::sync::RwLock;
 
 use idea_discussion_master::{
-    commands::{end_discussion::*, start_discussion::*},
+    commands::{end_discussion::*, start_discussion::*, start_votes::*},
     globals::{agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId},
     listeners::{before_commands::before, ready::ReadyEventHandler},
 };
 
 #[group]
-#[commands(start_discussion, end_discussion)]
+#[commands(start_discussion, end_discussion, start_votes)]
 struct General;
 
 #[tokio::main]
