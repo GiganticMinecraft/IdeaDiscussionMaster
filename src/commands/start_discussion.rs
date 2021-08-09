@@ -132,7 +132,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     }
 
     {
-        // TODO: writeだけにできるのでは？
         let cached_agendas = {
             let data_read = ctx.data.read().await;
             data_read
@@ -142,6 +141,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         };
         let mut agendas = cached_agendas.write().await;
 
+        // TODO: 議題のクリアは会議終了時にもされるべき
         agendas.clear();
         record_relations.iter().for_each(|agenda_id| {
             agendas.insert(agenda_id.to_owned(), AgendaStatus::New);
