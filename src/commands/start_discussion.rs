@@ -123,11 +123,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                 .expect("Expected RecordId in TypeMap.")
                 .clone()
         };
-        if cached_record_id.load(Ordering::Relaxed) != 0 {
-            message.reply(ctx, "会議はすでに始まっています。").await?;
-
-            return Ok(());
-        }
         cached_record_id.store(record_id, Ordering::Relaxed);
     }
 
