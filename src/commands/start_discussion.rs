@@ -1,4 +1,3 @@
-use chrono::Utc;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::channel::Message,
@@ -9,10 +8,7 @@ use std::sync::atomic::Ordering;
 
 use crate::{
     domains::{discord_embed, discussion, redmine},
-    globals::{
-        agendas::{AgendaStatus, Agendas},
-        record_id::RecordId,
-    },
+    globals::{agendas, record_id},
 };
 
 // TODO: エラーをまとめる
@@ -119,7 +115,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         let cached_record_id = {
             let data_read = ctx.data.read().await;
             data_read
-                .get::<RecordId>()
+                .get::<record_id::RecordId>()
                 .expect("Expected RecordId in TypeMap.")
                 .clone()
         };
@@ -130,7 +126,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         let cached_agendas = {
             let data_read = ctx.data.read().await;
             data_read
-                .get::<Agendas>()
+                .get::<agendas::Agendas>()
                 .expect("Expected Agendas in TypeMap.")
                 .clone()
         };
@@ -139,7 +135,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         // TODO: 議題などのクリアは会議終了時にもされるべき
         agendas.clear();
         record_relations.iter().for_each(|agenda_id| {
-            agendas.insert(agenda_id.to_owned(), AgendaStatus::New);
+            agendas.insert(agenda_id.to_owned(), agendas::AgendaStatus::New);
         });
     }
 
@@ -159,7 +155,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .await?;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-
     message
         .channel_id
         .send_message(&ctx.http, |msg| {
