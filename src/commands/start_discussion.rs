@@ -8,7 +8,7 @@ use serenity::{
 use std::sync::atomic::Ordering;
 
 use crate::{
-    domains::{discussion, redmine},
+    domains::{discord_embed, discussion, redmine},
     globals::{
         agendas::{AgendaStatus, Agendas},
         record_id::RecordId,
@@ -147,16 +147,13 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
-                embed
+                discord_embed::default_success_embed(embed, record_id)
                     .title("会議を開始しました")
                     .field(
                         "議事録チケット",
                         format!("{}{}", redmine::REDMINE_ISSUE_URL, record_id),
                         false,
                     )
-                    .colour(Colour::from_rgb(87, 199, 255))
-                    .timestamp(Utc::now().to_rfc3339())
-                    .footer(|footer| footer.text(format!("アイデア会議: #{}", record_id)))
             })
         })
         .await?;
@@ -167,7 +164,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| match next_agenda_id {
-                Some(id) => create_default_embed(embed, record_id)
+                Some(id) => discord_embed::default_success_embed(embed, record_id)
                     .title(format!("次の議題は#{}です", id))
                     .field(
                         "議題チケット",
@@ -175,23 +172,12 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                         false,
                     )
                     .colour(Colour::from_rgb(87, 199, 255)),
-                None => create_default_embed(embed, record_id)
+                None => discord_embed::default_failure_embed(embed, record_id)
                     .title("次の議題はありません")
-                    .description("Redmine上で提起されていた議題は全て処理されました。")
-                    .colour(Colour::from_rgb(245, 93, 93)),
+                    .description("Redmine上で提起されていた議題は全て処理されました。"),
             })
         })
         .await?;
 
     Ok(())
-}
-
-// TODO: 他にもつくれそう
-fn create_default_embed(
-    embed: &mut serenity::builder::CreateEmbed,
-    record_id: u16,
-) -> &mut serenity::builder::CreateEmbed {
-    embed
-        .timestamp(Utc::now().to_rfc3339())
-        .footer(|footer| footer.text(format!("アイデア会議: #{}", record_id)))
 }
