@@ -10,6 +10,11 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
         command_name,
         message.author.tag()
     );
+
+    if message.author.bot {
+        return false;
+    }
+
     let cached_record_id = {
         let cached_record_id = {
             let data_read = ctx.data.read().await;
