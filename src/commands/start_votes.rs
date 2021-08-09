@@ -33,6 +33,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         };
         cached_current_agenda_id.load(Ordering::Relaxed)
     };
+    let current_agenda_exists = current_agenda_id != 0;
     let description = vec![
         "提議されている議題についての採決を行います。",
         "以下のリアクションで投票を行ってください。過半数を超え次第、次の議題へと移ります。",
@@ -40,9 +41,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         ":x:: 却下",
     ]
     .join("\n");
-    let current_agenda_exists = current_agenda_id != 0;
-
-    let msg = message
+    let voted_message = message
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
@@ -59,8 +58,8 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         .await?;
 
     if current_agenda_exists {
-        msg.react(&ctx.http, '⭕').await?;
-        msg.react(&ctx.http, '❌').await?;
+        voted_message.react(&ctx.http, '⭕').await?;
+        voted_message.react(&ctx.http, '❌').await?;
     }
 
     Ok(())
