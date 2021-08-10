@@ -16,9 +16,7 @@ use idea_discussion_master::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
         voted_message_id::VotedMessageId,
     },
-    listeners::{
-        before_commands::before, reactions::ReactionAddedEventHandler, ready::ReadyEventHandler,
-    },
+    listeners::{before_commands::before, listener::Handler},
 };
 
 #[group]
@@ -52,8 +50,7 @@ async fn main() {
     // TODO: helpとか該当コマンドなしとか？
     let mut client = Client::builder(&token)
         .framework(framework)
-        .event_handler(ReadyEventHandler)
-        .event_handler(ReactionAddedEventHandler)
+        .event_handler(Handler)
         .await
         .expect("Err creating client");
 
