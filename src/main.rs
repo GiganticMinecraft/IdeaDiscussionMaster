@@ -19,7 +19,7 @@ use idea_discussion_master::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
         voice_chat_channel_id::VoiceChatChannelId, voted_message_id::VotedMessageId,
     },
-    listeners::{before_commands::before, listener::Handler},
+    listeners::{after_commands::after, before_commands::before, listener::Handler},
 };
 
 #[group]
@@ -47,6 +47,7 @@ async fn main() {
 
     let framework = StandardFramework::new()
         .configure(|c| c.owners(owners).prefix("\\"))
+        .after(after)
         .before(before)
         .group(&GENERAL_GROUP);
 
