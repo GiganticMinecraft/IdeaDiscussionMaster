@@ -107,7 +107,17 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     //     }
     // };
 
+    {
+        let cached_voice_chat_channel_id = {
+            let data_read = ctx.data.read().await;
+            data_read
                 .get::<voice_chat_channel_id::VoiceChatChannelId>()
+                .expect("Expected VoiceChatChannelId in TypeMap.")
+                .clone()
+        };
+        cached_voice_chat_channel_id.store(vc_id.as_u64().to_owned(), Ordering::Relaxed);
+    }
+
     {
         let cached_record_id = {
             let data_read = ctx.data.read().await;
