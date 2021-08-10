@@ -31,43 +31,39 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をSomeで包んでVecで返す。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
-    let record_relations = {
-        match redmine::fetch_record_issue(record_id).await {
-            Ok(issue) => {
-                if issue.project.name == "アイデア会議議事録"
-                    && issue.tracker.name == "アイデア会議"
-                // && issue.status.name == "新規" // FIXME: コメントアウト
-                {
-                    let relations = issue
-                        .relations
-                        .iter()
-                        .filter(|rel| rel.relation_type == "relates")
-                        .flat_map(|rel| [rel.issue_id, rel.issue_to_id])
-                        .filter(|num| num != &issue.id)
-                        .collect::<Vec<_>>();
+    let record_relations = match redmine::fetch_record_issue(record_id).await {
+        Ok(issue) => {
+            if issue.project.name == "アイデア会議議事録" && issue.tracker.name == "アイデア会議"
+            // && issue.status.name == "新規" // FIXME: コメントアウト
+            {
+                let relations = issue
+                    .relations
+                    .iter()
+                    .filter(|rel| rel.relation_type == "relates")
+                    .flat_map(|rel| [rel.issue_id, rel.issue_to_id])
+                    .filter(|num| num != &issue.id)
+                    .collect::<Vec<_>>();
 
-                    Some(relations)
-                } else {
-                    None
-                }
-            }
-            Err(err) => {
-                println!("Redmineでのアクセス中にエラーが発生しました。: {}", err);
-
+                Some(relations)
+            } else {
                 None
             }
         }
+        Err(err) => {
+            println!("Redmineでのアクセス中にエラーが発生しました。: {}", err);
+
+            None
+        }
     };
     // 番号が適切ではない場合のみ通知し、処理を中止。
-    let record_relations = match record_relations {
-        Some(relations) => relations,
-        None => {
-            message
-                .reply(ctx, "指定された番号の議事録チケットが存在しません。")
-                .await?;
+    let record_relations = if let Some(relations) = record_relations {
+        relations
+    } else {
+        message
+            .reply(ctx, "指定された番号の議事録チケットが存在しません。")
+            .await?;
 
-            return Ok(());
-        }
+        return Ok(());
     };
 
     // FIXME: コメントアウト
