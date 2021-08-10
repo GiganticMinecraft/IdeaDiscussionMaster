@@ -139,7 +139,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
-                discord_embed::default_success_embed(embed, record_id)
+                discord_embed::default_embed(embed, record_id)
                     .title("会議を開始しました")
                     .field(
                         "議事録チケット",
