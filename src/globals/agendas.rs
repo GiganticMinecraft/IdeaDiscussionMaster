@@ -1,4 +1,4 @@
-use serenity::prelude::TypeMapKey;
+use serenity::prelude::{Context, TypeMapKey};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
@@ -40,4 +40,42 @@ impl AgendaStatus {
 
 impl TypeMapKey for Agendas {
     type Value = Arc<RwLock<HashMap<u16, AgendaStatus>>>;
+}
+
+pub async fn load(ctx: &Context) -> HashMap<u16, AgendaStatus> {
+    let cached_agendas = {
+        let data_read = ctx.data.read().await;
+        data_read
+            .get::<Agendas>()
+            .expect("Expected Agendas in TypeMap.")
+            .clone()
+    };
+    let map = cached_agendas.read().await;
+    map.to_owned()
+}
+
+pub async fn write(ctx: &Context, id: u16, status: AgendaStatus) -> HashMap<u16, AgendaStatus> {
+    let cached_agendas = {
+        let data_read = ctx.data.read().await;
+        data_read
+            .get::<Agendas>()
+            .expect("Expected Agendas in TypeMap.")
+            .clone()
+    };
+    let mut map = cached_agendas.write().await;
+    map.entry(id).and_modify(|state| *state = status).or_insert(status);
+    map.to_owned()
+}
+
+pub async fn clear(ctx: &Context) -> HashMap<u16, AgendaStatus> {
+    let cached_agendas = {
+        let data_read = ctx.data.read().await;
+        data_read
+            .get::<Agendas>()
+            .expect("Expected Agendas in TypeMap.")
+            .clone()
+    };
+    let mut map = cached_agendas.write().await;
+    map.clear();
+    map.to_owned()
 }

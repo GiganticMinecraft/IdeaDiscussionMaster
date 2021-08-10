@@ -165,23 +165,7 @@ impl EventHandler for Handler {
             })
             .await;
 
-        {
-            let cached_agendas = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<agendas::Agendas>()
-                    .expect("Expected Agendas in TypeMap.")
-                    .clone()
-            };
-            let mut agendas = cached_agendas.write().await;
-            // FIXME: 関連チケットが変更されるようなら.or_insertが必要
-            agendas
-                .entry(current_agenda_id)
-                .and_modify(|status| *status = status_reaction);
-            agendas.iter().for_each(|(id, status)| {
-                println!("{} {:?}", id, status);
-            })
-        }
+        agendas::write(&ctx, current_agenda_id, status_reaction).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
         // TODO: まとめる

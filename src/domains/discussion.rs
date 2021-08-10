@@ -5,16 +5,9 @@ use crate::globals::{agendas, current_agenda_id};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let agenda_id = {
-        let cached_agendas = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<agendas::Agendas>()
-                .expect("Expected Agendas in TypeMap.")
-                .clone()
-        };
-        let agendas = cached_agendas.read().await;
+        let cached_agendas = agendas::load(ctx).await;
 
-        agendas
+        cached_agendas
             .iter()
             .find(|(_, &status)| status == agendas::AgendaStatus::New)
             .map(|(id, _)| id.to_owned())
@@ -25,7 +18,7 @@ pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
             let data_read = ctx.data.read().await;
             data_read
                 .get::<current_agenda_id::CurrentAgendaId>()
-                .expect("Expected Agendas in TypeMap.")
+                .expect("Expected CurrentAgendaId in TypeMap.")
                 .clone()
         };
 

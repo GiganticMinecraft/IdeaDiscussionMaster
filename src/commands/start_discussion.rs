@@ -114,21 +114,10 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         cached_record_id.store(record_id, Ordering::Relaxed);
     }
 
-    {
-        let cached_agendas = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<agendas::Agendas>()
-                .expect("Expected Agendas in TypeMap.")
-                .clone()
-        };
-        let mut agendas = cached_agendas.write().await;
-
-        // TODO: 議題などのクリアは会議終了時にもされるべき
-        agendas.clear();
-        record_relations.iter().for_each(|agenda_id| {
-            agendas.insert(agenda_id.to_owned(), agendas::AgendaStatus::New);
-        });
+    // TODO: 議題などのクリアは会議終了時にもされるべき
+    agendas::clear(&ctx).await;
+    for relation in record_relations.iter() {
+        agendas::write(&ctx, relation.to_owned(), agendas::AgendaStatus::New).await;
     }
 
     message
