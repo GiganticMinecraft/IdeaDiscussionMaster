@@ -5,7 +5,7 @@ use crate::globals::{agendas, current_agenda_id};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let agenda_id = {
-        let cached_agendas = agendas::load(ctx).await;
+        let cached_agendas = agendas::read(ctx).await;
 
         cached_agendas
             .iter()

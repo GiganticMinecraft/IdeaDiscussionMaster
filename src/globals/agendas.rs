@@ -42,7 +42,7 @@ impl TypeMapKey for Agendas {
     type Value = Arc<RwLock<HashMap<u16, AgendaStatus>>>;
 }
 
-pub async fn load(ctx: &Context) -> HashMap<u16, AgendaStatus> {
+pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
         data_read
