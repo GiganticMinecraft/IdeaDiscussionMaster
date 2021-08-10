@@ -7,7 +7,7 @@ use std::sync::atomic::Ordering;
 
 use crate::{
     domains::discord_embed,
-    globals::{current_agenda_id, record_id},
+    globals::{current_agenda_id, record_id, voted_message_id},
 };
 
 #[command]
@@ -49,7 +49,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
                     discord_embed::default_failure_embed(embed, record_id)
                         .title("現在進行中の議題はありません")
                 } else {
-                    discord_embed::default_success_embed(embed, record_id)
+                    discord_embed::default_embed(embed, record_id)
                         .title(format!("採決: #{}", current_agenda_id))
                         .description(description)
                 }
@@ -60,6 +60,15 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
     if current_agenda_exists {
         voted_message.react(&ctx.http, '⭕').await?;
         voted_message.react(&ctx.http, '❌').await?;
+
+        let cached_voted_message_id = {
+            let data_read = ctx.data.read().await;
+            data_read
+                .get::<voted_message_id::VotedMessageId>()
+                .expect("Expected VotedMessageId in TypeMap.")
+                .clone()
+        };
+        cached_voted_message_id.store(voted_message.id.as_u64().to_owned(), Ordering::Relaxed);
     }
 
     Ok(())
