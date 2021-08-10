@@ -2,7 +2,6 @@ use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::{channel::Message, id::ChannelId},
     prelude::Context,
-    utils::Colour,
 };
 use std::sync::atomic::Ordering;
 
@@ -159,8 +158,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                         "議題チケット",
                         format!("{}{}", redmine::REDMINE_ISSUE_URL, id),
                         false,
-                    )
-                    .colour(Colour::from_rgb(87, 199, 255)),
+                    ),
                 None => discord_embed::default_failure_embed(embed, record_id)
                     .title("次の議題はありません")
                     .description("Redmine上で提起されていた議題は全て処理されました。"),
