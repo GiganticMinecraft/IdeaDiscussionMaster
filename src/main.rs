@@ -6,7 +6,10 @@ use serenity::{
 use std::{
     collections::{HashMap, HashSet},
     env,
-    sync::{atomic::{AtomicU16, AtomicU64}, Arc},
+    sync::{
+        atomic::{AtomicU16, AtomicU64},
+        Arc,
+    },
 };
 use tokio::sync::RwLock;
 
@@ -14,7 +17,7 @@ use idea_discussion_master::{
     commands::{end_discussion::*, start_discussion::*, start_votes::*},
     globals::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
-        voted_message_id::VotedMessageId,
+        voice_chat_channel_id::VoiceChatChannelId, voted_message_id::VotedMessageId,
     },
     listeners::{before_commands::before, listener::Handler},
 };
@@ -61,6 +64,7 @@ async fn main() {
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
         data.insert::<CurrentAgendaId>(Arc::new(AtomicU16::new(0)));
         data.insert::<VotedMessageId>(Arc::new(AtomicU64::new(0)));
+        data.insert::<VoiceChatChannelId>(Arc::new(AtomicU64::new(0)));
     }
 
     if let Err(reason) = client.start().await {
