@@ -1,6 +1,6 @@
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
-    model::channel::Message,
+    model::{channel::Message, id::ChannelId},
     prelude::Context,
     utils::Colour,
 };
@@ -8,7 +8,7 @@ use std::sync::atomic::Ordering;
 
 use crate::{
     domains::{discord_embed, discussion, redmine},
-    globals::{agendas, record_id},
+    globals::{agendas, record_id, voice_chat_channel_id},
 };
 
 // TODO: エラーをまとめる
@@ -107,6 +107,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     //     }
     // };
 
+                .get::<voice_chat_channel_id::VoiceChatChannelId>()
     {
         let cached_record_id = {
             let data_read = ctx.data.read().await;
