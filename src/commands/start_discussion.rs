@@ -155,6 +155,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| match next_agenda_id {
+                // TODO: 議題のタイトルと説明を追加
                 Some(id) => discord_embed::default_success_embed(embed, record_id)
                     .title(format!("次の議題は#{}です", id))
                     .field(
