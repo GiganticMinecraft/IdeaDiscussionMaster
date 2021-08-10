@@ -16,21 +16,18 @@ use crate::{
 
 #[command]
 #[aliases("sid")]
+#[min_args(1)]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            message
-                .reply(ctx, "議事録のチケット番号が指定されていません。")
-                .await?;
-
-            return Ok(());
+            return Err("議事録のチケット番号が指定されていません。".into());
         }
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
-    // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をSomeで包んでVecで返す。
-    // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合はNone。
+    // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をVecで返す。
+    // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合は処理を中止。
     let record_relations = match redmine::fetch_record_issue(record_id).await {
         Ok(issue) => {
             if issue.project.name == "アイデア会議議事録" && issue.tracker.name == "アイデア会議"
@@ -44,28 +41,17 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .filter(|num| num != &issue.id)
                     .collect::<Vec<_>>();
 
-                Some(relations)
+                relations
             } else {
-                None
+                return Err("指定された番号の議事録チケットが存在しません。".into());
             }
         }
         Err(err) => {
-            println!("Redmineでのアクセス中にエラーが発生しました。: {}", err);
-
-            None
+            return Err(format!("Redmineでのアクセス中にエラーが発生しました。管理者に連絡してください。(fatal): {}", err).into());
         }
     };
-    // 番号が適切ではない場合のみ通知し、処理を中止。
-    let record_relations = if let Some(relations) = record_relations {
-        relations
-    } else {
-        message
-            .reply(ctx, "指定された番号の議事録チケットが存在しません。")
-            .await?;
 
-        return Ok(());
-    };
-
+    let vc_id = ChannelId(872720546742296667);
     // FIXME: コメントアウト
     // let guild_id = match message.guild_id {
     //     Some(id) => id,
