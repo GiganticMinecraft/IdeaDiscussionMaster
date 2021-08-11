@@ -121,6 +121,7 @@ impl EventHandler for Handler {
             .await;
 
         agendas::write(&ctx, current_agenda_id, status_reaction).await;
+        current_agenda_id::clear(&ctx).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
         // TODO: 他のコマンドのところにもこのembedと送信処理は存在するのでまとめる
