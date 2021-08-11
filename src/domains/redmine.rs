@@ -26,6 +26,9 @@ pub struct RedmineIssue {
     pub project: RedmineProject,
     pub tracker: RedmineIssueTracker,
     pub status: RedmineIssueStatus,
+    pub subject: String,
+    pub description: String,
+    #[serde(default)]
     pub relations: Vec<RedmineIssueRelations>,
 }
 #[derive(Debug, Deserialize)]
