@@ -46,16 +46,7 @@ impl EventHandler for Handler {
         }
 
         // TODO: だだかぶりなのでまとめる→VoiceStatesを返す関数に
-        let vc_id = {
-            let cached_voice_chat_channel_id = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<voice_chat_channel_id::VoiceChatChannelId>()
-                    .expect("Expected VoiceChatChannelId in TypeMap.")
-                    .clone()
-            };
-            cached_voice_chat_channel_id.load(Ordering::Relaxed)
-        };
+        let vc_id = voice_chat_channel_id::read(&ctx).await;
         let guild_id = if let Some(id) = reaction.guild_id {
             id
         } else {
