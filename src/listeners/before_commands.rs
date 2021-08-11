@@ -1,5 +1,4 @@
 use serenity::{framework::standard::macros::hook, model::channel::Message, prelude::Context};
-use std::sync::atomic::Ordering;
 
 use crate::globals::record_id;
 

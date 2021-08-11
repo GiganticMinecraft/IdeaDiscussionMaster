@@ -3,7 +3,6 @@ use serenity::{
     model::{channel::Message, id::ChannelId},
     prelude::Context,
 };
-use std::sync::atomic::Ordering;
 
 use crate::{
     domains::{discord_embed, discussion, redmine},
