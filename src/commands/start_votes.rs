@@ -22,6 +22,8 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         "以下のリアクションで投票を行ってください。過半数を超え次第、次の議題へと移ります。",
         ":o:: 承認",
         ":x:: 却下",
+        "",
+        "※リアクションがすべて表示されてからリアクションを行わないと、投票が無効になる場合があります。",
     ]
     .join("\n");
     let voted_message = message
