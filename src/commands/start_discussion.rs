@@ -89,10 +89,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .await?;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
+    let next_redmine_issue = redmine::fetch_issue(next_agenda_id.unwrap_or_default(), None).await.ok();
     message
         .channel_id
         .send_message(&ctx.http, |msg| {
-            msg.embed(|embed| discord_embed::next_agenda_embed(embed, record_id, next_agenda_id))
+            msg.embed(|embed| discord_embed::next_agenda_embed(embed, record_id, next_redmine_issue))
         })
         .await?;
 

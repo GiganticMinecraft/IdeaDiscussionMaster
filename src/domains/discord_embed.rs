@@ -37,14 +37,14 @@ pub fn default_failure_embed(
 pub fn next_agenda_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
-    next_agenda_id: Option<u16>,
+    next_redmine_issue: Option<redmine::RedmineIssue>,
 ) -> &mut builder::CreateEmbed {
-    if let Some(id) = next_agenda_id {
+    if let Some(issue) = next_redmine_issue {
         default_colored_embed(embed, record_id)
-            .title(format!("次の議題は#{}です", id))
+            .title(format!("次の議題は#{}です", issue.id))
             .field(
                 "議題チケット",
-                format!("{}{}", redmine::REDMINE_ISSUE_URL, id),
+                format!("{}{}", redmine::REDMINE_ISSUE_URL, issue.id),
                 false,
             )
     } else {
