@@ -107,23 +107,10 @@ impl EventHandler for Handler {
         current_agenda_id::clear(&ctx).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
-        // TODO: 他のコマンドのところにもこのembedと送信処理は存在するのでまとめる
         let _ = reaction
             .channel_id
             .send_message(&ctx.http, |msg| {
-                msg.embed(|embed| match next_agenda_id {
-                    // TODO: 議題のタイトルと説明を追加
-                    Some(id) => discord_embed::default_success_embed(embed, record_id)
-                        .title(format!("次の議題は#{}です", id))
-                        .field(
-                            "議題チケット",
-                            format!("{}{}", redmine::REDMINE_ISSUE_URL, id),
-                            false,
-                        ),
-                    None => discord_embed::default_failure_embed(embed, record_id)
-                        .title("次の議題はありません")
-                        .description("Redmine上で提起されていた議題は全て処理されました。"),
-                })
+                msg.embed(|embed| discord_embed::next_agenda_embed(embed, record_id, next_agenda_id))
             })
             .await;
     }
