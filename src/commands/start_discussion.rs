@@ -45,7 +45,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             }
         }
         Err(err) => {
-            return Err(format!("Redmineでのアクセス中にエラーが発生しました。管理者に連絡してください。(fatal): {}", err).into());
+            return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。(fatal): {}", err).into());
         }
     };
 
