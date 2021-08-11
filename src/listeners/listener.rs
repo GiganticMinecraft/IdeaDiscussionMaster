@@ -132,16 +132,7 @@ impl EventHandler for Handler {
             };
             cached_record_id.load(Ordering::Relaxed)
         };
-        let current_agenda_id = {
-            let cached_current_agenda_id = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<current_agenda_id::CurrentAgendaId>()
-                    .expect("Expected CurrentAgendaId in TypeMap.")
-                    .clone()
-            };
-            cached_current_agenda_id.load(Ordering::Relaxed)
-        };
+        let current_agenda_id = current_agenda_id::read(&ctx).await;
 
         let _ = reaction
             .channel_id

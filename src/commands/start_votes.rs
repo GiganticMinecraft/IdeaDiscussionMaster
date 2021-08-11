@@ -23,16 +23,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         };
         cached_record_id.load(Ordering::Relaxed)
     };
-    let current_agenda_id = {
-        let cached_current_agenda_id = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<current_agenda_id::CurrentAgendaId>()
-                .expect("Expected CurrentAgendaId in TypeMap.")
-                .clone()
-        };
-        cached_current_agenda_id.load(Ordering::Relaxed)
-    };
+    let current_agenda_id = current_agenda_id::read(ctx).await;
     let current_agenda_exists = current_agenda_id != 0;
     let description = vec![
         "提議されている議題についての採決を行います。",
