@@ -50,6 +50,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     };
 
     let vc_id = ChannelId(872720546742296667);
+    voice_chat_channel_id::write(ctx, vc_id.as_u64().to_owned()).await;
     // FIXME: コメントアウト
     // if let Some(id) = discussion::fetch_voice_states(ctx, message.guild_id)
     //     .await
@@ -65,7 +66,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     //     return Ok(());
     // }
 
-    voice_chat_channel_id::write(ctx, vc_id.as_u64().to_owned()).await;
     record_id::write(ctx, record_id).await;
 
     agendas::clear(&ctx).await;
