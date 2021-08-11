@@ -26,16 +26,7 @@ impl EventHandler for Handler {
     }
 
     async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
-        let voted_message_id = {
-            let cached_voted_message_id = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<voted_message_id::VotedMessageId>()
-                    .expect("Expected VotedMessageId in TypeMap.")
-                    .clone()
-            };
-            cached_voted_message_id.load(Ordering::Relaxed)
-        };
+        let voted_message_id = voted_message_id::read(&ctx).await;
         if let Ok(user) = reaction.user(&ctx.http).await {
             if user.bot {
                 return;
@@ -102,16 +93,7 @@ impl EventHandler for Handler {
             return;
         }
 
-        {
-            let cached_voted_message_id = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<voted_message_id::VotedMessageId>()
-                    .expect("Expected VotedMessageId in TypeMap.")
-                    .clone()
-            };
-            cached_voted_message_id.store(0, Ordering::Relaxed);
-        }
+        voted_message_id::clear(&ctx).await;
 
         let record_id = record_id::read(&ctx).await;
         let current_agenda_id = current_agenda_id::read(&ctx).await;

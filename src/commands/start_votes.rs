@@ -43,14 +43,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         voted_message.react(&ctx.http, '⭕').await?;
         voted_message.react(&ctx.http, '❌').await?;
 
-        let cached_voted_message_id = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<voted_message_id::VotedMessageId>()
-                .expect("Expected VotedMessageId in TypeMap.")
-                .clone()
-        };
-        cached_voted_message_id.store(voted_message.id.as_u64().to_owned(), Ordering::Relaxed);
+        voted_message_id::write(ctx, voted_message.id.as_u64().to_owned()).await;
     }
 
     Ok(())
