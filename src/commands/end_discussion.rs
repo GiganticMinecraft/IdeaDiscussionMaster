@@ -8,7 +8,7 @@ use crate::globals::record_id;
 #[command]
 #[aliases("eid")]
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
-    record_id::write(ctx, 0).await;
+    record_id::clear(ctx).await;
     message.reply(ctx, "会議を終了しました。").await?;
 
     Ok(())
