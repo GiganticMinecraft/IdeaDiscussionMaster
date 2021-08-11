@@ -12,11 +12,18 @@ pub fn default_embed(
         .footer(|footer| footer.text(format!("アイデア会議: #{}", record_id)))
 }
 
+pub fn default_colored_embed(
+    embed: &mut builder::CreateEmbed,
+    record_id: u16,
+) -> &mut builder::CreateEmbed {
+    default_embed(embed, record_id).color(Color::from_rgb(118, 245, 164))
+}
+
 pub fn default_success_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
 ) -> &mut builder::CreateEmbed {
-    default_embed(embed, record_id).color(Color::from_rgb(87, 199, 255))
+    default_embed(embed, record_id).color(Color::from_rgb(50, 173, 240))
 }
 
 pub fn default_failure_embed(
@@ -33,7 +40,7 @@ pub fn next_agenda_embed(
     next_agenda_id: Option<u16>,
 ) -> &mut builder::CreateEmbed {
     if let Some(id) = next_agenda_id {
-        default_success_embed(embed, record_id)
+        default_colored_embed(embed, record_id)
             .title(format!("次の議題は#{}です", id))
             .field(
                 "議題チケット",
