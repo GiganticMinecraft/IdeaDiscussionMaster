@@ -95,7 +95,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
     record_id::write(ctx, record_id).await;
 
-    // TODO: 議題などのクリアは会議終了時にもされるべき
     agendas::clear(&ctx).await;
     for relation in record_relations.iter() {
         agendas::write(&ctx, relation.to_owned(), agendas::AgendaStatus::New).await;
