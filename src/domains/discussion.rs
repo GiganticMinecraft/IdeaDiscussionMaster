@@ -7,7 +7,7 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-use crate::globals::{agendas, current_agenda_id, voice_chat_channel_id};
+use crate::globals::{agendas, current_agenda_id};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let agenda_id = {
