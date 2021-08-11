@@ -26,6 +26,8 @@ use idea_discussion_master::{
 #[commands(start_discussion, end_discussion, start_votes)]
 struct General;
 
+// TODO: expectをなくす
+
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().expect("Failed to load .env file");
