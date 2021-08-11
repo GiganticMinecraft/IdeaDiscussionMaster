@@ -34,7 +34,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
                     discord_embed::default_failure_embed(embed, record_id)
                         .title("現在進行中の議題はありません")
                 } else {
-                    discord_embed::default_embed(embed, record_id)
+                    discord_embed::default_colored_embed(embed, record_id)
                         .title(format!("採決: #{}", current_agenda_id))
                         .description(description)
                 }
