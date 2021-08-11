@@ -40,9 +40,9 @@ impl EventHandler for Handler {
         let half_of_vc_members = discussion::fetch_voice_states(&ctx, reaction.guild_id)
             .await
             .iter()
-            .filter(|(_, state)| state.channel_id.unwrap() == ChannelId(vc_id))
-            .count();
-        let half_of_vc_members = vc_members / 2;
+            .filter(|(_, state)| state.channel_id.unwrap_or_default() == ChannelId(vc_id))
+            .count()
+            / 2;
 
         let choices = vec![AgendaStatus::Approved, AgendaStatus::Declined];
         let status_reaction = if let Some(emoji) = choices
