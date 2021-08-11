@@ -67,7 +67,7 @@ pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<
     map.to_owned()
 }
 
-pub async fn clear(ctx: &Context) -> HashMap<u16, AgendaStatus> {
+pub async fn clear(ctx: &Context) {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
         data_read
@@ -77,5 +77,4 @@ pub async fn clear(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     };
     let mut map = cached_agendas.write().await;
     map.clear();
-    map.to_owned()
 }
