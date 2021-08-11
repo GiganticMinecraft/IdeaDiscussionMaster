@@ -6,7 +6,7 @@ use serenity::{
 
 use crate::{
     domains::{discord_embed, discussion, redmine},
-    globals::{agendas, record_id, voice_chat_channel_id},
+    globals::{agendas, record_id},
 };
 
 // TODO: エラーをまとめる
@@ -51,47 +51,19 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
     let vc_id = ChannelId(872720546742296667);
     // FIXME: コメントアウト
-    // let guild_id = match message.guild_id {
-    //     Some(id) => id,
-    //     None => {
-    //         println!("会議を開始しようとしましたが、guild_idが見つかりませんでした。");
-    //         message
-    //             .reply(ctx, "内部エラーにより会議を開始できませんでした。")
-    //             .await?;
-
-    //         return Ok(());
-    //     }
-    // };
-
-    // let guild = ctx.cache.guild(guild_id).await;
-    // if guild.is_none() {
-    //     println!(
-    //         "会議を開始しようとしましたが、guildが見つかりませんでした。（guild_id: {}）",
-    //         guild_id
-    //     );
+    // if let Some(id) = discussion::fetch_voice_states(ctx, message.guild_id)
+    //     .await
+    //     .get(&message.author.id)
+    //     .and_then(|state| state.channel_id)
+    // {
+    //     voice_chat_channel_id::write(ctx, id.as_u64().to_owned()).await;
+    // } else {
     //     message
-    //         .reply(ctx, "内部エラーにより会議を開始できませんでした。")
+    //         .reply(ctx, "会議を開始するにはVCに参加してください。")
     //         .await?;
 
     //     return Ok(());
     // }
-    // match guild
-    //     .unwrap()
-    //     .voice_states
-    //     .get(&message.author.id)
-    //     .and_then(|state| state.channel_id)
-    // {
-    //     Some(id) => id,
-    //     None => {
-    //         message
-    //             .reply(ctx, "会議を開始するにはVCに参加してください。")
-    //             .await?;
-
-    //         return Ok(());
-    //     }
-    // };
-
-    voice_chat_channel_id::write(ctx, vc_id.as_u64().to_owned()).await;
 
     record_id::write(ctx, record_id).await;
 

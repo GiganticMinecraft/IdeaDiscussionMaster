@@ -36,26 +36,9 @@ impl EventHandler for Handler {
             return;
         }
 
-        // TODO: だだかぶりなのでまとめる→VoiceStatesを返す関数に
         let vc_id = voice_chat_channel_id::read(&ctx).await;
-        let guild_id = if let Some(id) = reaction.guild_id {
-            id
-        } else {
-            println!("投票メッセージに対してリアクションが行われましたが、guild_idが見つかりませんでした。");
-
-            return;
-        };
-        let guild = if let Some(guild) = ctx.cache.guild(guild_id).await {
-            guild
-        } else {
-            println!(
-                    "投票メッセージに対してリアクションが行われましたが、guildが見つかりませんでした。（guild_id: {}）",
-                    guild_id
-                );
-            return;
-        };
-        let vc_members = guild
-            .voice_states
+        let half_of_vc_members = discussion::fetch_voice_states(&ctx, reaction.guild_id)
+            .await
             .iter()
             .filter(|(_, state)| state.channel_id.unwrap() == ChannelId(vc_id))
             .count();
