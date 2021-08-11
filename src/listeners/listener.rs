@@ -10,7 +10,7 @@ use serenity::{
 use std::convert::From;
 
 use crate::{
-    domains::{discord_embed, discussion, redmine},
+    domains::{discord_embed, discussion},
     globals::{
         agendas::{self, AgendaStatus},
         current_agenda_id, record_id, voice_chat_channel_id, voted_message_id,
