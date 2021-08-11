@@ -26,6 +26,7 @@ pub fn default_failure_embed(
     default_embed(embed, record_id).color(Color::from_rgb(245, 93, 93))
 }
 
+// TODO: タイトルと説明を表示する
 pub fn next_agenda_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
