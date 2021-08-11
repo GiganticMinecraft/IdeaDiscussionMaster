@@ -54,7 +54,7 @@ pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     map.to_owned()
 }
 
-pub async fn write(ctx: &Context, id: u16, status: AgendaStatus) -> HashMap<u16, AgendaStatus> {
+pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<u16, AgendaStatus> {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
         data_read
@@ -63,7 +63,7 @@ pub async fn write(ctx: &Context, id: u16, status: AgendaStatus) -> HashMap<u16,
             .clone()
     };
     let mut map = cached_agendas.write().await;
-    map.entry(id).and_modify(|state| *state = status).or_insert(status);
+    map.entry(id).and_modify(|status| *status = new_status).or_insert(new_status);
     map.to_owned()
 }
 
