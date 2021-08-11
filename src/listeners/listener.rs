@@ -7,7 +7,7 @@ use serenity::{
     },
     prelude::{Context, EventHandler},
 };
-use std::{convert::From, sync::atomic::Ordering};
+use std::convert::From;
 
 use crate::{
     domains::{discord_embed, discussion, redmine},

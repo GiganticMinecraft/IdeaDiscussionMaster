@@ -3,7 +3,6 @@ use serenity::{
     model::prelude::Message,
     prelude::Context,
 };
-use std::sync::atomic::Ordering;
 
 use crate::{
     domains::discord_embed,
