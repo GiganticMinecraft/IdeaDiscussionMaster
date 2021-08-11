@@ -123,6 +123,7 @@ impl EventHandler for Handler {
         agendas::write(&ctx, current_agenda_id, status_reaction).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
+        // TODO: 他のコマンドのところにもこのembedと送信処理は存在するのでまとめる
         let _ = reaction
             .channel_id
             .send_message(&ctx.http, |msg| {
