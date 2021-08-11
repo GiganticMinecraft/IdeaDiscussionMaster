@@ -122,16 +122,7 @@ impl EventHandler for Handler {
             cached_voted_message_id.store(0, Ordering::Relaxed);
         }
 
-        let record_id = {
-            let cached_record_id = {
-                let data_read = ctx.data.read().await;
-                data_read
-                    .get::<record_id::RecordId>()
-                    .expect("Expected RecordId in TypeMap.")
-                    .clone()
-            };
-            cached_record_id.load(Ordering::Relaxed)
-        };
+        let record_id = record_id::read(&ctx).await;
         let current_agenda_id = current_agenda_id::read(&ctx).await;
 
         let _ = reaction

@@ -13,16 +13,7 @@ use crate::{
 #[command]
 #[aliases("svo")]
 pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
-    let record_id = {
-        let cached_record_id = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<record_id::RecordId>()
-                .expect("Expected RecordId in TypeMap.")
-                .clone()
-        };
-        cached_record_id.load(Ordering::Relaxed)
-    };
+    let record_id = record_id::read(ctx);
     let current_agenda_id = current_agenda_id::read(ctx).await;
     let current_agenda_exists = current_agenda_id != 0;
     let description = vec![

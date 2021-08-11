@@ -15,22 +15,12 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
         return false;
     }
 
-    let cached_record_id = {
-        let cached_record_id = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<record_id::RecordId>()
-                .expect("Expected RecordId in TypeMap.")
-                .clone()
-        };
-
-        cached_record_id.load(Ordering::Relaxed)
-    };
-    if command_name == "start_discussion" && cached_record_id != 0 {
+    let record_id_exists = record_id::read(ctx).await != 0;
+    if command_name == "start_discussion" && record_id_exists {
         let _ = message.reply(ctx, "会議はすでに始まっています。").await;
 
         return false;
-    } else if command_name != "start_discussion" && cached_record_id == 0 {
+    } else if command_name != "start_discussion" && !record_id_exists {
         let _ = message.reply(ctx, "会議が始まっていません。").await;
 
         return false;

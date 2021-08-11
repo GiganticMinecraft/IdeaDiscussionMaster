@@ -103,16 +103,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         cached_voice_chat_channel_id.store(vc_id.as_u64().to_owned(), Ordering::Relaxed);
     }
 
-    {
-        let cached_record_id = {
-            let data_read = ctx.data.read().await;
-            data_read
-                .get::<record_id::RecordId>()
-                .expect("Expected RecordId in TypeMap.")
-                .clone()
-        };
-        cached_record_id.store(record_id, Ordering::Relaxed);
-    }
+    record_id::write(ctx, record_id).await;
 
     // TODO: 議題などのクリアは会議終了時にもされるべき
     agendas::clear(&ctx).await;
