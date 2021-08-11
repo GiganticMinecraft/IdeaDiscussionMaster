@@ -4,6 +4,7 @@ use serenity::{model::prelude::Message, prelude::Context};
 use crate::globals::record_id;
 
 // TODO: embed
+// TODO: 結果をRedmineとDiscordに送信
 
 #[command]
 #[aliases("eid")]
