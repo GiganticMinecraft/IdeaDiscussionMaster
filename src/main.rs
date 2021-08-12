@@ -4,7 +4,7 @@ use serenity::{
     prelude::Client,
 };
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashMap,
     env,
     sync::{
         atomic::{AtomicU16, AtomicU64},
@@ -35,18 +35,8 @@ async fn main() {
 
     let http = Http::new_with_token(&token);
 
-    let owners = match http.get_current_application_info().await {
-        Ok(info) => {
-            let mut owners = HashSet::new();
-            owners.insert(info.owner.id);
-
-            owners
-        }
-        Err(reason) => panic!("Could not access application info: {:?}", reason),
-    };
-
     let framework = StandardFramework::new()
-        .configure(|c| c.owners(owners).prefix("\\"))
+        .configure(|config| config.prefix("\\"))
         .after(after)
         .before(before)
         .group(&GENERAL_GROUP);
