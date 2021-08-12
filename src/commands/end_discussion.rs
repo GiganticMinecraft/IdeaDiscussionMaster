@@ -8,7 +8,6 @@ use crate::{
 };
 
 // TODO: 結果をRedmineに送信
-// TODO: 説明文にまとめてではなく、フィールドを用いる
 
 #[command]
 #[aliases("eid")]
@@ -18,11 +17,11 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     voted_message_id::clear(ctx).await;
 
     let record_id = record_id::read(ctx).await;
-    let age = agendas::read(ctx).await;
+    let cached_agendas = agendas::read(ctx).await;
     let agendas = agendas::AgendaStatus::values()
         .into_iter()
         .map(|state| {
-            let issue_ids = if let Some(array) = age
+            let issue_ids = if let Some(array) = cached_agendas
                 .iter()
                 .group_by(|(_, status)| **status == state)
                 .into_iter()
@@ -34,22 +33,21 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
             } else {
                 "-".to_string()
             };
-            format!("[{}]\n{}", state.ja(), issue_ids)
+            (state.ja(), issue_ids, false)
         })
-        .collect_vec()
-        .join("\n");
+        .collect_vec();
     message
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
                 discord_embed::default_embed(embed, record_id)
                     .title("会議を終了しました")
-                    .description(agendas)
                     .field(
                         "議事録チケット",
                         format!("{}{}", redmine::REDMINE_ISSUE_URL, record_id),
                         false,
                     )
+                    .fields(agendas)
             })
         })
         .await?;
