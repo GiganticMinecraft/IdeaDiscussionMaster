@@ -33,8 +33,6 @@ async fn main() {
     let token = env::var("IDEA_DISCUSSION_MASTER_DISCORD_TOKEN")
         .expect("Expected a token in the environment");
 
-    let http = Http::new_with_token(&token);
-
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
         .after(after)
