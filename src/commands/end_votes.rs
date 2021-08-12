@@ -10,6 +10,7 @@ use crate::globals::{current_agenda_id, record_id, voted_message_id};
 #[aliases("evo")]
 #[min_args(1)]
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
+    // TODO: 任意の選択肢で手動投票を行った後、結果をBot側に入力するコマンド
     let status = if let Ok(str) = args.single::<String>() {
         str
     } else {
