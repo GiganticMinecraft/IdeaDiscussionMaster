@@ -44,8 +44,7 @@ impl EventHandler for Handler {
             .count()
             / 2;
 
-        let choices = vec![AgendaStatus::Approved, AgendaStatus::Declined];
-        let status_reaction = if let Some(emoji) = choices
+        let status_reaction = if let Some(emoji) = AgendaStatus::done_statuses()
             .iter()
             .find(|status| reaction.emoji.unicode_eq(&status.emoji().to_string()))
         {
