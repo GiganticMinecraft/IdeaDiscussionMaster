@@ -1,4 +1,8 @@
-use serenity::{framework::standard::macros::hook, model::channel::Message, prelude::Context};
+use serenity::{
+    framework::standard::macros::hook,
+    model::{channel::Message, id::RoleId},
+    prelude::Context,
+};
 use std::env;
 
 use crate::globals::record_id;
@@ -17,6 +21,26 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
     }
 
     if message.author.bot {
+        return false;
+    }
+    if !message
+        .author
+        .has_role(
+            &ctx.http,
+            message.guild_id.unwrap(),
+            RoleId::from(
+                env::var("EXECUTABLE_ROLE_ID")
+                    .ok()
+                    .and_then(|str| str.parse::<u64>().ok())
+                    .unwrap_or(0),
+            ),
+        )
+        .await
+        .ok()
+        .unwrap_or(false)
+    {
+        let _ = message.reply(&ctx.http, "このコマンドを実行する権限がありません。").await;
+
         return false;
     }
 
