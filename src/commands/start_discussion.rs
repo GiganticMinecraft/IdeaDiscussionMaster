@@ -10,9 +10,6 @@ use crate::{
     globals::{agendas, record_id, voice_chat_channel_id},
 };
 
-// TODO: エラーをまとめる
-// TODO: 長くない？
-
 #[command]
 #[aliases("sid")]
 #[min_args(1)]
