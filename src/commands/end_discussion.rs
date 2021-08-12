@@ -1,6 +1,10 @@
 use itertools::Itertools;
-use serenity::framework::standard::{macros::command, CommandResult};
-use serenity::{model::prelude::Message, prelude::Context};
+use serenity::{
+    framework::standard::{macros::command, CommandResult},
+    model::prelude::Message,
+    prelude::Context,
+};
+use strum::IntoEnumIterator;
 
 use crate::{
     domains::{discord_embed, redmine},
@@ -18,8 +22,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
 
     let record_id = record_id::read(ctx).await;
     let cached_agendas = agendas::read(ctx).await;
-    let agendas = agendas::AgendaStatus::values()
-        .into_iter()
+    let agendas = agendas::AgendaStatus::iter()
         .map(|state| {
             let issue_ids = if let Some(array) = cached_agendas
                 .iter()
