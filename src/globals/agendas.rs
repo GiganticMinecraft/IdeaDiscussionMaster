@@ -28,7 +28,7 @@ impl AgendaStatus {
         }.to_string()
     }
 
-    pub fn from(ch: char) -> Option<AgendaStatus> {
+    pub fn from(ch: char) -> Option<Self> {
         match ch {
             '🆕' => Some(AgendaStatus::New),
             '⭕' => Some(AgendaStatus::Approved),
