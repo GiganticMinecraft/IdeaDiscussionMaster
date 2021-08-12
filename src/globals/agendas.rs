@@ -36,6 +36,10 @@ impl AgendaStatus {
             _ => None
         }
     }
+
+    pub fn values() -> Vec<Self> {
+        vec!(Self::New, Self::Approved, Self::Declined)
+    }
 }
 
 impl TypeMapKey for Agendas {
