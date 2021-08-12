@@ -1,6 +1,5 @@
 use serenity::{
     framework::{standard::macros::group, StandardFramework},
-    http::Http,
     prelude::Client,
 };
 use std::{
