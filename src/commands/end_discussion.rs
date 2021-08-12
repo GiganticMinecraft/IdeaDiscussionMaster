@@ -8,6 +8,7 @@ use crate::{
 };
 
 // TODO: 結果をRedmineに送信
+// TODO: 説明文にまとめてではなく、フィールドを用いる
 
 #[command]
 #[aliases("eid")]
