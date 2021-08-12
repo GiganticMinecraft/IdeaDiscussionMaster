@@ -9,8 +9,6 @@ use crate::{
     globals::{current_agenda_id, record_id, voted_message_id},
 };
 
-// TODO: 選択肢を手動指定できるように
-
 #[command]
 #[aliases("svo")]
 pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
