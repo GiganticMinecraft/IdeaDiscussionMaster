@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::{channel::Message, id::ChannelId},
@@ -31,15 +32,13 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             if issue.project.name == "アイデア会議議事録" && issue.tracker.name == "アイデア会議"
             // && issue.status.name == "新規" // FIXME: コメントアウト
             {
-                let relations = issue
+                issue
                     .relations
                     .iter()
                     .filter(|rel| rel.relation_type == "relates")
                     .flat_map(|rel| [rel.issue_id, rel.issue_to_id])
                     .filter(|num| num != &issue.id)
-                    .collect::<Vec<_>>();
-
-                relations
+                    .collect_vec()
             } else {
                 return Err("指定された番号の議事録チケットが存在しません。".into());
             }
