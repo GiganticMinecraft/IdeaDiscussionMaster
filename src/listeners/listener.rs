@@ -7,7 +7,7 @@ use serenity::{
     },
     prelude::{Context, EventHandler},
 };
-use std::convert::From;
+use std::str::FromStr;
 
 use crate::{
     domains::{discord_embed, discussion, redmine},
@@ -46,7 +46,7 @@ impl EventHandler for Handler {
 
         let status_reaction = if let Some(emoji) = AgendaStatus::done_statuses()
             .iter()
-            .find(|status| reaction.emoji.unicode_eq(&status.emoji().to_string()))
+            .find(|status| reaction.emoji.unicode_eq(&status.emoji()))
         {
             emoji.to_owned()
         } else {
@@ -58,7 +58,7 @@ impl EventHandler for Handler {
             .get_reaction_users(
                 reaction.channel_id.as_u64().to_owned(),
                 reaction.message_id.as_u64().to_owned(),
-                &ReactionType::from(status_reaction.emoji()),
+                &ReactionType::from_str(&status_reaction.emoji()).unwrap(),
                 100,
                 None,
             )
