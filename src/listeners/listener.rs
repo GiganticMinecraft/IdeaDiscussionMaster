@@ -18,11 +18,8 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{discord_embed, discussion, redmine_api},
-    globals::{
-        agendas::{self, AgendaStatus},
-        current_agenda_id, record_id, voice_chat_channel_id, voted_message_id,
-    },
+    domains::{discord_embed, discussion, redmine_api, agenda_status::{self, AgendaStatus}},
+    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 
 pub struct Handler;
@@ -52,7 +49,7 @@ impl EventHandler for Handler {
             .count()
             / 2;
 
-        let status_reaction = if let Some(emoji) = AgendaStatus::done_statuses()
+        let status_reaction = if let Some(emoji) = agenda_status::AgendaStatus::done_statuses()
             .iter()
             .find(|status| reaction.emoji.unicode_eq(&status.emoji()))
         {
@@ -115,7 +112,8 @@ impl EventHandler for Handler {
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
         let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-        let next_redmine_issue = redmine_api.fetch_issue(&next_agenda_id.unwrap_or_default())
+        let next_redmine_issue = redmine_api
+            .fetch_issue(&next_agenda_id.unwrap_or_default())
             .await
             .ok();
         let _ = reaction

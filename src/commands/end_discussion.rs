@@ -7,7 +7,7 @@ use serenity::{
 use strum::IntoEnumIterator;
 
 use crate::{
-    domains::{discord_embed, redmine_api},
+    domains::{agenda_status, discord_embed, redmine_api},
     globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 
@@ -22,7 +22,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
 
     let record_id = record_id::read(ctx).await;
     let cached_agendas = agendas::read(ctx).await;
-    let agendas = agendas::AgendaStatus::iter()
+    let agendas = agenda_status::AgendaStatus::iter()
         .map(|state| {
             let issue_ids = if let Some(array) = cached_agendas
                 .iter()

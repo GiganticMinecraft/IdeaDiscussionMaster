@@ -14,7 +14,7 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{discord_embed, discussion, redmine_api},
+    domains::{agenda_status, discord_embed, discussion, redmine_api},
     globals::{agendas, record_id, voice_chat_channel_id},
 };
 
@@ -75,7 +75,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
     agendas::clear(&ctx).await;
     for relation in record_relations.iter() {
-        agendas::write(&ctx, relation.to_owned(), agendas::AgendaStatus::New).await;
+        agendas::write(&ctx, relation.to_owned(), agenda_status::AgendaStatus::New).await;
     }
 
     message
@@ -94,7 +94,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .await?;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-    let next_redmine_issue = redmine_api.fetch_issue(&next_agenda_id.unwrap_or_default())
+    let next_redmine_issue = redmine_api
+        .fetch_issue(&next_agenda_id.unwrap_or_default())
         .await
         .ok();
     message

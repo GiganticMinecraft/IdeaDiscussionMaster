@@ -7,7 +7,7 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-use crate::globals::{agendas, current_agenda_id};
+use crate::{domains::agenda_status, globals::{agendas, current_agenda_id}};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let agenda_id = {
@@ -15,7 +15,7 @@ pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
 
         cached_agendas
             .iter()
-            .find(|(_, &status)| status == agendas::AgendaStatus::New)
+            .find(|(_, &status)| status == agenda_status::AgendaStatus::New)
             .map(|(id, _)| id.to_owned())
     };
 
