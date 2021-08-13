@@ -71,5 +71,8 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
         })
         .await;
 
+    // TODO: 過半数を超えていたら以下の操作をする
+    // redmineのステータス変更
+
     Ok(())
 }
