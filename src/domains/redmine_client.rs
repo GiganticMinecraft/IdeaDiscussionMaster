@@ -8,14 +8,9 @@ pub struct RedmineClient {
     client: Client,
 }
 
-impl Default for RedmineClient {
-    fn default() -> Self {
-        RedmineClient::new()
-    }
-}
-
 #[automock]
 impl RedmineClient {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         RedmineClient {
             client: Client::new(),
