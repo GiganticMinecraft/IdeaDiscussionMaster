@@ -5,6 +5,14 @@ use serenity::{
     prelude::Context,
 };
 
+cfg_if::cfg_if! {
+    if #[cfg(test)] {
+        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
+    } else {
+        pub use crate::domains::redmine_client::RedmineClient;
+    }
+}
+
 use crate::{
     domains::{discord_embed, discussion, redmine_api},
     globals::{agendas, record_id, voice_chat_channel_id},
@@ -24,7 +32,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をVecで返す。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合は処理を中止。
-    let redmine_api = redmine_api::RedmineApi::new(reqwest::Client::new());
+    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     let record_relations = match redmine_api.fetch_issue_with_relations(&record_id).await {
         Ok(issue) => {
             if issue.project.name == "アイデア会議議事録" && issue.tracker.name == "アイデア会議"

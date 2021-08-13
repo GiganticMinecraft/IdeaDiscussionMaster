@@ -9,6 +9,14 @@ use serenity::{
 };
 use std::str::FromStr;
 
+cfg_if::cfg_if! {
+    if #[cfg(test)] {
+        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
+    } else {
+        pub use crate::domains::redmine_client::RedmineClient;
+    }
+}
+
 use crate::{
     domains::{discord_embed, discussion, redmine_api},
     globals::{
@@ -106,7 +114,7 @@ impl EventHandler for Handler {
         current_agenda_id::clear(&ctx).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
-        let redmine_api = redmine_api::RedmineApi::new(reqwest::Client::new());
+        let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
         let next_redmine_issue = redmine_api.fetch_issue(&next_agenda_id.unwrap_or_default())
             .await
             .ok();
