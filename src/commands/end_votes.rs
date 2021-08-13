@@ -36,26 +36,26 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
     let current_agenda_id = current_agenda_id::read(&ctx).await;
 
     // let _ = message
-    //         .channel_id
-    //         .send_message(&ctx.http, |msg| {
-    //             msg.embed(|embed| {
-    //                 match status_reaction {
-    //                     AgendaStatus::Approved => {
-    //                         discord_embed::default_success_embed(embed, record_id)
-    //                     }
-    //                     AgendaStatus::Declined => {
-    //                         discord_embed::default_failure_embed(embed, record_id)
-    //                     }
-    //                     _ => embed,
+    //     .channel_id
+    //     .send_message(&ctx.http, |msg| {
+    //         msg.embed(|embed| {
+    //             match status_reaction {
+    //                 AgendaStatus::Approved => {
+    //                     discord_embed::default_success_embed(embed, record_id)
     //                 }
-    //                 .title(format!(
-    //                     "採決終了: #{}は{}されました",
-    //                     current_agenda_id,
-    //                     status_reaction.ja()
-    //                 ))
-    //             })
+    //                 AgendaStatus::Declined => {
+    //                     discord_embed::default_failure_embed(embed, record_id)
+    //                 }
+    //                 _ => embed,
+    //             }
+    //             .title(format!(
+    //                 "採決終了: #{}は{}されました",
+    //                 current_agenda_id,
+    //                 status_reaction.ja()
+    //             ))
     //         })
-    //         .await;
+    //     })
+    //     .await;
 
     Ok(())
 }
