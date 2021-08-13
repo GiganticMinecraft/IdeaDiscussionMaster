@@ -10,7 +10,10 @@ mod test {
     use strum::IntoEnumIterator;
     use test_case::test_case;
 
-    use crate::globals::agendas::AgendaStatus;
+    use crate::{
+        domains::{redmine, redmine_api, redmine_client::MockRedmineClient},
+        globals::agendas::AgendaStatus,
+    };
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
     #[test_case("New" => AgendaStatus::New; "Newから")]
@@ -54,6 +57,20 @@ mod test {
                 AgendaStatus::Approved,
                 AgendaStatus::Declined
             )
+        );
+    }
+
+    #[tokio::test]
+    async fn test_fetch_redmine_issue() {
+        let mut client = MockRedmineClient::default();
+        client
+            .expect_fetch_issue()
+            .returning(|_| Ok(redmine::RedmineIssueResult::default().issue));
+        let redmine_api = redmine_api::RedmineApi::new(client);
+
+        assert_eq!(
+            redmine_api.fetch_issue(&u16::default()).await.unwrap(),
+            redmine::RedmineIssue::default()
         );
     }
 }
