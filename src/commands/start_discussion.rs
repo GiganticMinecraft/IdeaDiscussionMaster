@@ -21,6 +21,7 @@ use crate::{
 #[command]
 #[aliases("sid", "bid")]
 #[min_args(1)]
+#[description = "会議を開始するコマンドです。\n議題の提示までを行います。"]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
     let record_id = match args.single::<u16>() {

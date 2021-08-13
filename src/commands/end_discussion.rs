@@ -15,6 +15,7 @@ use crate::{
 
 #[command]
 #[aliases("eid")]
+#[description = "会議を終了するコマンドです。\n議事をまとめ、議事録を終了するまでを行います。"]
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     current_agenda_id::clear(ctx).await;
     voice_chat_channel_id::clear(ctx).await;

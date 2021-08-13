@@ -21,6 +21,7 @@ use crate::{
 #[command]
 #[aliases("evo", "fvo")]
 #[min_args(1)]
+#[description = "投票を終了するコマンドです。\n選択肢が所定のもの以外の場合は、このコマンドを使用して議論結果を入力してください。"]
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let status = if let Ok(str) = args.single::<String>() {
         if let Some(status) = agenda_status::AgendaStatus::from_str(&str)

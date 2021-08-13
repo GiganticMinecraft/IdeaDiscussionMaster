@@ -11,6 +11,7 @@ use crate::{
 
 #[command]
 #[aliases("svo")]
+#[description = "投票を開始するコマンドです。"]
 pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
     let record_id = record_id::read(ctx).await;
     let current_agenda_id = current_agenda_id::read(ctx).await;
