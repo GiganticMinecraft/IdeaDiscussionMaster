@@ -17,3 +17,5 @@ regex = "1"
 itertools = "0.10"
 strum = { version = "0.21", features = ["derive"] }
 test-case = "1.2"
+mockall = "0.10"
+cfg-if = "1.0"
