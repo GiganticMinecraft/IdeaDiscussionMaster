@@ -38,7 +38,10 @@ mod test {
 
     #[test]
     fn agenda_statuses_can_be_done() {
-        assert_eq!(AgendaStatus::done_statuses(), vec!(AgendaStatus::Approved, AgendaStatus::Declined));
+        assert_eq!(
+            AgendaStatus::done_statuses(),
+            vec!(AgendaStatus::Approved, AgendaStatus::Declined)
+        );
     }
 
     #[test]
