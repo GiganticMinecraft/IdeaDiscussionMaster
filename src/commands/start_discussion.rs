@@ -6,7 +6,7 @@ use serenity::{
 };
 
 use crate::{
-    domains::{discord_embed, discussion, redmine},
+    domains::{discord_embed, discussion, redmine_api},
     globals::{agendas, record_id, voice_chat_channel_id},
 };
 
@@ -24,7 +24,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をVecで返す。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合は処理を中止。
-    let record_relations = match redmine::fetch_record_issue(record_id).await {
+    let redmine_api = redmine_api::RedmineApi::new(reqwest::Client::new());
+    let record_relations = match redmine_api.fetch_issue_with_relations(&record_id).await {
         Ok(issue) => {
             if issue.project.name == "アイデア会議議事録" && issue.tracker.name == "アイデア会議"
             // && issue.status.name == "新規" // FIXME: コメントアウト
@@ -41,7 +42,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             }
         }
         Err(err) => {
-            return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {}", err).into());
+            return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
         }
     };
 
@@ -77,7 +78,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .title("会議を開始しました")
                     .field(
                         "議事録チケット",
-                        format!("{}{}", redmine::REDMINE_ISSUE_URL, record_id),
+                        format!("{}/issues/{}", redmine_api::REDMINE_URL, record_id),
                         false,
                     )
             })
@@ -85,7 +86,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .await?;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-    let next_redmine_issue = redmine::fetch_issue(next_agenda_id.unwrap_or_default(), None)
+    let next_redmine_issue = redmine_api.fetch_issue(&next_agenda_id.unwrap_or_default())
         .await
         .ok();
     message

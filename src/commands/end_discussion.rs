@@ -7,7 +7,7 @@ use serenity::{
 use strum::IntoEnumIterator;
 
 use crate::{
-    domains::{discord_embed, redmine},
+    domains::{discord_embed, redmine_api},
     globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 
@@ -47,7 +47,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
                     .title("会議を終了しました")
                     .field(
                         "議事録チケット",
-                        format!("{}{}", redmine::REDMINE_ISSUE_URL, record_id),
+                        format!("{}/issues/{}", redmine_api::REDMINE_URL, record_id),
                         false,
                     )
                     .fields(agendas)

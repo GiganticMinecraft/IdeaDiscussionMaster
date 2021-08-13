@@ -2,7 +2,7 @@ use chrono::Utc;
 use regex::Regex;
 use serenity::{builder, utils::Color};
 
-use crate::domains::redmine;
+use crate::domains::{redmine, redmine_api};
 
 pub fn default_embed(
     embed: &mut builder::CreateEmbed,
@@ -46,7 +46,7 @@ pub fn next_agenda_embed(
             .title(format!("次の議題は#{}です", issue.id))
             .field(
                 "議題チケット",
-                format!("{}{}", redmine::REDMINE_ISSUE_URL, issue.id),
+                format!("{}/issues/{}", redmine_api::REDMINE_URL, issue.id),
                 false,
             )
             .field("タイトル", subject, false)

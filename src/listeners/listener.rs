@@ -10,7 +10,7 @@ use serenity::{
 use std::str::FromStr;
 
 use crate::{
-    domains::{discord_embed, discussion, redmine},
+    domains::{discord_embed, discussion, redmine_api},
     globals::{
         agendas::{self, AgendaStatus},
         current_agenda_id, record_id, voice_chat_channel_id, voted_message_id,
@@ -106,7 +106,8 @@ impl EventHandler for Handler {
         current_agenda_id::clear(&ctx).await;
 
         let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
-        let next_redmine_issue = redmine::fetch_issue(next_agenda_id.unwrap_or_default(), None)
+        let redmine_api = redmine_api::RedmineApi::new(reqwest::Client::new());
+        let next_redmine_issue = redmine_api.fetch_issue(&next_agenda_id.unwrap_or_default())
             .await
             .ok();
         let _ = reaction
