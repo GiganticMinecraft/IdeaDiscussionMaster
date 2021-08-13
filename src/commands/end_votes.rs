@@ -26,7 +26,7 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
         if let Some(status) = agenda_status::AgendaStatus::from_str(&str)
             .ok()
             .or_else(|| agenda_status::AgendaStatus::from_ja(&str))
-            .or_else(|| agenda_status::AgendaStatus::from_shorten(&str))
+            .or_else(|| agenda_status::AgendaStatus::from_alias(&str))
             .filter(|status| agenda_status::AgendaStatus::done_statuses().contains(status))
         {
             status

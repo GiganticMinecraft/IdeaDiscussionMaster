@@ -35,7 +35,7 @@ impl AgendaStatus {
         Self::iter().find(|status| str == &status.ja())
     }
 
-    pub fn from_shorten(str: &str) -> Option<Self> {
+    pub fn from_alias(str: &str) -> Option<Self> {
         Self::iter().find(|status| status.to_string().to_lowercase().starts_with(str))
     }
 

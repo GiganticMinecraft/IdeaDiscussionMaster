@@ -41,8 +41,8 @@ mod test {
     #[test_case("app" => Some(AgendaStatus::Approved))]
     #[test_case("dec" => Some(AgendaStatus::Declined))]
     #[test_case("new" => Some(AgendaStatus::New))]
-    fn agenda_status_from_shorten_str(str: &str) -> Option<AgendaStatus> {
-        AgendaStatus::from_shorten(str)
+    fn agenda_status_from_alias_str(str: &str) -> Option<AgendaStatus> {
+        AgendaStatus::from_alias(str)
     }
 
     #[test]
