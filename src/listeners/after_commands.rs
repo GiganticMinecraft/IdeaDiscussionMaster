@@ -13,7 +13,7 @@ pub async fn after(
 ) {
     if let Err(err) = command_result {
         let _ = message.reply(&ctx.http, &err).await;
-        if format!("{}", err).contains("fatal") {
+        if format!("{}", err).contains("Fatal") {
             println!(
                 "[{}] {}の処理中にエラーが発生しました。\nerror: {}\nmessage: {}\nauthor: {} (id: {})\nguild_id: {:?}",
                 message.timestamp,
