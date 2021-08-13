@@ -2,14 +2,15 @@ pub mod commands;
 pub mod domains;
 pub mod globals;
 pub mod listeners;
-pub mod utils;
 
 #[cfg(test)]
 mod test {
+    use itertools::Itertools;
     use std::str::FromStr;
+    use strum::IntoEnumIterator;
     use test_case::test_case;
 
-    use crate::{domains::redmine, globals::agendas::AgendaStatus};
+    use crate::globals::agendas::AgendaStatus;
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
     #[test_case("New" => AgendaStatus::New; "Newから")]
@@ -40,17 +41,16 @@ mod test {
         assert_eq!(AgendaStatus::done_statuses(), vec!(AgendaStatus::Approved, AgendaStatus::Declined));
     }
 
-    #[tokio::test]
-    #[ignore]
-    async fn fetch_issue() {
-        match redmine::fetch_record_issue(9690).await {
-            Ok(issue) => {
-                // TODO: test
-                println!("{:#?}", issue.relations);
-            }
-            Err(err) => {
-                println!("{}", err);
-            }
-        }
+    #[test]
+    fn test_agenda_status_contents() {
+        assert_eq!(AgendaStatus::iter().count(), 3);
+        assert_eq!(
+            AgendaStatus::iter().collect_vec(),
+            vec!(
+                AgendaStatus::New,
+                AgendaStatus::Approved,
+                AgendaStatus::Declined
+            )
+        );
     }
 }
