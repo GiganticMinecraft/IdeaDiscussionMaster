@@ -23,6 +23,9 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
     if message.author.bot {
         return false;
     }
+    if message.guild_id.is_none() {
+        return false;
+    }
     if !message
         .author
         .has_role(
