@@ -40,7 +40,6 @@ async fn main() {
         .group(&GENERAL_GROUP)
         .help(&MY_HELP);
 
-    // TODO: helpとか該当コマンドなしとか？
     let mut client = Client::builder(&token)
         .framework(framework)
         .event_handler(Handler)
