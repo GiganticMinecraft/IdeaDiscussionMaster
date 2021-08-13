@@ -19,7 +19,7 @@ use crate::{
 };
 
 #[command]
-#[aliases("evo")]
+#[aliases("evo","fvo")]
 #[min_args(1)]
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let status = if let Ok(str) = args.single::<String>() {

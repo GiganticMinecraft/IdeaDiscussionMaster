@@ -19,7 +19,7 @@ use crate::{
 };
 
 #[command]
-#[aliases("sid")]
+#[aliases("sid", "bid")]
 #[min_args(1)]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
