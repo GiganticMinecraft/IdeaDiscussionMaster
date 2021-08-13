@@ -18,7 +18,10 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{discord_embed, discussion, redmine_api, agenda_status::{self, AgendaStatus}},
+    domains::{
+        agenda_status::{self, AgendaStatus},
+        discord_embed, discussion, redmine_api,
+    },
     globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 
@@ -89,20 +92,12 @@ impl EventHandler for Handler {
             .channel_id
             .send_message(&ctx.http, |msg| {
                 msg.embed(|embed| {
-                    match status_reaction {
-                        AgendaStatus::Approved => {
-                            discord_embed::default_success_embed(embed, record_id)
-                        }
-                        AgendaStatus::Declined => {
-                            discord_embed::default_failure_embed(embed, record_id)
-                        }
-                        _ => embed,
-                    }
-                    .title(format!(
-                        "採決終了: #{}は{}されました",
+                    discord_embed::votes_result_embed(
+                        embed,
+                        record_id,
                         current_agenda_id,
-                        status_reaction.ja()
-                    ))
+                        status_reaction,
+                    )
                 })
             })
             .await;

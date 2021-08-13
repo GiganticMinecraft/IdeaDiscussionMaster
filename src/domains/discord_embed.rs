@@ -2,7 +2,7 @@ use chrono::Utc;
 use regex::Regex;
 use serenity::{builder, utils::Color};
 
-use crate::domains::{redmine, redmine_api};
+use crate::domains::{agenda_status, discord_embed, redmine, redmine_api};
 
 pub fn default_embed(
     embed: &mut builder::CreateEmbed,
@@ -56,4 +56,26 @@ pub fn next_agenda_embed(
             .title("次の議題はありません")
             .description("Redmine上で提起されていた議題は全て処理されました。")
     }
+}
+
+pub fn votes_result_embed(
+    embed: &mut builder::CreateEmbed,
+    record_id: u16,
+    current_agenda_id: u16,
+    status: agenda_status::AgendaStatus,
+) -> &mut builder::CreateEmbed {
+    match status {
+        agenda_status::AgendaStatus::Approved => {
+            discord_embed::default_success_embed(embed, record_id)
+        }
+        agenda_status::AgendaStatus::Declined => {
+            discord_embed::default_failure_embed(embed, record_id)
+        }
+        _ => embed,
+    }
+    .title(format!(
+        "採決終了: #{}は{}されました",
+        current_agenda_id,
+        status.ja()
+    ))
 }

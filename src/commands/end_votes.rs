@@ -19,7 +19,7 @@ use crate::{
 };
 
 #[command]
-#[aliases("evo","fvo")]
+#[aliases("evo", "fvo")]
 #[min_args(1)]
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let status = if let Ok(str) = args.single::<String>() {
@@ -37,8 +37,6 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
         return Err("ステータスが指定されていません。".into());
     };
 
-    //TODO: listener.rsとかぶっているのでまとめる
-
     voted_message_id::clear(&ctx).await;
 
     let record_id = record_id::read(&ctx).await;
@@ -48,20 +46,7 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
         .channel_id
         .send_message(&ctx.http, |msg| {
             msg.embed(|embed| {
-                match status {
-                    agenda_status::AgendaStatus::Approved => {
-                        discord_embed::default_success_embed(embed, record_id)
-                    }
-                    agenda_status::AgendaStatus::Declined => {
-                        discord_embed::default_failure_embed(embed, record_id)
-                    }
-                    _ => embed,
-                }
-                .title(format!(
-                    "採決終了: #{}は{}されました",
-                    current_agenda_id,
-                    status.ja()
-                ))
+                discord_embed::votes_result_embed(embed, record_id, current_agenda_id, status)
             })
         })
         .await;
