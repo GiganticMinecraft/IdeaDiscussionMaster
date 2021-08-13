@@ -10,9 +10,8 @@ mod test {
     use strum::IntoEnumIterator;
     use test_case::test_case;
 
-    use crate::{
-        domains::{redmine, redmine_api, redmine_client::MockRedmineClient},
-        globals::agendas::AgendaStatus,
+    use crate::domains::{
+        agenda_status::AgendaStatus, redmine, redmine_api, redmine_client::MockRedmineClient,
     };
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
@@ -37,6 +36,13 @@ mod test {
     #[test_case(AgendaStatus::Declined => "却下")]
     fn agenda_status_to_ja(status: AgendaStatus) -> String {
         status.ja()
+    }
+
+    #[test_case("app" => Some(AgendaStatus::Approved))]
+    #[test_case("dec" => Some(AgendaStatus::Declined))]
+    #[test_case("new" => Some(AgendaStatus::New))]
+    fn agenda_status_from_shorten_str(str: &str) -> Option<AgendaStatus> {
+        AgendaStatus::from_shorten(str)
     }
 
     #[test]
