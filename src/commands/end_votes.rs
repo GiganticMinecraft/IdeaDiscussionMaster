@@ -3,8 +3,12 @@ use serenity::{
     model::channel::Message,
     prelude::Context,
 };
+use std::str::FromStr;
 
-use crate::globals::{current_agenda_id, record_id, voted_message_id};
+use crate::{
+    domains::agenda_status,
+    globals::{current_agenda_id, record_id, voted_message_id},
+};
 
 #[command]
 #[aliases("evo")]
@@ -12,7 +16,16 @@ use crate::globals::{current_agenda_id, record_id, voted_message_id};
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // TODO: 任意の選択肢で手動投票を行った後、結果をBot側に入力するコマンド
     let status = if let Ok(str) = args.single::<String>() {
-        str
+        if let Some(status) = agenda_status::AgendaStatus::from_str(&str)
+            .ok()
+            .or_else(|| agenda_status::AgendaStatus::from_ja(&str))
+            .or_else(|| agenda_status::AgendaStatus::from_shorten(&str))
+            .filter(|status| agenda_status::AgendaStatus::done_statuses().contains(status))
+        {
+            status
+        } else {
+            return Err("指定されたステータスは存在しないか、設定できません。".into());
+        }
     } else {
         return Err("ステータスが指定されていません。".into());
     };
