@@ -42,7 +42,9 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
         .ok()
         .unwrap_or(false)
     {
-        let _ = message.reply(&ctx.http, "このコマンドを実行する権限がありません。").await;
+        let _ = message
+            .reply(&ctx.http, "このコマンドを実行する権限がありません。")
+            .await;
 
         return false;
     }
