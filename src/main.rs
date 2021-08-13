@@ -13,7 +13,7 @@ use std::{
 use tokio::sync::RwLock;
 
 use idea_discussion_master::{
-    commands::{end_discussion::*, end_votes::*, start_discussion::*, start_votes::*},
+    commands::{end_discussion::*, end_votes::*, start_discussion::*, start_votes::*, help::*},
     globals::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
         voice_chat_channel_id::VoiceChatChannelId, voted_message_id::VotedMessageId,
@@ -22,6 +22,7 @@ use idea_discussion_master::{
 };
 
 #[group]
+#[only_in(guilds)]
 #[commands(start_discussion, end_discussion, start_votes, end_votes)]
 struct General;
 
@@ -36,7 +37,8 @@ async fn main() {
         .configure(|config| config.prefix("\\"))
         .after(after)
         .before(before)
-        .group(&GENERAL_GROUP);
+        .group(&GENERAL_GROUP)
+        .help(&MY_HELP);
 
     // TODO: helpとか該当コマンドなしとか？
     let mut client = Client::builder(&token)
