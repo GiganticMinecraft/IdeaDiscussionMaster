@@ -11,7 +11,7 @@ use std::collections::HashSet;
 #[individual_command_tip = "Helpコマンドです。\nコマンド名を引数として渡すことで、そのコマンドに関する特定の情報を得ることができます。"]
 #[command_not_found_text = "Could not find: `{}`."]
 // コマンドサジェストの精度指定。0で無効。
-#[max_levenshtein_distance(3)]
+#[max_levenshtein_distance(0)]
 pub async fn my_help(
     context: &Context,
     msg: &Message,
