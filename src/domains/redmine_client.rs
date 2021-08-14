@@ -6,7 +6,7 @@ use std::{collections::HashMap, env};
 use crate::domains::{agenda_status, custom_error, redmine, redmine_api};
 
 pub struct RedmineClient {
-    client: Client,
+    reqwest_client: Client,
     api_key: String,
 }
 
@@ -15,7 +15,7 @@ impl RedmineClient {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         RedmineClient {
-            client: Client::new(),
+            reqwest_client: Client::new(),
             api_key: env::var("IDEA_DISCUSSION_MASTER_REDMINE_KEY").unwrap_or_default(),
         }
     }
@@ -24,7 +24,7 @@ impl RedmineClient {
         &self,
         issue_id: &u16,
     ) -> Result<redmine::RedmineIssue, custom_error::Error> {
-        Ok(fetch(&self.client, issue_id, None)
+        Ok(fetch(&self.reqwest_client, issue_id, None)
             .await?
             .json::<redmine::RedmineIssueResult>()
             .await?
@@ -38,7 +38,7 @@ impl RedmineClient {
         let mut query = HashMap::new();
         query.insert("include", "relations");
 
-        Ok(fetch(&self.client, issue_id, Some(query))
+        Ok(fetch(&self.reqwest_client, issue_id, Some(query))
             .await?
             .json::<redmine::RedmineIssueResult>()
             .await?
@@ -50,7 +50,7 @@ impl RedmineClient {
         issue_id: &u16,
         status: &agenda_status::AgendaStatus,
     ) -> Result<reqwest::Response, custom_error::Error> {
-        update_status(&self.client, issue_id, status, self.api_key.to_owned()).await
+        update_status(&self, issue_id, status).await
     }
 }
 
@@ -70,16 +70,15 @@ async fn fetch(
 }
 
 async fn update_status(
-    client: &Client,
+    client: &RedmineClient,
     issue_id: &u16,
     status: &agenda_status::AgendaStatus,
-    api_key: String,
 ) -> Result<reqwest::Response, custom_error::Error> {
     let url = format!(
         "{}/issues/{}.json?key={}",
         redmine_api::REDMINE_URL,
         issue_id,
-        api_key
+        client.api_key
     );
     let json_value = json!({
       "issue": {
@@ -88,6 +87,7 @@ async fn update_status(
     });
 
     let response = client
+        .reqwest_client
         .put(url)
         .header(header::CONTENT_TYPE, "application/json")
         .json(&json_value)
