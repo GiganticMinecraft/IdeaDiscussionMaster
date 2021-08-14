@@ -3,7 +3,7 @@ use reqwest::{header, Client};
 use serde_json::json;
 use std::{collections::HashMap, env};
 
-use crate::domains::{custom_error, redmine, redmine_api, status::trait_status::Status};
+use crate::domains::{custom_error, redmine, redmine_api};
 
 pub struct RedmineClient {
     reqwest_client: Client,
