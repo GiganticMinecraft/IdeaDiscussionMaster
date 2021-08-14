@@ -1,11 +1,13 @@
 use mockall::automock;
-use reqwest::Client;
-use std::collections::HashMap;
+use reqwest::{header, Client};
+use serde_json::json;
+use std::{collections::HashMap, env};
 
-use crate::domains::{custom_error, redmine, redmine_api};
+use crate::domains::{agenda_status, custom_error, redmine, redmine_api};
 
 pub struct RedmineClient {
     client: Client,
+    api_key: String,
 }
 
 #[automock]
@@ -14,6 +16,7 @@ impl RedmineClient {
     pub fn new() -> Self {
         RedmineClient {
             client: Client::new(),
+            api_key: env::var("IDEA_DISCUSSION_MASTER_REDMINE_KEY").unwrap_or_default(),
         }
     }
 
@@ -40,6 +43,28 @@ impl RedmineClient {
             .json::<redmine::RedmineIssueResult>()
             .await?
             .issue)
+    }
+
+    pub async fn update_issue_status(&self, issue_id: &u16, status: &agenda_status::AgendaStatus) {
+        let url = format!(
+            "{}/issues/{}.json?key={}",
+            redmine_api::REDMINE_URL,
+            issue_id,
+            self.api_key
+        );
+        let json_value = json!({
+          "issue": {
+            "status_id": status.id()
+          }
+        });
+        let res = self
+            .client
+            .put(url)
+            .header(header::CONTENT_TYPE, "application/json")
+            .json(&json_value)
+            .send()
+            .await;
+        println!("{:#?}", res);
     }
 }
 
