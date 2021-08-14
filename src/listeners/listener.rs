@@ -1,5 +1,6 @@
 use serenity::{
     async_trait,
+    framework::standard::{Args, Delimiter},
     model::{
         channel::{Reaction, ReactionType},
         gateway::Ready,
@@ -18,8 +19,9 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{agenda_status, discord_embed, discussion, redmine_api},
-    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
+    commands::end_votes,
+    domains::{agenda_status, discussion},
+    globals::{voice_chat_channel_id, voted_message_id},
 };
 
 pub struct Handler;
@@ -73,48 +75,17 @@ impl EventHandler for Handler {
         } else {
             return;
         };
-        // TODO: 過半数を超えていたら以下の操作をする
-        // redmineのステータス変更
 
         if reaction_counts <= half_of_vc_members {
             return;
         }
 
-        voted_message_id::clear(&ctx).await;
-
-        let record_id = record_id::read(&ctx).await;
-        let current_agenda_id = current_agenda_id::read(&ctx).await;
-
-        let _ = reaction
-            .channel_id
-            .send_message(&ctx.http, |msg| {
-                msg.embed(|embed| {
-                    discord_embed::votes_result_embed(
-                        embed,
-                        record_id,
-                        current_agenda_id,
-                        status_reaction,
-                    )
-                })
-            })
-            .await;
-
-        agendas::write(&ctx, current_agenda_id, status_reaction).await;
-        current_agenda_id::clear(&ctx).await;
-
-        let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
-        let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-        let next_redmine_issue = redmine_api
-            .fetch_issue(&next_agenda_id.unwrap_or_default())
-            .await
-            .ok();
-        let _ = reaction
-            .channel_id
-            .send_message(&ctx.http, |msg| {
-                msg.embed(|embed| {
-                    discord_embed::next_agenda_embed(embed, record_id, next_redmine_issue)
-                })
-            })
-            .await;
+        // end_votesコマンドを強制的に叩く
+        let _ = end_votes::end_votes(
+            &ctx,
+            &reaction.message(&ctx.http).await.unwrap(),
+            Args::new(&status_reaction.ja(), &[Delimiter::Single(' ')]),
+        )
+        .await;
     }
 }
