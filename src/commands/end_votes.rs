@@ -20,10 +20,10 @@ use crate::{
 
 #[command]
 #[aliases("evo", "fvo")]
-#[usage="[議題ステータス(app, dec)]"]
+#[usage = "[議題ステータス(app, dec)]"]
 #[min_args(1)]
 #[description = "投票を終了するコマンドです。\n選択肢が所定のもの以外の場合は、このコマンドを使用して議論結果を入力してください。"]
-async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
+pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let status = if let Ok(str) = args.single::<String>() {
         if let Some(status) = agenda_status::AgendaStatus::from_str(&str)
             .ok()
@@ -53,11 +53,15 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
         })
         .await;
 
+    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
+    redmine_api
+        .update_issue_status(&current_agenda_id, &status)
+        .await;
+
     agendas::write(&ctx, current_agenda_id, status).await;
     current_agenda_id::clear(&ctx).await;
 
     let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
-    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     let next_redmine_issue = redmine_api
         .fetch_issue(&next_agenda_id.unwrap_or_default())
         .await
@@ -71,9 +75,6 @@ async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandR
             })
         })
         .await;
-
-    // TODO: 過半数を超えていたら以下の操作をする
-    // redmineのステータス変更
 
     Ok(())
 }
