@@ -7,7 +7,10 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-use crate::{domains::agenda_status, globals::{agendas, current_agenda_id}};
+use crate::{
+    domains::status::agenda_status,
+    globals::{agendas, current_agenda_id},
+};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let agenda_id = {

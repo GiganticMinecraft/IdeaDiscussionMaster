@@ -2,7 +2,7 @@ use serenity::prelude::{Context, TypeMapKey};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
-use crate::domains::agenda_status::AgendaStatus;
+use crate::domains::status::agenda_status::AgendaStatus;
 
 pub struct Agendas;
 

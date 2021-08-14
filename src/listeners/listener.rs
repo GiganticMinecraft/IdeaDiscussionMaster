@@ -20,7 +20,7 @@ cfg_if::cfg_if! {
 
 use crate::{
     commands::end_votes,
-    domains::{agenda_status, discussion},
+    domains::{discussion, status::agenda_status},
     globals::{voice_chat_channel_id, voted_message_id},
 };
 

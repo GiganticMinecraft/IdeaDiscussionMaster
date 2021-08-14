@@ -7,7 +7,7 @@ use serenity::{
 use strum::IntoEnumIterator;
 
 use crate::{
-    domains::{agenda_status, discord_embed, redmine_api},
+    domains::{discord_embed, redmine_api, status::agenda_status},
     globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 

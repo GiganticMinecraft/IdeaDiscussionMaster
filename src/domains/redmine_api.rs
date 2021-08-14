@@ -6,7 +6,7 @@ cfg_if::cfg_if! {
     }
 }
 
-use crate::domains::{agenda_status, custom_error, redmine};
+use crate::domains::{custom_error, redmine, status::agenda_status};
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
