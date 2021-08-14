@@ -24,7 +24,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
 
     let record_id = record_id::read(ctx).await;
     let cached_agendas = agendas::read(ctx).await;
-    let agendas = agenda_status::AgendaStatus::iter()
+    let agendas_result = agenda_status::AgendaStatus::iter()
         .map(|state| {
             let issue_ids = if let Some(array) = cached_agendas
                 .iter()
@@ -52,7 +52,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
                         format!("{}/issues/{}", redmine_api::REDMINE_URL, record_id),
                         false,
                     )
-                    .fields(agendas)
+                    .fields(agendas_result)
             })
         })
         .await?;
