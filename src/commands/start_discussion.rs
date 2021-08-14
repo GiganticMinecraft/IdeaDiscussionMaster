@@ -20,6 +20,7 @@ use crate::{
 
 #[command]
 #[aliases("sid", "bid")]
+#[usage="[議事録のチケット番号]"]
 #[min_args(1)]
 #[description = "会議を開始するコマンドです。\n議題の提示までを行います。"]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {

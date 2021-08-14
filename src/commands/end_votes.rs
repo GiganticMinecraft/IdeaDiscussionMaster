@@ -20,6 +20,7 @@ use crate::{
 
 #[command]
 #[aliases("evo", "fvo")]
+#[usage="[議題ステータス(app, dec)]"]
 #[min_args(1)]
 #[description = "投票を終了するコマンドです。\n選択肢が所定のもの以外の場合は、このコマンドを使用して議論結果を入力してください。"]
 async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
