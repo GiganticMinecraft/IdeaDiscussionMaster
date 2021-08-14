@@ -45,26 +45,12 @@ impl RedmineClient {
             .issue)
     }
 
-    pub async fn update_issue_status(&self, issue_id: &u16, status: &agenda_status::AgendaStatus) {
-        let url = format!(
-            "{}/issues/{}.json?key={}",
-            redmine_api::REDMINE_URL,
-            issue_id,
-            self.api_key
-        );
-        let json_value = json!({
-          "issue": {
-            "status_id": status.id()
-          }
-        });
-        let res = self
-            .client
-            .put(url)
-            .header(header::CONTENT_TYPE, "application/json")
-            .json(&json_value)
-            .send()
-            .await;
-        println!("{:#?}", res);
+    pub async fn update_issue_status(
+        &self,
+        issue_id: &u16,
+        status: &agenda_status::AgendaStatus,
+    ) -> Result<reqwest::Response, custom_error::Error> {
+        update_status(&self.client, issue_id, status, self.api_key.to_owned()).await
     }
 }
 
@@ -77,6 +63,34 @@ async fn fetch(
     let response = client
         .get(url)
         .query(&query.unwrap_or_default())
+        .send()
+        .await?;
+
+    Ok(response)
+}
+
+async fn update_status(
+    client: &Client,
+    issue_id: &u16,
+    status: &agenda_status::AgendaStatus,
+    api_key: String,
+) -> Result<reqwest::Response, custom_error::Error> {
+    let url = format!(
+        "{}/issues/{}.json?key={}",
+        redmine_api::REDMINE_URL,
+        issue_id,
+        api_key
+    );
+    let json_value = json!({
+      "issue": {
+        "status_id": status.id()
+      }
+    });
+
+    let response = client
+        .put(url)
+        .header(header::CONTENT_TYPE, "application/json")
+        .json(&json_value)
         .send()
         .await?;
 

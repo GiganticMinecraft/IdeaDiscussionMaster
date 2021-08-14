@@ -33,7 +33,11 @@ impl RedmineApi {
         self.client.fetch_issue_with_relations(issue_id).await
     }
 
-    pub async fn update_issue_status(&self, issue_id: &u16, status: &agenda_status::AgendaStatus) {
+    pub async fn update_issue_status(
+        &self,
+        issue_id: &u16,
+        status: &agenda_status::AgendaStatus,
+    ) -> Result<reqwest::Response, custom_error::Error> {
         self.client.update_issue_status(issue_id, status).await
     }
 }
