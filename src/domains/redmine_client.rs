@@ -3,9 +3,7 @@ use reqwest::{header, Client};
 use serde_json::json;
 use std::{collections::HashMap, env};
 
-use crate::domains::{
-    custom_error, redmine, redmine_api, status::agenda_status, status::trait_status::Status,
-};
+use crate::domains::{custom_error, redmine, redmine_api, status::trait_status::Status};
 
 pub struct RedmineClient {
     reqwest_client: Client,
@@ -50,9 +48,9 @@ impl RedmineClient {
     pub async fn update_issue_status(
         &self,
         issue_id: &u16,
-        status: &agenda_status::AgendaStatus,
+        status_id: &u16,
     ) -> Result<reqwest::Response, custom_error::Error> {
-        update_status(&self, issue_id, status).await
+        update_status(&self, issue_id, status_id).await
     }
 }
 
@@ -74,7 +72,7 @@ async fn fetch(
 async fn update_status(
     client: &RedmineClient,
     issue_id: &u16,
-    status: &agenda_status::AgendaStatus,
+    status_id: &u16,
 ) -> Result<reqwest::Response, custom_error::Error> {
     let url = format!(
         "{}/issues/{}.json?key={}",
@@ -84,7 +82,7 @@ async fn update_status(
     );
     let json_value = json!({
       "issue": {
-        "status_id": status.id()
+        "status_id": status_id
       }
     });
 

@@ -36,8 +36,8 @@ impl RedmineApi {
     pub async fn update_issue_status(
         &self,
         issue_id: &u16,
-        status: &agenda_status::AgendaStatus,
+        status_id: &u16,
     ) -> Result<reqwest::Response, custom_error::Error> {
-        self.client.update_issue_status(issue_id, status).await
+        self.client.update_issue_status(issue_id, status_id).await
     }
 }
