@@ -54,9 +54,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         .await;
 
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    redmine_api
-        .update_issue_status(&current_agenda_id, &status)
-        .await;
+    // FIXME: コメントアウト
+    // redmine_api
+    //     .update_issue_status(&current_agenda_id, &status)
+    //     .await;
 
     agendas::write(&ctx, current_agenda_id, status).await;
     current_agenda_id::clear(&ctx).await;
