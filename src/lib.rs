@@ -12,6 +12,7 @@ mod test {
 
     use crate::domains::{
         agenda_status::AgendaStatus, redmine, redmine_api, redmine_client::MockRedmineClient,
+        status::trait_status::Status,
     };
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
@@ -43,6 +44,13 @@ mod test {
     #[test_case("new" => Some(AgendaStatus::New))]
     fn agenda_status_from_alias_str(str: &str) -> Option<AgendaStatus> {
         AgendaStatus::from_alias(str)
+    }
+
+    #[test_case(AgendaStatus::Approved => 17)]
+    #[test_case(AgendaStatus::Declined => 6)]
+    #[test_case(AgendaStatus::New => 1)]
+    fn agenda_status_id(status: AgendaStatus) -> u16 {
+        status.id()
     }
 
     #[test]
