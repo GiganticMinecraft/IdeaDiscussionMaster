@@ -22,7 +22,7 @@ impl RedmineClient {
 
     pub async fn fetch_issue(
         &self,
-        issue_id: &u16,
+        issue_id: u16,
     ) -> Result<redmine::RedmineIssue, custom_error::Error> {
         Ok(fetch(&self.reqwest_client, issue_id, None)
             .await?
@@ -33,7 +33,7 @@ impl RedmineClient {
 
     pub async fn fetch_issue_with_relations(
         &self,
-        issue_id: &u16,
+        issue_id: u16,
     ) -> Result<redmine::RedmineIssue, custom_error::Error> {
         let mut query = HashMap::new();
         query.insert("include", "relations");
@@ -47,8 +47,8 @@ impl RedmineClient {
 
     pub async fn update_issue_status(
         &self,
-        issue_id: &u16,
-        status_id: &u16,
+        issue_id: u16,
+        status_id: u16,
     ) -> Result<reqwest::Response, custom_error::Error> {
         let json_value = json!({
           "issue": {
@@ -61,7 +61,7 @@ impl RedmineClient {
 
     pub async fn add_comments(
         &self,
-        issue_id: &u16,
+        issue_id: u16,
         comments: Vec<String>,
     ) -> Result<reqwest::Response, custom_error::Error> {
         let comments = comments.join("\n");
@@ -78,7 +78,7 @@ impl RedmineClient {
 
 async fn fetch(
     client: &Client,
-    issue_id: &u16,
+    issue_id: u16,
     query: Option<HashMap<&str, &str>>,
 ) -> Result<reqwest::Response, custom_error::Error> {
     let url = format!("{}/issues/{}.json", redmine_api::REDMINE_URL, issue_id);
@@ -93,7 +93,7 @@ async fn fetch(
 
 async fn update_issue(
     client: &RedmineClient,
-    issue_id: &u16,
+    issue_id: u16,
     json_value: serde_json::Value,
 ) -> Result<reqwest::Response, custom_error::Error> {
     let url = format!(

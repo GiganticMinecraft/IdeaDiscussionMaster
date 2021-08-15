@@ -84,7 +84,7 @@ mod test {
         let redmine_api = redmine_api::RedmineApi::new(client);
 
         assert_eq!(
-            redmine_api.fetch_issue(&u16::default()).await.unwrap(),
+            redmine_api.fetch_issue(u16::default()).await.unwrap(),
             redmine::RedmineIssue::default()
         );
     }

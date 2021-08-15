@@ -64,7 +64,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
 
     let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
     let next_redmine_issue = redmine_api
-        .fetch_issue(&next_agenda_id.unwrap_or_default())
+        .fetch_issue(next_agenda_id.unwrap_or_default())
         .await
         .ok();
 
