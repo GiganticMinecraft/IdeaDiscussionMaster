@@ -50,7 +50,29 @@ impl RedmineClient {
         issue_id: &u16,
         status_id: &u16,
     ) -> Result<reqwest::Response, custom_error::Error> {
-        update_status(&self, issue_id, status_id).await
+        let json_value = json!({
+          "issue": {
+            "status_id": status_id
+          }
+        });
+
+        update_issue(self, issue_id, json_value).await
+    }
+
+    pub async fn add_comments(
+        &self,
+        issue_id: &u16,
+        comments: Vec<String>,
+    ) -> Result<reqwest::Response, custom_error::Error> {
+        let comments = comments.join("\n");
+        println!("{}", comments);
+        let json_value = json!({
+          "issue": {
+            "notes": comments
+          }
+        });
+
+        update_issue(self, issue_id, json_value).await
     }
 }
 
@@ -69,10 +91,10 @@ async fn fetch(
     Ok(response)
 }
 
-async fn update_status(
+async fn update_issue(
     client: &RedmineClient,
     issue_id: &u16,
-    status_id: &u16,
+    json_value: serde_json::Value,
 ) -> Result<reqwest::Response, custom_error::Error> {
     let url = format!(
         "{}/issues/{}.json?key={}",
@@ -80,12 +102,6 @@ async fn update_status(
         issue_id,
         client.api_key
     );
-    let json_value = json!({
-      "issue": {
-        "status_id": status_id
-      }
-    });
-
     let response = client
         .reqwest_client
         .put(url)

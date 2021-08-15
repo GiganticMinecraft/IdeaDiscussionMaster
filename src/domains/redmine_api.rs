@@ -40,4 +40,12 @@ impl RedmineApi {
     ) -> Result<reqwest::Response, custom_error::Error> {
         self.client.update_issue_status(issue_id, status_id).await
     }
+
+    pub async fn add_comments(
+        &self,
+        issue_id: &u16,
+        comments: Vec<String>,
+    ) -> Result<reqwest::Response, custom_error::Error> {
+        self.client.add_comments(issue_id, comments).await
+    }
 }
