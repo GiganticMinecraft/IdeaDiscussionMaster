@@ -1,3 +1,4 @@
+use futures::stream::{self, StreamExt};
 use itertools::Itertools;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
@@ -54,6 +55,25 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         Err(err) => {
             return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
         }
+    };
+    let record_relations = {
+        let issues = stream::iter(record_relations)
+            .then(|id| redmine_api.fetch_issue(id))
+            .collect::<Vec<_>>()
+            .await;
+        issues
+            .iter()
+            .filter_map(|res| res.as_ref().ok())
+            .filter(|issue| issue.project.name == "アイデア提案用プロジェクト")
+            .filter(|issue| issue.tracker.name == "アイデア提案")
+            .filter(|issue| {
+                !agenda_status::AgendaStatus::done_statuses()
+                    .iter()
+                    .map(|status| status.ja())
+                    .contains(&issue.status.name)
+            })
+            .map(|issue| issue.id)
+            .collect_vec()
     };
 
     let vc_id = ChannelId(872720546742296667);
