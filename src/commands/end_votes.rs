@@ -14,7 +14,10 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{discord_embed, discussion, redmine_api, status::agenda_status},
+    domains::{
+        custom_error::DiscussionError, discord_embed, discussion, redmine_api,
+        status::agenda_status,
+    },
     globals::{agendas, current_agenda_id, record_id, voted_message_id},
 };
 
@@ -33,10 +36,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         {
             status
         } else {
-            return Err("指定されたステータスは存在しないか、設定できません。".into());
+            return Err(DiscussionError::StatusIsNotFound.to_string().into());
         }
     } else {
-        return Err("ステータスが指定されていません。".into());
+        return Err(DiscussionError::StatusIsNotFound.to_string().into());
     };
 
     voted_message_id::clear(&ctx).await;

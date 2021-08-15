@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::channel::Message,
@@ -14,7 +13,10 @@ cfg_if::cfg_if! {
 }
 
 use crate::{
-    domains::{discord_embed, discussion, redmine_api, status::agenda_status},
+    domains::{
+        custom_error::DiscussionError, discord_embed, discussion, redmine_api,
+        status::agenda_status,
+    },
     globals::{agendas, record_id},
 };
 
@@ -28,26 +30,20 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     let issue_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err("チケット番号が指定されていません。".into());
+            return Err(DiscussionError::TicketNumberIsNotSpecified.to_string().into());
         }
     };
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     let issue_id = match redmine_api.fetch_issue(issue_id).await {
         Ok(issue) => {
-            if issue.project.name == "アイデア提案用プロジェクト"
-                && issue.tracker.name == "アイデア提案"
-                && !agenda_status::AgendaStatus::done_statuses()
-                    .iter()
-                    .map(|status| status.ja())
-                    .contains(&issue.status.name)
-            {
+            if issue.is_idea_ticket() {
                 issue.id
             } else {
-                return Err("指定された番号のチケットが存在しません。".into());
+                return Err(DiscussionError::TickerIsNotFound.to_string().into());
             }
         }
         Err(err) => {
-            return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
+            return Err(DiscussionError::from(err).to_string().into());
         }
     };
 
@@ -55,7 +51,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
 
     let record_id = record_id::read(&ctx).await;
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
-        return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
+        return Err(DiscussionError::from(err).to_string().into());
     };
 
     message

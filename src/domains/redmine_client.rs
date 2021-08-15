@@ -23,7 +23,7 @@ impl RedmineClient {
     pub async fn fetch_issue(
         &self,
         issue_id: u16,
-    ) -> Result<redmine::RedmineIssue, custom_error::Error> {
+    ) -> Result<redmine::RedmineIssue, custom_error::DiscussionError> {
         Ok(fetch(&self.reqwest_client, issue_id, None)
             .await?
             .json::<redmine::RedmineIssueResult>()
@@ -34,7 +34,7 @@ impl RedmineClient {
     pub async fn fetch_issue_with_relations(
         &self,
         issue_id: u16,
-    ) -> Result<redmine::RedmineIssue, custom_error::Error> {
+    ) -> Result<redmine::RedmineIssue, custom_error::DiscussionError> {
         let mut query = HashMap::new();
         query.insert("include", "relations");
 
@@ -49,7 +49,7 @@ impl RedmineClient {
         &self,
         issue_id: u16,
         status_id: u16,
-    ) -> Result<reqwest::Response, custom_error::Error> {
+    ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let json_value = json!({
           "issue": {
             "status_id": status_id
@@ -63,7 +63,7 @@ impl RedmineClient {
         &self,
         issue_id: u16,
         comments: Vec<String>,
-    ) -> Result<reqwest::Response, custom_error::Error> {
+    ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let comments = comments.join("\n");
         let json_value = json!({
           "issue": {
@@ -78,7 +78,7 @@ impl RedmineClient {
         &self,
         record_id: u16,
         issue_id: u16,
-    ) -> Result<reqwest::Response, custom_error::Error> {
+    ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let url = format!(
             "{}/issues/{}/relations.json?key={}",
             redmine_api::REDMINE_URL,
@@ -107,7 +107,7 @@ async fn fetch(
     client: &Client,
     issue_id: u16,
     query: Option<HashMap<&str, &str>>,
-) -> Result<reqwest::Response, custom_error::Error> {
+) -> Result<reqwest::Response, custom_error::DiscussionError> {
     let url = format!("{}/issues/{}.json", redmine_api::REDMINE_URL, issue_id);
     let response = client
         .get(url)
@@ -122,7 +122,7 @@ async fn update_issue(
     client: &RedmineClient,
     issue_id: u16,
     json_value: serde_json::Value,
-) -> Result<reqwest::Response, custom_error::Error> {
+) -> Result<reqwest::Response, custom_error::DiscussionError> {
     let url = format!(
         "{}/issues/{}.json?key={}",
         redmine_api::REDMINE_URL,
