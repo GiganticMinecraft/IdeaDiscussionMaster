@@ -72,22 +72,23 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
         })
         .await?;
 
-    let agendas_result = agendas_result
-        .iter()
-        .map(|(status, issue_ids)| {
-            format!("[{}]\n{}\n", status, issue_ids.join(" "))
-        })
-        .collect_vec();
-    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    if let Err(err) = redmine_api.add_comments(&record_id, agendas_result).await {
-        return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
-    }
-    if let Err(err) = redmine_api
-        .update_issue_status(&record_id, &record_status::RecordStatus::Done.id())
-        .await
-    {
-        return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
-    }
+    // FIXME: コメントアウト
+    // let agendas_result = agendas_result
+    //     .iter()
+    //     .map(|(status, issue_ids)| {
+    //         format!("[{}]\n{}\n", status, issue_ids.join(" "))
+    //     })
+    //     .collect_vec();
+    // let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
+    // if let Err(err) = redmine_api.add_comments(&record_id, agendas_result).await {
+    //     return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
+    // }
+    // if let Err(err) = redmine_api
+    //     .update_issue_status(&record_id, &record_status::RecordStatus::Done.id())
+    //     .await
+    // {
+    //     return Err(format!("Redmineへのアクセス中にエラーが発生しました。管理者に連絡してください。\nFatalError: {:?}", err).into());
+    // }
 
     record_id::clear(ctx).await;
     agendas::clear(ctx).await;
