@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[command]
-#[usage="(引数なし)"]
+#[usage = "(引数なし)"]
 #[aliases("svo")]
 #[description = "投票を開始するコマンドです。"]
 pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
