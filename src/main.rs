@@ -13,7 +13,10 @@ use std::{
 use tokio::sync::RwLock;
 
 use idea_discussion_master::{
-    commands::{end_discussion::*, end_votes::*, start_discussion::*, start_votes::*, help::*},
+    commands::{
+        add_agenda::*, end_discussion::*, end_votes::*, help::*, start_discussion::*,
+        start_votes::*,
+    },
     globals::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
         voice_chat_channel_id::VoiceChatChannelId, voted_message_id::VotedMessageId,
@@ -23,7 +26,7 @@ use idea_discussion_master::{
 
 #[group]
 #[only_in(guilds)]
-#[commands(start_discussion, end_discussion, start_votes, end_votes)]
+#[commands(start_discussion, end_discussion, start_votes, end_votes, add_agenda)]
 struct General;
 
 #[tokio::main]
