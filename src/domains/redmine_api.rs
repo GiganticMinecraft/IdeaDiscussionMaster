@@ -48,4 +48,12 @@ impl RedmineApi {
     ) -> Result<reqwest::Response, custom_error::Error> {
         self.client.add_comments(issue_id, comments).await
     }
+
+    pub async fn add_relation(
+        &self,
+        record_id: u16,
+        issue_id: u16,
+    ) -> Result<reqwest::Response, custom_error::Error> {
+        self.client.add_relation(record_id, issue_id).await
+    }
 }

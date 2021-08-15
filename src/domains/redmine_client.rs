@@ -65,7 +65,6 @@ impl RedmineClient {
         comments: Vec<String>,
     ) -> Result<reqwest::Response, custom_error::Error> {
         let comments = comments.join("\n");
-        println!("{}", comments);
         let json_value = json!({
           "issue": {
             "notes": comments
@@ -73,6 +72,34 @@ impl RedmineClient {
         });
 
         update_issue(self, issue_id, json_value).await
+    }
+
+    pub async fn add_relation(
+        &self,
+        record_id: u16,
+        issue_id: u16,
+    ) -> Result<reqwest::Response, custom_error::Error> {
+        let url = format!(
+            "{}/issues/{}/relations.json?key={}",
+            redmine_api::REDMINE_URL,
+            record_id,
+            self.api_key
+        );
+        let json_value = json!({
+          "relation": {
+            "issue_to_id": issue_id,
+            "relation_type": "relates"
+          }
+        });
+        let response = self
+            .reqwest_client
+            .post(url)
+            .header(header::CONTENT_TYPE, "application/json")
+            .json(&json_value)
+            .send()
+            .await?;
+
+        Ok(response)
     }
 }
 
