@@ -22,8 +22,6 @@ use crate::{
     globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
 };
 
-// TODO: 結果をRedmineに送信
-
 #[command]
 #[aliases("eid", "edi")]
 #[usage = "(引数なし)"]
