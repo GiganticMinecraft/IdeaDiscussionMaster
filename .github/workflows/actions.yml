@@ -33,6 +33,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PAT }}
 
+      - name: prepare for docker build
+        command: |
+          cargo install dummy-cargo-toml-creater
+          ~/.cargo/bin/dummy-cargo-toml-creater
+
       - name: Build and push
         uses: docker/build-push-action@v2
         with:

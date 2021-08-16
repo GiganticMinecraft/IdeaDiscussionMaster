@@ -5,7 +5,6 @@ RUN mkdir /tmp/app
 WORKDIR /tmp/app
 
 ## Build Dependency Library with DummyVersion.toml/lock
-RUN cargo install dummy-cargo-toml-creater && ~/.cargo/bin/dummy-cargo-toml-creater
 COPY DummyVersion.toml ./Cargo.toml
 COPY DummyVersion.lock ./Cargo.lock
 RUN mkdir -p src/ && touch src/lib.rs
