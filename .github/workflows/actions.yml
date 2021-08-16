@@ -53,7 +53,7 @@ jobs:
             type=local, src=/tmp/.buildx-cache
             type=local, src=~/.cargo/registry
             type=local, src=~/.cargo/git
-            type=local, src=target
+            type=local, src=/tmp/app/target
           cache-to: |
             type=local, dest=/tmp/.buildx-cache
             type=local, dest=~/.cargo/registry
