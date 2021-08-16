@@ -3,7 +3,7 @@ WORKDIR /app
 
 RUN cargo build --release
 
-FROM rust:1.54.0-alpine
+FROM rust:1.54.0
 WORKDIR /app
 
 COPY --from=builder /app/target .
