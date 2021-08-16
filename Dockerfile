@@ -7,4 +7,4 @@ FROM rust:1.54.0
 WORKDIR /app
 COPY --from=builder /app/target .
 
-ENTRYPOINT ["/app/target/release/idea_discussion_master"]
+ENTRYPOINT ["/app/release/idea_discussion_master"]
