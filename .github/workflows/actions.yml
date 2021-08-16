@@ -12,7 +12,18 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ github.ref }}-${{ github.sha }}
+          restore-keys: |
+            ${{ github.ref }}-${{ github.sha }}
+            ${{ github.ref }}
+            refs/head/main
+
       - name: Set up Docker Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v1
 
       - name: Login to GitHub Container Registry
@@ -27,5 +38,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/${{ secrets.GHCR_OWNERNAME }}/${{ env.IMAGE_NAME }}:latest
+          builder: ${{ steps.buildx.outputs.name }}
+          tags: ghcr.io/${{ secrets.GHCR_OWNERNAME }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
