@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo build --release
+RUN cargo build --release
 
 ENTRYPOINT ["/app/target/release/idea_discussion_master"]
