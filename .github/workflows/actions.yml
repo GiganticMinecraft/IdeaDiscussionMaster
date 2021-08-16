@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  env:
-    CARGO_INCREMENTAL: 1
   build_and_test:
     runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 1
     steps:
       - name: checkout
         uses: actions/checkout@v2
