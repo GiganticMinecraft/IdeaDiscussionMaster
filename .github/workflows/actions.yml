@@ -40,5 +40,5 @@ jobs:
           push: true
           builder: ${{ steps.buildx.outputs.name }}
           tags: ghcr.io/${{ secrets.GHCR_OWNERNAME }}/${{ env.IMAGE_NAME }}:latest
-          cache-from: type=local, src=/tmp/.buildx-cache
-          cache-to: type=local, dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
