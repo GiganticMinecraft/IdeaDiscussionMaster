@@ -5,6 +5,7 @@ RUN mkdir /tmp/app
 WORKDIR /tmp/app
 
 ## Build Dependency Library with DummyVersion.toml/lock
+RUN cargo install dummy-cargo-toml-creater && ~/.cargo/bin/dummy-cargo-toml-creater
 COPY DummyVersion.toml ./Cargo.toml
 COPY DummyVersion.lock ./Cargo.lock
 RUN mkdir -p src/ && touch src/lib.rs
@@ -18,8 +19,8 @@ COPY Cargo.lock ./Cargo.lock
 RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
-FROM scratch
-RUN mkdir /app/target
+FROM rust:1.54-alpine
+RUN mkdir -p /app/target
 WORKDIR /app/target
 COPY --from=builder /tmp/app/target .
 
