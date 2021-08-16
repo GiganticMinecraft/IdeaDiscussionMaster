@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: prepare for docker build
-        command: |
+        run: |
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
 
