@@ -6,7 +6,7 @@ on:
 jobs:
   env:
     CARGO_INCREMENTAL: 1
-  prepare_for_build:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -36,23 +36,11 @@ jobs:
             ${{ github.ref }}
             refs/head/main
 
-      - name: Upload files
-        uses: actions/upload-artifact@v2
-        with:
-          name: workspace_dir
-          retention-days: 1
-          path: .
-
-  build:
-    runs-on: ubuntu-latest
-    needs: prepare_for_build
-    steps:
-      - name: Download work-directory
-        uses: actions/download-artifact@v2
-        with:
-          name: workspace_dir
       - name: Build
         run: cargo build --release
+      - name: Run tests
+        run: cargo test --release
+
       - name: Upload built artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -60,20 +48,9 @@ jobs:
           retention-days: 1
           path: ./target/release/
 
-  test:
-    runs-on: ubuntu-latest
-    needs: prepare_for_build
-    steps:
-      - name: Download work-directory
-        uses: actions/download-artifact@v2
-        with:
-          name: workspace_dir
-      - name: Run tests
-        run: cargo test --release
-
   deploy:
     runs-on: ubuntu-latest
-    needs: [build, test]
+    needs: build_and_test
     steps:
       - name: Download built artifacts
         uses: actions/download-artifact@v2
