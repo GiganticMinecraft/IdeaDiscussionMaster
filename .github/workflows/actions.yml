@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CARGO_INCREMENTAL: 1
+      CARGO_TERM_COLOR: always
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -29,7 +30,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target
+            ./target
           key: ${{ github.ref }}-${{ github.sha }}
           restore-keys: |
             ${{ github.ref }}-${{ github.sha }}
