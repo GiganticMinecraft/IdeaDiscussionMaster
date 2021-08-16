@@ -18,7 +18,7 @@ COPY Cargo.lock ./Cargo.lock
 RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
-FROM rust:1.54.0
+FROM scratch
 RUN mkdir /app/target
 WORKDIR /app/target
 COPY --from=builder /tmp/app/target .
