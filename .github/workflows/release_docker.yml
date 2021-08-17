@@ -16,6 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~//.cargo/bin/dummy-cargo-toml-creater
+            ./target
+          key: cargo-${{ hashFiles('**/DummyCargo.lock') }}
+
       - name: login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -26,15 +36,6 @@ jobs:
         run: |
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
-
-      - name: restore cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ./target
-          key: cargo-${{ hashFiles('**/DummyCargo.lock') }}
 
       # IncrementalBuildが機能しないので、以下3ステップでファイルのタイムスタンプをgitから復元する
       # https://zenn.dev/kt3k/articles/d557cc874961ab
