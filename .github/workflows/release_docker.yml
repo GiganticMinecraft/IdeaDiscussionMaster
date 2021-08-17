@@ -32,9 +32,9 @@ jobs:
           ~/.cargo/bin/dummy-cargo-toml-creater
 
       - name: Build builder image
-        run: docker build --target builder -t $IMAGE:builder --cache-from $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg CARGO_INCREMENTAL=1 .
+        run: docker build --target builder -t $IMAGE:builder --cache-from $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
       - name: Build image
-        run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg CARGO_INCREMENTAL=1 .
+        run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
 
       - name: Push image
         run: |
