@@ -18,6 +18,6 @@ RUN cargo build --release
 
 FROM scratch
 WORKDIR /app
-COPY --from=builder /tmp/app/target/release/ .
+COPY --from=builder /tmp/app/target/release .
 
 ENTRYPOINT ["/app/idea_discussion_master"]
