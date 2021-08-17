@@ -10,6 +10,8 @@ COPY --chown=rust:rust DummyVersion.toml ./Cargo.toml
 COPY --chown=rust:rust DummyVersion.lock ./Cargo.lock
 RUN cargo build --release
 
+RUN cd target/release && ls -la
+
 ## Build Base Library with Cargo.toml/lock
 COPY --chown=rust:rust Cargo.toml ./Cargo.toml
 COPY --chown=rust:rust Cargo.lock ./Cargo.lock
