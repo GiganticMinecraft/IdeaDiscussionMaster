@@ -1,5 +1,7 @@
 FROM ekidd/rust-musl-builder:stable AS builder
 
+USER rust
+
 ## Build Cache Dependency Library
 RUN mkdir /tmp/app
 WORKDIR /tmp/app
@@ -19,6 +21,7 @@ RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
 FROM scratch
+USER rust
 WORKDIR /app
 COPY --from=builder /tmp/app/target/release/ .
 
