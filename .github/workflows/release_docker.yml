@@ -26,10 +26,10 @@ jobs:
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
 
-      - name: Build builder image
-        run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
+      # - name: Build builder image
+      #   run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
       - name: Build image
-        run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
+        run: docker build -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
 
       - name: Push image
         run: |
