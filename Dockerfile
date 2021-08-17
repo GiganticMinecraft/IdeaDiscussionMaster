@@ -12,9 +12,9 @@ RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
 ## Build Base Library with Cargo.toml/lock
-COPY ./src/ ./src/
 COPY Cargo.toml ./Cargo.toml
 COPY Cargo.lock ./Cargo.lock
+COPY ./src/ ./src/
 RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
