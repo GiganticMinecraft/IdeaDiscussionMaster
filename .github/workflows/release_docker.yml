@@ -24,6 +24,15 @@ jobs:
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
 
+      - name: restore cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ./target
+          key: cargo-${{ hashFiles('**/DummyCargo.lock') }}
+
       # IncrementalBuildが機能しないので、以下3ステップでファイルのタイムスタンプをgitから復元する
       # https://zenn.dev/kt3k/articles/d557cc874961ab
       - name: install python
@@ -33,14 +42,6 @@ jobs:
       - name: restore mtime
         run: git restore-mtime
 
-      - name: restore cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ./target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: build builder image
         run: docker build --target builder -t $IMAGE:builder --cache-from $IMAGE:builder \
                 -v ~/.cargo/registry/:/usr/local/cargo/registry/ \
