@@ -23,7 +23,17 @@ jobs:
         run: |
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
-      - name: Restore cache
+
+      # IncrementalBuildが機能しないので、以下3ステップでファイルのタイムスタンプをgitから復元する
+      # https://zenn.dev/kt3k/articles/d557cc874961ab
+      - name: install python
+        uses: actions/setup-python@v2
+      - name: install git-restore-mtime
+        run: sudo apt-get update && sudo apt-get install git-restore-mtime -y
+      - name: restore mtime
+        run: git restore-mtime
+
+      - name: restore cache
         uses: actions/cache@v2
         with:
           path: |
