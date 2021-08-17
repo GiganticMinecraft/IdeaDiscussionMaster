@@ -19,7 +19,6 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.cargo/registry
             ~/.cargo/bin/dummy-cargo-toml-creater
             ./target
           key: cargo-${{ hashFiles('**/Cargo.lock') }}
@@ -27,9 +26,6 @@ jobs:
         run: |
           if [ ! -d target ];then
             mkdir ./target
-          fi
-          if [ ! -d ~/.cargo/registry ];then
-            mkdir ~/.cargo/registry
           fi
 
       - name: Login to GitHub Container Registry

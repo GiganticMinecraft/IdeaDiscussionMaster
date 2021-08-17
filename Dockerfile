@@ -10,7 +10,6 @@ WORKDIR /tmp/app
 RUN mkdir -p src/ && touch src/lib.rs
 COPY --chown=rust:rust DummyVersion.toml ./Cargo.toml
 COPY --chown=rust:rust DummyVersion.lock ./Cargo.lock
-COPY --chown=rust:rust ~/.cargo/registry/ ~/.cargo/registry/
 COPY --chown=rust:rust ./target/ ./target/
 RUN cargo build --release
 
