@@ -10,9 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: 1
-      IMAGE: ghcr.io/lucky3028/idea-discussion-master
+      IMAGE_OWNER: lucky3028
+      IMAGE_NAME: idea-discussion-master
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set image name
+        run: |
+          echo "IMAGE=ghcr.io/${IMAGE_OWNER}/${IMAGE_NAME}"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -36,3 +41,9 @@ jobs:
           docker push $IMAGE:builder &
           docker push $IMAGE:latest &
           wait
+
+      - uses: jcansdale/delete-untagged-images@master
+        with:
+          owner: ${IMAGE_OWNER}
+          package: ${IMAGE_NAME}
+          token: ${{ secrets.GHCR_PAT }}
