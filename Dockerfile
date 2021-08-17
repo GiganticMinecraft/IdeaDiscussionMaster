@@ -20,6 +20,6 @@ RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/rel
 
 FROM scratch
 WORKDIR /app
-COPY --from=builder /tmp/app/ .
+COPY --from=builder /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master .
 
 ENTRYPOINT ["/app/idea_discussion_master"]
