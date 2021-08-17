@@ -21,7 +21,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ~//.cargo/bin/dummy-cargo-toml-creater
+            ~/.cargo/bin/dummy-cargo-toml-creater
             ./target
           key: cargo-${{ hashFiles('**/DummyCargo.lock') }}
 
