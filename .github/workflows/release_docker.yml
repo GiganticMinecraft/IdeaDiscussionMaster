@@ -13,6 +13,9 @@ jobs:
       IMAGE: ghcr.io/lucky3028/idea-discussion-master
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
