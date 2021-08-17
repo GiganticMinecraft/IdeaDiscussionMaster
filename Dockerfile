@@ -22,6 +22,6 @@ RUN cd target/release && ls -la
 
 FROM rust:latest
 WORKDIR /app
-COPY --from=builder /tmp/app/target/release .
+COPY --from=builder /tmp/app/ .
 
 ENTRYPOINT ["/app/idea_discussion_master"]
