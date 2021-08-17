@@ -18,7 +18,7 @@ COPY ./src/ ./src/
 RUN sudo chown -R rust:rust .
 RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master
 
-FROM rust:latest
+FROM scratch
 WORKDIR /app
 COPY --from=builder /tmp/app/ .
 
