@@ -19,6 +19,10 @@ jobs:
           registry: ghcr.io
           username: lucky3028
           password: ${{ secrets.GHCR_PAT }}
+      - name: prepare dummy Cargo.toml & lock for build
+        run: |
+          cargo install dummy-cargo-toml-creater
+          ~/.cargo/bin/dummy-cargo-toml-creater
       - name: build builder image
         run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
       - name: build image
