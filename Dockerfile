@@ -2,6 +2,9 @@ FROM ekidd/rust-musl-builder:stable AS builder
 
 USER rust
 
+COPY --chown=rust:rust ~/.cargo/registry/ ~/.cargo/registry/
+COPY --chown=rust:rust ./target/ ./target/
+
 ## Build Cache Dependency Library
 RUN mkdir /tmp/app
 WORKDIR /tmp/app
