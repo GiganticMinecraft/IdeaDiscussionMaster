@@ -13,20 +13,6 @@ jobs:
       IMAGE: ghcr.io/lucky3028/idea-discussion-master
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Restore cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin/dummy-cargo-toml-creater
-            ./target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Mkdir target
-        run: |
-          if [ ! -d target ];then
-            mkdir ./target
-          fi
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -39,15 +25,6 @@ jobs:
         run: |
           cargo install dummy-cargo-toml-creater
           ~/.cargo/bin/dummy-cargo-toml-creater
-
-      # IncrementalBuildが機能しないので、以下3ステップでファイルのタイムスタンプをgitから復元する
-      # https://zenn.dev/kt3k/articles/d557cc874961ab
-      - name: Install python
-        uses: actions/setup-python@v2
-      - name: Install git-restore-mtime
-        run: sudo apt-get update && sudo apt-get install git-restore-mtime -y
-      - name: restore mtime
-        run: git restore-mtime
 
       - name: Build builder image
         run: docker build --target builder -t $IMAGE:builder --cache-from $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 --build-arg CARGO_INCREMENTAL=1 .
