@@ -15,6 +15,7 @@ COPY --chown=rust:rust Cargo.toml ./Cargo.toml
 COPY --chown=rust:rust Cargo.lock ./Cargo.lock
 COPY --chown=rust:rust ./src/ ./src/
 RUN cargo build --release
+RUN cd target/release && ls -la
 
 FROM scratch
 WORKDIR /app
