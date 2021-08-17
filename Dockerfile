@@ -18,8 +18,6 @@ COPY Cargo.lock ./Cargo.lock
 RUN sudo chown -R rust:rust .
 RUN cargo build --release
 
-RUN cd target/release && ls -la
-
 FROM rust:latest
 WORKDIR /app
 COPY --from=builder /tmp/app/ .
