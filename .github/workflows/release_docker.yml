@@ -1,6 +1,8 @@
 name: Build and Publish Docker
 
 on:
+  pull_request:
+    branch: [main]
   workflow_dispatch:
 
 jobs:
