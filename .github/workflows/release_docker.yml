@@ -21,10 +21,14 @@ jobs:
           username: lucky3028
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Prepare dummy Cargo.toml & lock for build
+      - name: Prepare dummy
         run: |
-          cargo install dummy-cargo-toml-creater
-          ~/.cargo/bin/dummy-cargo-toml-creater
+          curl -s https://api.github.com/repos/Lucky3028/create-dummy-toml/releases/latest \
+            | grep "browser_download_url" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | wget -qi -
+          ./create_dummy_toml
 
       - name: Build builder image
         run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
