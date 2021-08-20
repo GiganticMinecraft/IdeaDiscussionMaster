@@ -28,6 +28,7 @@ jobs:
             | cut -d : -f 2,3 \
             | tr -d \" \
             | wget -qi -
+          chmod u+x create_dummy_toml
           ./create_dummy_toml
 
       - name: Build builder image
