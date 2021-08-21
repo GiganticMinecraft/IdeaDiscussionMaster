@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/trivy
-          key: truvy-vulnerability-db
+          key: trivy-vulnerability-db
 
       - uses: lazy-actions/gitrivy@v3
         with:
