@@ -1,4 +1,5 @@
 #TODO:  https://sysdig.jp/blog/dockerfile-best-practices/
+# builder
 FROM ekidd/rust-musl-builder:stable AS builder
 
 ## Build Cache Dependency Library
@@ -17,6 +18,7 @@ COPY --chown rust:rust Cargo.lock ./Cargo.lock
 COPY --chown rust:rust ./src/ ./src/
 RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master
 
+# executor
 FROM gcr.io/distroless/cc
 USER nonroot
 WORKDIR /app
