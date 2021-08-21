@@ -65,5 +65,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ env.IMAGE }}:latest
-          fail_on_vulnerabilities: true
+          fail_on_vulnerabilities: false
           issue_title: Security Alert for executor image
