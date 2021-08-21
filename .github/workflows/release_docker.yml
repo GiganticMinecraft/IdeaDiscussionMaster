@@ -41,3 +41,28 @@ jobs:
           docker push $IMAGE:builder &
           docker push $IMAGE:latest &
           wait
+
+  scan_vululnerability:
+    needs: build_and_deploy
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/lucky3028/idea-discussion-master
+    steps:
+      - name: Cache trivy DB
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/trivy
+          key: truvy-vulnerability-db
+
+      - uses: lazy-actions/gitrivy@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image: $IMAGE:builder
+          fail_on_vulnerabilities: true
+          issue_title: Security Alert for builder image
+      - uses: lazy-actions/gitrivy@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          image: $IMAGE:latest
+          fail_on_vulnerabilities: true
+          issue_title: Security Alert for executor image
