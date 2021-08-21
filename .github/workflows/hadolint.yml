@@ -1,15 +1,16 @@
 name: hadolint with reviewdog
 
-on: [pull_request]
+on:
+  pull_request:
+    branch: [main]
 
 jobs:
   hadolint:
     name: Execute hadolint
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: hadolint
+      - uses: actions/checkout@v1
+      - name: Execute hadolint
         uses: reviewdog/action-hadolint@v1
         with:
           github_token: ${{ secrets.github_token }}
