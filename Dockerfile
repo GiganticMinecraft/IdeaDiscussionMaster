@@ -19,7 +19,7 @@ COPY --chown=rust:rust ./src/ ./src/
 RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master
 
 # executor
-FROM gcr.io/distroless/cc
+FROM gcr.io/distroless/cc:latest
 USER nonroot
 WORKDIR /app
 COPY --from=builder /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master .
