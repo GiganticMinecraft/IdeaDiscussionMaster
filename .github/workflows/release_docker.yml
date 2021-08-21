@@ -64,12 +64,12 @@ jobs:
       - uses: lazy-actions/gitrivy@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ IMAGE }}:builder
+          image: ${{ env.IMAGE }}:builder
           fail_on_vulnerabilities: true
           issue_title: Security Alert for builder image
       - uses: lazy-actions/gitrivy@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ IMAGE }}:latest
+          image: ${{ env.IMAGE }}:latest
           fail_on_vulnerabilities: true
           issue_title: Security Alert for executor image
