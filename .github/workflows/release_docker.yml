@@ -45,3 +45,4 @@ jobs:
           wait
 
       # TODO: untaggedなイメージを常に削除
+      # TODO: サーバーへアクセスしてbotを再起動させる
