@@ -1,10 +1,10 @@
 name: Build and Publish Docker
 
 on:
-  # TODO: mainブランチへのpush時にも作動させる
+  push:
+    branch: main
   pull_request:
-    branch: [main]
-  workflow_dispatch:
+    branch: main
 
 jobs:
   build_and_publish_images:
