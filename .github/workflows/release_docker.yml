@@ -38,6 +38,7 @@ jobs:
         run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
 
       - name: Push image
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push $IMAGE:builder &
           docker push $IMAGE:latest &
