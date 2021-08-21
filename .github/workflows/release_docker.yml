@@ -32,7 +32,6 @@ jobs:
           chmod u+x create_dummy_toml
           ./create_dummy_toml
 
-      # TODO: タグ名にブランチ名を含め、当該ブランチが削除された場合はそのイメージも消す（mainではやらない）
       - name: Build builder image
         run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
       - name: Build image
@@ -44,5 +43,4 @@ jobs:
           docker push $IMAGE:latest &
           wait
 
-      # TODO: untaggedなイメージを常に削除
       # TODO: サーバーへアクセスしてbotを再起動させる
