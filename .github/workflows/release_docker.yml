@@ -54,6 +54,13 @@ jobs:
           path: ~/.cache/trivy
           key: trivy-vulnerability-db
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: lucky3028
+          password: ${{ secrets.GHCR_PAT }}
+
       - uses: lazy-actions/gitrivy@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
