@@ -1,0 +1,79 @@
+name: Build and Publish Docker
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+  build_and_publish_images:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
+      IMAGE: ghcr.io/lucky3028/idea-discussion-master
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: lucky3028
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Prepare dummy
+        run: |
+          curl -s https://api.github.com/repos/Lucky3028/create-dummy-toml/releases/latest \
+            | grep "browser_download_url" \
+            | cut -d : -f 2,3 \
+            | tr -d \" \
+            | wget -qi -
+          chmod u+x create_dummy_toml
+          ./create_dummy_toml
+
+      - name: Build builder image
+        run: docker build --target builder --cache-from $IMAGE:builder -t $IMAGE:builder --build-arg BUILDKIT_INLINE_CACHE=1 .
+      - name: Build image
+        run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
+
+      - name: Push image
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push $IMAGE:builder &
+          docker push $IMAGE:latest &
+          wait
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_publish_images
+    if: github.ref == 'refs/heads/main'
+    env:
+      IMAGE: ghcr.io/lucky3028/idea-discussion-master
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Make .env
+        run: |
+          cd attachments
+          echo "IDEA_DISCUSSION_MASTER_DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
+          echo "IDEA_DISCUSSION_MASTER_REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
+          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
+          echo "IS_DEBUG=false" >> .env
+          cd ../
+
+      - name: SFTP .env & docker-compose.yml
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
+        with:
+          username: ${{ secrets.SERVER_SSH_USER }}
+          server: ${{ secrets.SERVER_SSH_ADDRESS }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          local_path: "./attachments/*"
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          remote_path: ${{ secrets.SERVER_SSH_PATH }}
+          args: "-o ConnectTimeout=5 -o StrictHostKeyChecking=no"
+
+      - name: Restart docker
+        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ${{ secrets.SSH_PRIVATE_KEY }} \
+              -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} \
+              "docker-compose down;docker-compose up -d"

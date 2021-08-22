@@ -47,7 +47,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .relations
                     .iter()
                     .filter(|rel| rel.relation_type == "relates")
-                    .flat_map(|rel| [rel.issue_id, rel.issue_to_id])
+                    .flat_map(|rel| vec!(rel.issue_id, rel.issue_to_id))
                     .filter(|num| num != &issue.id)
                     .collect_vec()
             } else {
