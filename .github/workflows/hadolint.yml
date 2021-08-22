@@ -1,8 +1,10 @@
 name: hadolint with reviewdog
 
 on:
+  push:
+    branches: main
   pull_request:
-    branch: [main]
+    branches: main
 
 jobs:
   hadolint:
