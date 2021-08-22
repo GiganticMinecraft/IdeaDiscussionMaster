@@ -1,4 +1,3 @@
-#TODO:  https://sysdig.jp/blog/dockerfile-best-practices/
 # builder
 FROM ekidd/rust-musl-builder:stable AS builder
 
