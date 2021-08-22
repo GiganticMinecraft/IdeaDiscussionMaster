@@ -52,10 +52,10 @@ jobs:
 
       - name: Make .env
         run: |
-          echo "IDEA_DISCUSSION_MASTER_DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
-          echo "IDEA_DISCUSSION_MASTER_REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
-          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
-          echo "IS_DEBUG=false" >> .env
+          echo "IDEA_DISCUSSION_MASTER_DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > env
+          echo "IDEA_DISCUSSION_MASTER_REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> env
+          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> env
+          echo "IS_DEBUG=false" >> env
           echo $GITHUB_WORKDIR
       - name: Install SSH Key
         run: |
@@ -65,7 +65,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: rsync .env & docker-compose.yml
-        run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
+        run: rsync -auvz --delete \
+              -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./attachments/ \
+              ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
 
       - name: Restart docker
-        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} "cd ${{ secrets.SERVER_SSH_PATH }};docker-compose down;docker-compose up -d"
+        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+              ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} \
+              "cd ${{ secrets.SERVER_SSH_PATH }};mv env .env;docker-compose down;docker-compose up -d"
