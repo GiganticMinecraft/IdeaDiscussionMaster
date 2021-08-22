@@ -43,10 +43,9 @@ jobs:
   #         docker push $IMAGE:builder &
   #         docker push $IMAGE:latest &
   #         wait
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_publish_images
+    # needs: build_and_publish_images
     # if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
