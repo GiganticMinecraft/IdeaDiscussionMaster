@@ -68,6 +68,4 @@ jobs:
         run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
 
       - name: Restart docker
-        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-              ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} \
-              "cd ${{ secrets.SERVER_SSH_PATH }};mv env .env;docker-compose down;docker-compose up -d"
+        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} "cd ${{ secrets.SERVER_SSH_PATH }};mv env .env;docker-compose down;docker-compose up -d"
