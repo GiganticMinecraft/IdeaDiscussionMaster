@@ -16,7 +16,7 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::DiscussionError, discord_embed, discussion, redmine_api,
-        status::agenda_status,
+        status::{agenda_status, trait_status},
     },
     globals::{agendas, current_agenda_id, record_id, voted_message_id},
 };
@@ -58,7 +58,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
 
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     redmine_api
-        .update_issue_status(&current_agenda_id, &status.id())
+        .update_issue_status(current_agenda_id, &status.id())
         .await;
 
     agendas::write(&ctx, current_agenda_id, status).await;
