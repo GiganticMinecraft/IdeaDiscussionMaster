@@ -61,12 +61,18 @@ jobs:
           echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
           echo "IS_DEBUG=false" >> .env
           cd ../
+      - name: Install SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 .ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: rsync .env & docker-compose.yml
-        run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ${{ secrets.SSH_KEY }}\
-           -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
+        run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+              ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
 
       - name: Restart docker
-        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ${{ secrets.SSH_KEY }} \
+        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa \
               -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} \
               "cd ${{ secrets.SERVER_SSH_PATH }};docker-compose down;docker-compose up -d"
