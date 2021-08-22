@@ -2,9 +2,9 @@ name: Build and Publish Docker
 
 on:
   push:
-    branch: main
+    branches: main
   pull_request:
-    branch: main
+    branches: main
 
 jobs:
   build_and_publish_images:
@@ -63,7 +63,7 @@ jobs:
           cd ../
 
       - name: SFTP .env & docker-compose.yml
-        use: wlixcc/SFTP-Deploy-Action@v1.2.1
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
         with:
           username: ${{ secrets.SERVER_SSH_USER }}
           server: ${{ secrets.SERVER_SSH_ADDRESS }}
