@@ -38,7 +38,7 @@ jobs:
         run: docker build --cache-from $IMAGE:builder --cache-from $IMAGE:latest -t $IMAGE:latest --build-arg BUILDKIT_INLINE_CACHE=1 .
 
       - name: Push image
-        if: github.ref == "refs/heads/main"
+        if: github.ref == 'refs/heads/main'
         run: |
           docker push $IMAGE:builder &
           docker push $IMAGE:latest &
@@ -47,7 +47,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_publish_images
-    if: github.ref == "refs/heads/main"
+    if: github.ref == 'refs/heads/main'
     env:
       IMAGE: ghcr.io/lucky3028/idea-discussion-master
     steps:
