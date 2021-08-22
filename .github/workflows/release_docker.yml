@@ -62,18 +62,11 @@ jobs:
           echo "IS_DEBUG=false" >> .env
           cd ../
 
-      - name: SFTP .env & docker-compose.yml
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
-        with:
-          username: ${{ secrets.SERVER_SSH_USER }}
-          server: ${{ secrets.SERVER_SSH_ADDRESS }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          local_path: "./attachments/*"
-          port: ${{ secrets.SERVER_SSH_PORT }}
-          remote_path: ${{ secrets.SERVER_SSH_PATH }}
-          args: "-o ConnectTimeout=5 -o StrictHostKeyChecking=no"
+      - name: rsync .env & docker-compose.yml
+        run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ${{ secrets.SSH_PRIVATE_KEY }}\
+           -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
 
       - name: Restart docker
         run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ${{ secrets.SSH_PRIVATE_KEY }} \
               -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} \
-              "docker-compose down;docker-compose up -d"
+              "cd ${{ secrets.SERVER_SSH_PATH }};docker-compose down;docker-compose up -d"
