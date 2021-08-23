@@ -1,7 +1,7 @@
 # IdeaDiscussionMaster
 ギガンティック☆整地鯖公式Discordにて、アイデア会議を円滑に進行するためのDiscord Botです。
 
-## Commands
+## コマンド
 
 |コマンド|説明|エイリアス|使用例|
 |---|---|---|---|
@@ -20,19 +20,29 @@
 |approved|app|承認|
 |declined|dec|却下|
 
-## About .env
+## 環境設定ファイルについて（.env）
 
 |変数名|説明|
 |---|---|
-|IDEA_DISCUSSION_MASTER_DISCORD_TOKEN|DiscordBotのToken。[Discord Developer Portal](https://discord.com/developers/docs)から入手。|
+|IDEA_DISCUSSION_MASTER_DISCORD_TOKEN|DiscordBotのToken。[Discord Developer Portal][1]から入手。|
 |IDEA_DISCUSSION_MASTER_REDMINE_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要|
 |IS_DEBUG|「true」と設定しておくと、コマンドが実行された際にコンソールに通知を行う。それ以外を設定するもしくは何も設定を行わないと、当該通知は行われない。|
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
 
-## docker
+## Docker
 
-// TODO: docker
+イメージは[こちらのページ][2]の`latest`タグのものを使用してください。
+
+こちらの[docker-compose.yml][3]を使用することで容易に起動可能です。この際、[当該yml][3]と同じディレクトリに[前述の環境設定ファイル][4]が存在する必要があります。
+
+使用例: [restart_docker.sh][5]
 
 ## License
 
 [MIT License](./LICENSE)
+
+[1]: https://discord.com/developers/docs
+[2]: https://github.com/Lucky3028/IdeaDiscussionMaster/pkgs/container/idea-discussion-master
+[3]: ./attachments/docker-compose.yml
+[4]: #環境設定ファイルについて（.env）
+[5]: ./attachments/restart_docker.sh
