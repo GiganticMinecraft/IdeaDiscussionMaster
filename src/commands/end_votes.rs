@@ -43,10 +43,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         return Err(DiscussionError::StatusIsNotFound.to_string().into());
     };
 
-    voted_message_id::clear(&ctx).await;
+    voted_message_id::clear(ctx).await;
 
-    let record_id = record_id::read(&ctx).await;
-    let current_agenda_id = current_agenda_id::read(&ctx).await;
+    let record_id = record_id::read(ctx).await;
+    let current_agenda_id = current_agenda_id::read(ctx).await;
 
     let _ = message
         .channel_id
@@ -65,10 +65,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         return Err(err.to_string().into());
     }
 
-    agendas::write(&ctx, current_agenda_id, status).await;
-    current_agenda_id::clear(&ctx).await;
+    agendas::write(ctx, current_agenda_id, status).await;
+    current_agenda_id::clear(ctx).await;
 
-    let next_agenda_id = discussion::go_to_next_agenda(&ctx).await;
+    let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
     let next_redmine_issue = redmine_api
         .fetch_issue(next_agenda_id.unwrap_or_default())
         .await
