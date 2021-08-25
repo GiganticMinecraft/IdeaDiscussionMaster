@@ -43,7 +43,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             }
         }
         Err(err) => {
-            return Err(DiscussionError::from(err).to_string().into());
+            return Err(err.to_string().into());
         }
     };
 
@@ -51,7 +51,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
 
     let record_id = record_id::read(&ctx).await;
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
-        return Err(DiscussionError::from(err).to_string().into());
+        return Err(err.to_string().into());
     };
 
     message

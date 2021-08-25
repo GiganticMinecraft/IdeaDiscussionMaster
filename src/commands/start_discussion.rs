@@ -56,7 +56,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             }
         }
         Err(err) => {
-            return Err(DiscussionError::from(err).to_string().into());
+            return Err(err.to_string().into());
         }
     };
     let record_relations = {
