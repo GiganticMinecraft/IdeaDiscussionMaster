@@ -16,7 +16,7 @@ impl RedmineClient {
     pub fn new() -> Self {
         RedmineClient {
             reqwest_client: Client::new(),
-            api_key: env::var("IDEA_DISCUSSION_MASTER_REDMINE_KEY").unwrap_or_default(),
+            api_key: env::var("REDMINE_KEY").unwrap_or_default(),
         }
     }
 

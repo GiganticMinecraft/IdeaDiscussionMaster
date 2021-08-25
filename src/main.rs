@@ -31,7 +31,7 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("IDEA_DISCUSSION_MASTER_DISCORD_TOKEN")
+    let token = env::var("DISCORD_TOKEN")
         .expect("Expected a token in the environment");
 
     let framework = StandardFramework::new()
