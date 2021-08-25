@@ -2,7 +2,7 @@ use futures::stream::{self, StreamExt};
 use itertools::Itertools;
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
-    model::{channel::Message, id::ChannelId},
+    model::channel::Message,
     prelude::Context,
 };
 
