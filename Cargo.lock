@@ -523,7 +523,7 @@ dependencies = [
 
 [[package]]
 name = "idea_discussion_master"
-version = "0.3.3"
+version = "0.3.0"
 dependencies = [
  "cfg-if",
  "chrono",
