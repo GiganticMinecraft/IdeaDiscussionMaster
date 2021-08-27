@@ -52,7 +52,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .filter(|num| num != &issue.id)
                     .collect_vec()
             } else {
-                return Err(DiscussionError::TickerIsNotFound.to_string().into());
+                return Err(DiscussionError::TicketIsNotFound.to_string().into());
             }
         }
         Err(err) => {

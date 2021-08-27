@@ -39,7 +39,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             if issue.is_idea_ticket() {
                 issue.id
             } else {
-                return Err(DiscussionError::TickerIsNotFound.to_string().into());
+                return Err(DiscussionError::TicketIsNotFound.to_string().into());
             }
         }
         Err(err) => {

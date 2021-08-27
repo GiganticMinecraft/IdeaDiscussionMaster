@@ -18,7 +18,7 @@ pub enum DiscussionError {
     #[strum(message = "チケット番号が指定されていません。")]
     TicketNumberIsNotSpecified,
     #[strum(message = "チケットが存在しません。")]
-    TickerIsNotFound,
+    TicketIsNotFound,
     #[strum(message = "VCに参加されていません。")]
     VcIsNotJoined,
     #[strum(message = "ステータスが指定されていません。")]
