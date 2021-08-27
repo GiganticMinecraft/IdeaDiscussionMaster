@@ -15,7 +15,7 @@ cfg_if::cfg_if! {
 
 use crate::{
     domains::{
-        custom_error::DiscussionError,
+        custom_error::{DiscussionError, SpecifiedArgs},
         discord_embed, discussion, redmine_api,
         status::{agenda_status, trait_status::Status},
     },
@@ -37,10 +37,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         {
             status
         } else {
-            return Err(DiscussionError::StatusIsNotFound.to_string().into());
+            return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).to_string().into());
         }
     } else {
-        return Err(DiscussionError::StatusIsNotFound.to_string().into());
+        return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).to_string().into());
     };
 
     voted_message_id::clear(ctx).await;

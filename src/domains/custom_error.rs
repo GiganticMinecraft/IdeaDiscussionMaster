@@ -15,24 +15,46 @@ impl fmt::Display for Error {
 
 #[derive(Debug, EnumMessage)]
 pub enum DiscussionError {
-    #[strum(message = "チケット番号が指定されていません。")]
-    TicketNumberIsNotSpecified,
+    #[strum(message = "引数が指定されていません。")]
+    ArgIsNotSpecified(SpecifiedArgs),
     #[strum(message = "チケットが存在しません。")]
     TicketIsNotFound,
     #[strum(message = "VCに参加されていません。")]
     VcIsNotJoined,
-    #[strum(message = "ステータスが指定されていません。")]
-    StatusIsNotFound,
     #[strum(
         message = "Redmineへのアクセス中に不明なエラーが発生しました。管理者に連絡してください。"
     )]
     UnknownError(Error),
 }
 
+#[derive(Debug, EnumMessage)]
+pub enum SpecifiedArgs {
+    #[strum(message = "チケット番号")]
+    TicketNumber,
+    #[strum(message = "チケットのステータス")]
+    TicketStatus,
+    #[strum(message = "議事録の日付")]
+    RecordDate,
+}
+
 impl DiscussionError {
     pub fn get_msg(&self) -> String {
-        self.get_message()
+        let msg = self
+            .get_message()
             .unwrap_or("エラーが発生しました。")
+            .to_string();
+        if let Self::ArgIsNotSpecified(arg) = self {
+            format!("{}({})", msg, arg.ja())
+        } else {
+            msg
+        }
+    }
+}
+
+impl SpecifiedArgs {
+    pub fn ja(&self) -> String {
+        self.get_message()
+            .unwrap_or("指定されるべき引数")
             .to_string()
     }
 }
@@ -53,7 +75,7 @@ impl ToString for DiscussionError {
     fn to_string(&self) -> String {
         match self {
             Self::UnknownError(err) => format!("{:?}\n{:?}", self.get_msg(), err),
-            _ => self.get_msg()
+            _ => self.get_msg(),
         }
     }
 }

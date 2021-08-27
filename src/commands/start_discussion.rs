@@ -16,7 +16,7 @@ cfg_if::cfg_if! {
 
 use crate::{
     domains::{
-        custom_error::DiscussionError, discord_embed, discussion, redmine_api,
+        custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
         status::agenda_status,
     },
     globals::{agendas, record_id, voice_chat_channel_id},
@@ -32,9 +32,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(DiscussionError::TicketNumberIsNotSpecified
-                .to_string()
-                .into());
+            return Err(
+                DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber)
+                    .to_string()
+                    .into(),
+            );
         }
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。

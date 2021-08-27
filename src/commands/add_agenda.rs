@@ -14,7 +14,7 @@ cfg_if::cfg_if! {
 
 use crate::{
     domains::{
-        custom_error::DiscussionError, discord_embed, discussion, redmine_api,
+        custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
         status::agenda_status,
     },
     globals::{agendas, record_id},
@@ -30,7 +30,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     let issue_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(DiscussionError::TicketNumberIsNotSpecified.to_string().into());
+            return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
         }
     };
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
@@ -39,7 +39,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             if issue.is_idea_ticket() {
                 issue.id
             } else {
-                return Err(DiscussionError::TicketIsNotFound.to_string().into());
+                return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
             }
         }
         Err(err) => {
