@@ -32,7 +32,7 @@ struct General;
 #[tokio::main]
 async fn main() {
     let token = env::var("DISCORD_TOKEN")
-        .expect("Expected a token in the environment");
+        .expect("DiscordのBot Tokenが見つかりません。");
 
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
@@ -58,6 +58,6 @@ async fn main() {
     }
 
     if let Err(reason) = client.start().await {
-        println!("Client error: {:?}", reason);
+        eprintln!("クライアントの起動に失敗しました: {:?}", reason);
     }
 }
