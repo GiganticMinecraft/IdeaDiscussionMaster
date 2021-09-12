@@ -35,19 +35,17 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     let cached_agendas = agendas::read(ctx).await;
     let agendas_result = agenda_status::AgendaStatus::iter()
         .map(|state| {
-            let issue_ids = if let Some(array) = cached_agendas
-                // 議題がある場合
-                .iter()
-                .group_by(|(_, agenda_state)| **agenda_state == state)
-                .into_iter()
-                .map(|(boolean, group)| (boolean, group.collect_vec()))
-                .find(|(boolean, _)| *boolean)
-                .map(|(_, group)| group.into_iter().map(|(id, _)| id).collect_vec())
-            {
-                array.iter().map(|id| format!("#{}", id)).collect_vec()
-            } else {
-                // 議題がない場合
-                vec!["-".to_string()]
+            let issue_ids = {
+                let ids = cached_agendas
+                    .iter()
+                    .filter(|(_, status)| **status == state)
+                    .map(|(id, _)| id)
+                    .collect_vec();
+                if ids.is_empty() {
+                    vec!["-".to_string()]
+                } else {
+                    ids.iter().map(|id| format!("#{}", id)).collect_vec()
+                }
             };
             (state.ja(), issue_ids)
         })
