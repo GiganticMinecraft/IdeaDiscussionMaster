@@ -51,6 +51,16 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         );
     };
 
+    let voted_message_id = voted_message_id::read(ctx).await;
+    if voted_message_id == 0 {
+        return Ok(());
+    }
+
+    let _ = message
+        .channel_id
+        .delete_message(&ctx.http, voted_message_id)
+        .await;
+
     voted_message_id::clear(ctx).await;
 
     let record_id = record_id::read(ctx).await;
