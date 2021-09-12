@@ -36,8 +36,9 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     let agendas_result = agenda_status::AgendaStatus::iter()
         .map(|state| {
             let issue_ids = if let Some(array) = cached_agendas
+                // 議題がある場合
                 .iter()
-                .group_by(|(_, status)| **status == state)
+                .group_by(|(_, agenda_state)| **agenda_state == state)
                 .into_iter()
                 .map(|(boolean, group)| (boolean, group.collect_vec()))
                 .find(|(boolean, _)| *boolean)
@@ -45,6 +46,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
             {
                 array.iter().map(|id| format!("#{}", id)).collect_vec()
             } else {
+                // 議題がない場合
                 vec!["-".to_string()]
             };
             (state.ja(), issue_ids)
