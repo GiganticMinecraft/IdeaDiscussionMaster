@@ -21,7 +21,7 @@ cfg_if::cfg_if! {
 use crate::{
     commands::end_votes,
     domains::{discussion, status::agenda_status},
-    globals::{voice_chat_channel_id, voted_message_id},
+    globals::{current_agenda_id, voice_chat_channel_id, voted_message_ids},
 };
 
 pub struct Handler;
@@ -33,12 +33,17 @@ impl EventHandler for Handler {
     }
 
     async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
-        let voted_message_id = voted_message_id::read(&ctx).await;
         if let Ok(user) = reaction.user(&ctx.http).await {
             if user.bot {
                 return;
             }
         }
+        let current_agenda_id = current_agenda_id::read(&ctx).await;
+        let voted_message_id = voted_message_ids::read(&ctx)
+            .await
+            .get(&current_agenda_id)
+            .unwrap_or(&0)
+            .to_owned();
         if voted_message_id == 0 {
             return;
         }

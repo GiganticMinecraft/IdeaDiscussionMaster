@@ -6,7 +6,7 @@ use serenity::{
 
 use crate::{
     domains::discord_embed,
-    globals::{current_agenda_id, record_id, voted_message_id},
+    globals::{current_agenda_id, record_id, voted_message_ids},
 };
 
 #[command]
@@ -46,7 +46,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
         voted_message.react(&ctx.http, '⭕').await?;
         voted_message.react(&ctx.http, '❌').await?;
 
-        voted_message_id::write(ctx, voted_message.id.as_u64().to_owned()).await;
+        voted_message_ids::write(ctx, current_agenda_id, voted_message.id.as_u64().to_owned()).await;
     }
 
     Ok(())

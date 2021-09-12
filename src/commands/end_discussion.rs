@@ -19,7 +19,7 @@ use crate::{
         discord_embed, redmine_api,
         status::{agenda_status, record_status, trait_status::Status},
     },
-    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_id},
+    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_ids},
 };
 
 #[command]
@@ -29,7 +29,7 @@ use crate::{
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     current_agenda_id::clear(ctx).await;
     voice_chat_channel_id::clear(ctx).await;
-    voted_message_id::clear(ctx).await;
+    voted_message_ids::clear(ctx).await;
 
     let record_id = record_id::read(ctx).await;
     let cached_agendas = agendas::read(ctx).await;

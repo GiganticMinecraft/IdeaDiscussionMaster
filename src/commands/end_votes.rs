@@ -19,7 +19,7 @@ use crate::{
         discord_embed, discussion, redmine_api,
         status::{agenda_status, trait_status::Status},
     },
-    globals::{agendas, current_agenda_id, record_id, voted_message_id},
+    globals::{agendas, current_agenda_id, record_id, voted_message_ids},
 };
 
 #[command]
@@ -51,20 +51,25 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         );
     };
 
-    let voted_message_id = voted_message_id::read(ctx).await;
-    if voted_message_id == 0 {
+    let current_agenda_id = current_agenda_id::read(ctx).await;
+
+    let voted_msg_id = voted_message_ids::read(ctx)
+        .await
+        .get(&current_agenda_id)
+        .unwrap_or(&0)
+        .to_owned();
+    if voted_msg_id == 0 {
         return Ok(());
     }
 
     let _ = message
         .channel_id
-        .delete_message(&ctx.http, voted_message_id)
+        .delete_message(&ctx.http, voted_msg_id)
         .await;
 
-    voted_message_id::clear(ctx).await;
+    voted_message_ids::write(ctx, current_agenda_id, 0).await;
 
     let record_id = record_id::read(ctx).await;
-    let current_agenda_id = current_agenda_id::read(ctx).await;
 
     let _ = message
         .channel_id
