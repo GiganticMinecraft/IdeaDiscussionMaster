@@ -20,6 +20,7 @@ use idea_discussion_master::{
     globals::{
         agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
         voice_chat_channel_id::VoiceChatChannelId, voted_message_id::VotedMessageId,
+        voted_message_ids::VotedMessageIds,
     },
     listeners::{after_commands::after, before_commands::before, listener::Handler},
 };
@@ -31,8 +32,7 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("DISCORD_TOKEN")
-        .expect("DiscordのBot Tokenが見つかりません。");
+    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません。");
 
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
@@ -54,6 +54,7 @@ async fn main() {
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
         data.insert::<CurrentAgendaId>(Arc::new(AtomicU16::new(0)));
         data.insert::<VotedMessageId>(Arc::new(AtomicU64::new(0)));
+        data.insert::<VotedMessageIds>(Arc::new(RwLock::new(HashMap::default())));
         data.insert::<VoiceChatChannelId>(Arc::new(AtomicU64::new(0)));
     }
 
