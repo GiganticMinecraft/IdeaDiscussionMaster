@@ -522,7 +522,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "idea_discussion_master"
+name = "idea-discussion-master"
 version = "0.3.0"
 dependencies = [
  "cfg-if",

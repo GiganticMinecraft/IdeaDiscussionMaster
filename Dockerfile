@@ -15,12 +15,12 @@ RUN cargo build --release
 COPY --chown=rust:rust Cargo.toml ./Cargo.toml
 COPY --chown=rust:rust Cargo.lock ./Cargo.lock
 COPY --chown=rust:rust ./src/ ./src/
-RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master
+RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea-discussion-master
 
 # executor
 FROM gcr.io/distroless/cc:latest
 USER nonroot
 WORKDIR /app
-COPY --from=builder /tmp/app/target/x86_64-unknown-linux-musl/release/idea_discussion_master .
+COPY --from=builder /tmp/app/target/x86_64-unknown-linux-musl/release/idea-discussion-master .
 
-ENTRYPOINT ["/app/idea_discussion_master"]
+ENTRYPOINT ["/app/idea-discussion-master"]
