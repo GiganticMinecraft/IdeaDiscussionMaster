@@ -37,10 +37,18 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         {
             status
         } else {
-            return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).to_string().into());
+            return Err(
+                DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus)
+                    .to_string()
+                    .into(),
+            );
         }
     } else {
-        return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).to_string().into());
+        return Err(
+            DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus)
+                .to_string()
+                .into(),
+        );
     };
 
     voted_message_id::clear(ctx).await;
