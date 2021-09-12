@@ -57,7 +57,6 @@ jobs:
           echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
           echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
           echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
-          echo "IS_DEBUG=false" >> .env
           cd ../
       - name: Install SSH Key
         run: |

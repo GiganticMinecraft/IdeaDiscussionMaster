@@ -9,16 +9,11 @@ use crate::globals::record_id;
 
 #[hook]
 pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> bool {
-    let is_debug = env::var("IS_DEBUG")
-        .ok()
-        .map(|str| str.parse().unwrap_or(false));
-    if is_debug.is_some() && is_debug.unwrap() {
-        println!(
-            "Running command '{}' invoked by '{}'",
-            command_name,
-            message.author.tag()
-        );
-    }
+    println!(
+        "Running command '{}' invoked by '{}'",
+        command_name,
+        message.author.tag()
+    );
 
     if message.author.bot {
         return false;

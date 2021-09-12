@@ -26,7 +26,6 @@
 |---|---|
 |DISCORD_TOKEN|DiscordBotのToken。[Discord Developer Portal][1]から入手。|
 |REDMINE_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要。|
-|IS_DEBUG|「true」と設定しておくと、コマンドが実行された際にコンソールに通知を行う。それ以外を設定するもしくは何も設定を行わないと、当該通知は行われない。|
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
 
 ## Docker
