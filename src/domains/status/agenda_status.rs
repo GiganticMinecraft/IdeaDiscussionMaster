@@ -52,4 +52,8 @@ impl AgendaStatus {
             .filter(|status| status.get_str("is_done").is_some())
             .collect_vec()
     }
+
+    pub fn is_done(&self) -> bool {
+        Self::done_statuses().contains(self)
+    }
 }
