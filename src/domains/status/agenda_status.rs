@@ -58,4 +58,12 @@ impl AgendaStatus {
     pub fn is_done(&self) -> bool {
         Self::done_statuses().contains(self)
     }
+
+    pub fn is_new(&self) -> bool {
+        *self == Self::New
+    }
+
+    pub fn is_in_progress(&self) -> bool {
+        *self == Self::InProgress
+    }
 }

@@ -17,7 +17,7 @@ use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
         discord_embed, discussion, redmine_api,
-        status::{agenda_status, trait_status::Status},
+        status::{agenda_status::AgendaStatus, trait_status::Status},
     },
     globals::{agendas, current_agenda_id, record_id, voted_message_ids},
 };
@@ -29,11 +29,11 @@ use crate::{
 #[description = "投票を終了するコマンドです。\n選択肢が所定のもの以外の場合は、このコマンドを使用して議論結果を入力してください。"]
 pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let status = if let Ok(str) = args.single::<String>() {
-        if let Some(status) = agenda_status::AgendaStatus::from_str(&str)
+        if let Some(status) = AgendaStatus::from_str(&str)
             .ok()
-            .or_else(|| agenda_status::AgendaStatus::from_ja(&str))
-            .or_else(|| agenda_status::AgendaStatus::from_alias(&str))
-            .filter(|status| agenda_status::AgendaStatus::done_statuses().contains(status))
+            .or_else(|| AgendaStatus::from_ja(&str))
+            .or_else(|| AgendaStatus::from_alias(&str))
+            .filter(|status| status.is_done())
         {
             status
         } else {
