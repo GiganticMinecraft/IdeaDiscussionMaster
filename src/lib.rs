@@ -18,6 +18,8 @@ mod test {
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
     #[test_case("New" => AgendaStatus::New; "Newから")]
+    #[test_case("inprogress" => AgendaStatus::InProgress; "inprogressから(insensitive)")]
+    #[test_case("InProgress" => AgendaStatus::InProgress; "inprogressから")]
     #[test_case("approved" => AgendaStatus::Approved; "Approvedから(insensitive)")]
     #[test_case("Approved" => AgendaStatus::Approved; "Approvedから")]
     #[test_case("declined" => AgendaStatus::Declined; "Declinedから(insensitive)")]
@@ -27,6 +29,7 @@ mod test {
     }
 
     #[test_case(AgendaStatus::New => "🆕")]
+    #[test_case(AgendaStatus::InProgress => "▶")]
     #[test_case(AgendaStatus::Approved => "⭕")]
     #[test_case(AgendaStatus::Declined => "❌")]
     fn agenda_status_to_emoji(status: AgendaStatus) -> String {
@@ -34,22 +37,25 @@ mod test {
     }
 
     #[test_case(AgendaStatus::New => "新規")]
+    #[test_case(AgendaStatus::InProgress => "進行中")]
     #[test_case(AgendaStatus::Approved => "承認")]
     #[test_case(AgendaStatus::Declined => "却下")]
     fn agenda_status_to_ja(status: AgendaStatus) -> String {
         status.ja()
     }
 
+    #[test_case("new" => Some(AgendaStatus::New))]
+    #[test_case("inp" => Some(AgendaStatus::InProgress))]
     #[test_case("app" => Some(AgendaStatus::Approved))]
     #[test_case("dec" => Some(AgendaStatus::Declined))]
-    #[test_case("new" => Some(AgendaStatus::New))]
     fn agenda_status_from_alias_str(str: &str) -> Option<AgendaStatus> {
         AgendaStatus::from_alias(str)
     }
 
+    #[test_case(AgendaStatus::New => 1)]
+    #[test_case(AgendaStatus::InProgress => 2)]
     #[test_case(AgendaStatus::Approved => 17)]
     #[test_case(AgendaStatus::Declined => 6)]
-    #[test_case(AgendaStatus::New => 1)]
     fn agenda_status_id(status: AgendaStatus) -> u16 {
         status.id()
     }
@@ -64,11 +70,12 @@ mod test {
 
     #[test]
     fn test_agenda_status_contents() {
-        assert_eq!(AgendaStatus::iter().count(), 3);
+        assert_eq!(AgendaStatus::iter().count(), 4);
         assert_eq!(
             AgendaStatus::iter().collect_vec(),
             vec!(
                 AgendaStatus::New,
+                AgendaStatus::InProgress,
                 AgendaStatus::Approved,
                 AgendaStatus::Declined
             )
