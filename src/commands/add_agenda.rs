@@ -30,7 +30,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     let issue_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
+            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
         }
     };
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
@@ -39,11 +39,11 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             if issue.is_idea_ticket() {
                 issue.id
             } else {
-                return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
+                return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
             }
         }
         Err(err) => {
-            return Err(err.to_string().into());
+            return err.into();
         }
     };
 
@@ -51,7 +51,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
 
     let record_id = record_id::read(ctx).await;
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
-        return Err(err.to_string().into());
+        return err.into();
     };
 
     message

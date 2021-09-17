@@ -32,11 +32,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(
-                DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber)
-                    .to_string()
-                    .into(),
-            );
+            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
         }
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
@@ -54,11 +50,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .filter(|num| num != &issue.id)
                     .collect_vec()
             } else {
-                return Err(DiscussionError::TicketIsNotFound.to_string().into());
+                return DiscussionError::TicketIsNotFound.into();
             }
         }
         Err(err) => {
-            return Err(err.to_string().into());
+            return err.into();
         }
     };
     let record_relations = {
@@ -81,7 +77,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     {
         voice_chat_channel_id::write(ctx, id.as_u64().to_owned()).await;
     } else {
-        return Err(DiscussionError::VcIsNotJoined.to_string().into());
+        return DiscussionError::VcIsNotJoined.into();
     }
 
     record_id::write(ctx, record_id).await;

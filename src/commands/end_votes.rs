@@ -37,18 +37,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         {
             status
         } else {
-            return Err(
-                DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus)
-                    .to_string()
-                    .into(),
-            );
+            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();
         }
     } else {
-        return Err(
-            DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus)
-                .to_string()
-                .into(),
-        );
+        return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();
     };
 
     let current_agenda_id = current_agenda_id::read(ctx).await;
@@ -85,7 +77,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         .update_issue_status(current_agenda_id, status.id())
         .await
     {
-        return Err(err.to_string().into());
+        return err.into();
     }
 
     agendas::write(ctx, current_agenda_id, status).await;

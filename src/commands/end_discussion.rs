@@ -76,13 +76,13 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
         .collect_vec();
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     if let Err(err) = redmine_api.add_comments(record_id, agendas_result).await {
-        return Err(err.to_string().into());
+        return err.into();
     }
     if let Err(err) = redmine_api
         .update_issue_status(record_id, record_status::RecordStatus::Done.id())
         .await
     {
-        return Err(err.to_string().into());
+        return err.into();
     }
 
     record_id::clear(ctx).await;
