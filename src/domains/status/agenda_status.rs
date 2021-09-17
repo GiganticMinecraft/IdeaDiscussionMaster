@@ -7,6 +7,8 @@ use crate::domains::status::trait_status;
 pub enum AgendaStatus {
     #[strum(ascii_case_insensitive, props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
+    #[strum(ascii_case_insensitive, props(ja = "進行中", emoji = "▶", id = "2"))]
+    InProgress,
     #[strum(
         ascii_case_insensitive,
         props(ja = "承認", emoji = "⭕", is_done = "true", id="17")
