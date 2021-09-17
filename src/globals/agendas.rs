@@ -4,12 +4,15 @@ use tokio::sync::RwLock;
 
 use crate::domains::status::agenda_status::AgendaStatus;
 
+#[deprecated]
 pub struct Agendas;
 
+#[allow(deprecated)]
 impl TypeMapKey for Agendas {
     type Value = Arc<RwLock<HashMap<u16, AgendaStatus>>>;
 }
 
+#[allow(deprecated)]
 pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
@@ -22,6 +25,7 @@ pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     map.to_owned()
 }
 
+#[allow(deprecated)]
 pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<u16, AgendaStatus> {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
@@ -37,6 +41,7 @@ pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<
     map.to_owned()
 }
 
+#[allow(deprecated)]
 pub async fn clear(ctx: &Context) {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
