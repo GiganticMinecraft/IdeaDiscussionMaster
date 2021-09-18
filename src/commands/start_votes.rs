@@ -49,5 +49,7 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
             .await;
     }
 
+    // TODO: 別スレッドを立てて2秒ごとにリアクションをチェックする（listener.rsの動作をする。listener.rsは削除）
+
     Ok(())
 }
