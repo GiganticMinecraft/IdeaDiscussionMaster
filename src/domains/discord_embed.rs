@@ -58,6 +58,13 @@ pub fn next_agenda_embed(
     }
 }
 
+pub fn no_current_agenda_embed(
+    embed: &mut builder::CreateEmbed,
+    record_id: u16,
+) -> &mut builder::CreateEmbed {
+    discord_embed::default_failure_embed(embed, record_id).title("現在進行中の議題はありません")
+}
+
 pub fn votes_result_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,

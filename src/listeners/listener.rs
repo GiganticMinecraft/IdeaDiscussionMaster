@@ -21,7 +21,7 @@ cfg_if::cfg_if! {
 use crate::{
     commands::end_votes,
     domains::{discussion, status::agenda_status},
-    globals::{current_agenda_id, voice_chat_channel_id, voted_message_ids},
+    globals::{agendas, voice_chat_channel_id},
 };
 
 pub struct Handler;
@@ -38,15 +38,11 @@ impl EventHandler for Handler {
                 return;
             }
         }
-        let current_agenda_id = current_agenda_id::read(&ctx).await;
-        let voted_message_id = voted_message_ids::read(&ctx)
-            .await
-            .get(&current_agenda_id)
-            .unwrap_or(&0)
-            .to_owned();
-        if voted_message_id == 0 {
+        let current_agenda_id = agendas::find_current_agenda_id(&ctx).await.unwrap();
+        let voted_message_id = agendas::find_votes_message_id(&ctx, current_agenda_id).await;
+        if voted_message_id.is_none() || voted_message_id.unwrap() != reaction.message_id {
             return;
-        }
+        };
 
         let vc_id = voice_chat_channel_id::read(&ctx).await;
         let half_of_vc_members = discussion::fetch_voice_states(&ctx, reaction.guild_id)

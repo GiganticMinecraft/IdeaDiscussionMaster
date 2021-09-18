@@ -19,7 +19,7 @@ use crate::{
         discord_embed, redmine_api,
         status::{agenda_status, record_status, trait_status::Status},
     },
-    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_ids},
+    globals::{agendas, record_id, voice_chat_channel_id},
 };
 
 #[command]
@@ -27,9 +27,7 @@ use crate::{
 #[usage = "(引数なし)"]
 #[description = "会議を終了するコマンドです。\n議事をまとめ、議事録を終了するまでを行います。"]
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
-    current_agenda_id::clear(ctx).await;
     voice_chat_channel_id::clear(ctx).await;
-    voted_message_ids::clear(ctx).await;
 
     let record_id = record_id::read(ctx).await;
     let cached_agendas = agendas::read(ctx).await;

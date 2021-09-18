@@ -19,7 +19,7 @@ use crate::{
         discord_embed, discussion, redmine_api,
         status::{agenda_status::AgendaStatus, trait_status::Status},
     },
-    globals::{agendas, current_agenda_id, record_id, voted_message_ids},
+    globals::{agendas, record_id},
 };
 
 #[command]
@@ -43,23 +43,28 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();
     };
 
-    let current_agenda_id = current_agenda_id::read(ctx).await;
+    let current_agenda_id = if let Some(id) = agendas::find_current_agenda_id(ctx).await {
+        id
+    } else {
+        let record_id = record_id::read(ctx).await;
+        let _ = message
+            .channel_id
+            .send_message(&ctx.http, |msg| {
+                msg.embed(|embed| discord_embed::no_current_agenda_embed(embed, record_id))
+            })
+            .await?;
+        return Ok(());
+    };
 
-    let voted_msg_id = voted_message_ids::read(ctx)
-        .await
-        .get(&current_agenda_id)
-        .unwrap_or(&0)
-        .to_owned();
-    if voted_msg_id == 0 {
+    if let Some(id) = agendas::find_votes_message_id(ctx, current_agenda_id).await {
+        let _ = message
+            .channel_id
+            .delete_message(&ctx.http, id)
+            .await;
+        agendas::update_votes_message_id(ctx, current_agenda_id, None).await;
+    } else {
         return Ok(());
     }
-
-    let _ = message
-        .channel_id
-        .delete_message(&ctx.http, voted_msg_id)
-        .await;
-
-    voted_message_ids::write(ctx, current_agenda_id, 0).await;
 
     let record_id = record_id::read(ctx).await;
 
@@ -81,7 +86,6 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
     }
 
     agendas::update_status(ctx, current_agenda_id, status).await;
-    current_agenda_id::clear(ctx).await;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
     let next_redmine_issue = redmine_api
