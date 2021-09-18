@@ -30,44 +30,53 @@ impl Default for Agenda {
 
 pub struct Agendas;
 
+type AgendasType = HashMap<u16, Agenda>;
+type AgendasTypeMapKey = Arc<RwLock<AgendasType>>;
+
 impl TypeMapKey for Agendas {
-    type Value = Arc<RwLock<HashMap<u16, Agenda>>>;
+    type Value = AgendasTypeMapKey;
 }
 
-pub async fn read(ctx: &Context) -> HashMap<u16, Agenda> {
-    let cached_agendas = {
-        let data_read = ctx.data.read().await;
-        data_read
-            .get::<Agendas>()
-            .expect("Expected Agendas in TypeMap.")
-            .clone()
-    };
-    let map = cached_agendas.read().await;
+async fn get_lock(ctx: &Context) -> AgendasTypeMapKey {
+    let data_read = ctx.data.read().await;
+    data_read
+        .get::<Agendas>()
+        .expect("Expected Agendas in TypeMap.")
+        .clone()
+}
+
+pub async fn read(ctx: &Context) -> AgendasType {
+    let lock = get_lock(ctx).await;
+    let map = lock.read().await;
     map.to_owned()
 }
 
 pub async fn write(ctx: &Context, id: u16, new_agenda: Agenda) {
-    let cached_agendas = {
-        let data_read = ctx.data.read().await;
-        data_read
-            .get::<Agendas>()
-            .expect("Expected Agendas in TypeMap.")
-            .clone()
-    };
-    let mut map = cached_agendas.write().await;
+    let lock = get_lock(ctx).await;
+    let mut map = lock.write().await;
     map.entry(id)
         .and_modify(|agenda| *agenda = new_agenda)
         .or_insert(new_agenda);
 }
 
-pub async fn clear(ctx: &Context) {
-    let cached_agendas = {
-        let data_read = ctx.data.read().await;
-        data_read
-            .get::<Agendas>()
-            .expect("Expected Agendas in TypeMap.")
-            .clone()
-    };
-    let mut map = cached_agendas.write().await;
+pub async fn update_status(ctx: &Context, id: u16, new_status: AgendaStatus) {
+    let map = read(ctx).await;
+    let agenda = map
+        .get(&id)
+        .map_or(Agenda::default(), |agenda| agenda.to_owned());
+    write(ctx, id, Agenda::new(new_status, agenda.votes_message_id)).await;
+}
+
+pub async fn update_votes_message_id(ctx: &Context, id: u16, new_msg_id: Option<MessageId>) {
+    let map = read(ctx).await;
+    let agenda = map
+        .get(&id)
+        .map_or(Agenda::default(), |agenda| agenda.to_owned());
+    write(ctx, id, Agenda::new(agenda.status, new_msg_id)).await;
+}
+
+pub async fn clear_all(ctx: &Context) {
+    let lock = get_lock(ctx).await;
+    let mut map = lock.write().await;
     map.clear();
 }
