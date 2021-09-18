@@ -17,9 +17,8 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
-        status::agenda_status,
     },
-    globals::{agendas, record_id, voice_chat_channel_id},
+    globals::{agendas::{self, Agenda}, record_id, voice_chat_channel_id},
 };
 
 #[command]
@@ -82,9 +81,9 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
 
     record_id::write(ctx, record_id).await;
 
-    agendas::clear(ctx).await;
+    agendas::clear_all(ctx).await;
     for relation in record_relations.iter() {
-        agendas::write(ctx, relation.to_owned(), agenda_status::AgendaStatus::New).await;
+        agendas::write(ctx, relation.to_owned(), Agenda::default()).await;
     }
 
     let _ = message

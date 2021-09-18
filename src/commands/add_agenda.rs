@@ -15,7 +15,7 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
-        status::agenda_status,
+        status::agenda_status::AgendaStatus,
     },
     globals::{agendas, record_id},
 };
@@ -47,7 +47,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
         }
     };
 
-    agendas::write(ctx, issue_id, agenda_status::AgendaStatus::New).await;
+    agendas::update_status(ctx, issue_id, AgendaStatus::New).await;
 
     let record_id = record_id::read(ctx).await;
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {

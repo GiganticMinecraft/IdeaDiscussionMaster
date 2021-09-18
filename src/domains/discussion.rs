@@ -15,7 +15,7 @@ pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
 
         cached_agendas
             .iter()
-            .find(|(_, status)| status.is_new())
+            .find(|(_, agenda)| agenda.status.is_new())
             .map(|(id, _)| id.to_owned())
     };
 

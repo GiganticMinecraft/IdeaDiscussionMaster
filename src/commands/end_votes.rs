@@ -80,7 +80,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         return err.into();
     }
 
-    agendas::write(ctx, current_agenda_id, status).await;
+    agendas::update_status(ctx, current_agenda_id, status).await;
     current_agenda_id::clear(ctx).await;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;

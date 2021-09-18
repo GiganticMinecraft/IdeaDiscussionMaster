@@ -38,7 +38,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
             let issue_ids = {
                 let ids = cached_agendas
                     .iter()
-                    .filter(|(_, status)| **status == state)
+                    .filter(|(_, agenda)| agenda.status == state)
                     .map(|(id, _)| id)
                     .collect_vec();
                 if ids.is_empty() {
@@ -86,7 +86,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     }
 
     record_id::clear(ctx).await;
-    agendas::clear(ctx).await;
+    agendas::clear_all(ctx).await;
 
     Ok(())
 }
