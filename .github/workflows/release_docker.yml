@@ -7,7 +7,7 @@ on:
     branches: main
 
 jobs:
-  build and publish images:
+  build_and_publish_images:
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: 1
