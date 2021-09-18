@@ -76,6 +76,7 @@ impl EventHandler for Handler {
             )
             .await
         {
+            // 本botのリアクションの分
             num.len() - 1
         } else {
             return;
