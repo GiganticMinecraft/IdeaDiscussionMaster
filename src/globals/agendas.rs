@@ -75,6 +75,18 @@ pub async fn update_votes_message_id(ctx: &Context, id: u16, new_msg_id: Option<
     write(ctx, id, Agenda::new(agenda.status, new_msg_id)).await;
 }
 
+pub async fn find_current_agenda(ctx: &Context) -> Option<(u16, Agenda)> {
+    let map = read(ctx).await;
+    map.iter()
+        .find(|(_, agenda)| agenda.status.is_in_progress())
+        .map(|(id, agenda)| (id.to_owned(), agenda.to_owned()))
+}
+
+pub async fn find_votes_message_id(ctx: &Context, id: u16) -> Option<MessageId> {
+    let map = read(ctx).await;
+    map.get(&id).and_then(|agenda| agenda.votes_message_id)
+}
+
 pub async fn clear_all(ctx: &Context) {
     let lock = get_lock(ctx).await;
     let mut map = lock.write().await;
