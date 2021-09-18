@@ -78,8 +78,12 @@ pub async fn update_votes_message_id(ctx: &Context, id: u16, new_msg_id: Option<
 pub async fn find_current_agenda(ctx: &Context) -> Option<(u16, Agenda)> {
     let map = read(ctx).await;
     map.iter()
-        .find(|(_, agenda)| agenda.status.is_in_progress())
+        .find(|agenda| agenda.1.status.is_in_progress())
         .map(|(id, agenda)| (id.to_owned(), agenda.to_owned()))
+}
+
+pub async fn find_current_agenda_id(ctx: &Context) -> Option<u16> {
+    find_current_agenda(ctx).await.map(|agenda| agenda.0)
 }
 
 pub async fn find_votes_message_id(ctx: &Context, id: u16) -> Option<MessageId> {
