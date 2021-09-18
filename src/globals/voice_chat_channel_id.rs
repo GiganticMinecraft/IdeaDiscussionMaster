@@ -3,6 +3,7 @@ use std::sync::{atomic::{AtomicU64, Ordering}, Arc};
 
 pub struct VoiceChatChannelId;
 
+// TODO: Arc<RwLock<serenity::model::id::ChannelId>>に
 impl TypeMapKey for VoiceChatChannelId {
     type Value = Arc<AtomicU64>;
 }
