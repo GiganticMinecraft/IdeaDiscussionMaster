@@ -1,19 +1,40 @@
-use serenity::prelude::{Context, TypeMapKey};
+use serenity::{
+    model::id::MessageId,
+    prelude::{Context, TypeMapKey},
+};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
 use crate::domains::status::agenda_status::AgendaStatus;
 
-#[deprecated]
-pub struct Agendas;
-
-#[allow(deprecated)]
-impl TypeMapKey for Agendas {
-    type Value = Arc<RwLock<HashMap<u16, AgendaStatus>>>;
+#[derive(Clone, Copy, Debug)]
+pub struct Agenda {
+    pub status: AgendaStatus,
+    pub votes_message_id: Option<MessageId>,
 }
 
-#[allow(deprecated)]
-pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
+impl Agenda {
+    pub fn new(status: AgendaStatus, votes_message_id: Option<MessageId>) -> Self {
+        Self {
+            status,
+            votes_message_id,
+        }
+    }
+}
+
+impl Default for Agenda {
+    fn default() -> Self {
+        Self::new(AgendaStatus::New, None)
+    }
+}
+
+pub struct Agendas;
+
+impl TypeMapKey for Agendas {
+    type Value = Arc<RwLock<HashMap<u16, Agenda>>>;
+}
+
+pub async fn read(ctx: &Context) -> HashMap<u16, Agenda> {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
         data_read
@@ -25,8 +46,7 @@ pub async fn read(ctx: &Context) -> HashMap<u16, AgendaStatus> {
     map.to_owned()
 }
 
-#[allow(deprecated)]
-pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<u16, AgendaStatus> {
+pub async fn write(ctx: &Context, id: u16, new_agenda: Agenda) {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
         data_read
@@ -36,12 +56,10 @@ pub async fn write(ctx: &Context, id: u16, new_status: AgendaStatus) -> HashMap<
     };
     let mut map = cached_agendas.write().await;
     map.entry(id)
-        .and_modify(|status| *status = new_status)
-        .or_insert(new_status);
-    map.to_owned()
+        .and_modify(|agenda| *agenda = new_agenda)
+        .or_insert(new_agenda);
 }
 
-#[allow(deprecated)]
 pub async fn clear(ctx: &Context) {
     let cached_agendas = {
         let data_read = ctx.data.read().await;
