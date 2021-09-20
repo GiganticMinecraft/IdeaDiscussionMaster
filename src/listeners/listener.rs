@@ -4,7 +4,6 @@ use serenity::{
     model::{
         channel::{Reaction, ReactionType},
         gateway::Ready,
-        id::ChannelId,
     },
     prelude::{Context, EventHandler},
 };
@@ -44,11 +43,12 @@ impl EventHandler for Handler {
             return;
         };
 
-        let vc_id = voice_chat_channel_id::read(&ctx).await;
+        // 会議が開始されている限りここはNoneにはならない
+        let vc_id = voice_chat_channel_id::read(&ctx).await.unwrap();
         let half_of_vc_members = discussion::fetch_voice_states(&ctx, reaction.guild_id)
             .await
             .iter()
-            .filter(|(_, state)| state.channel_id.unwrap_or_default() == ChannelId(vc_id))
+            .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)
             .count()
             / 2;
 

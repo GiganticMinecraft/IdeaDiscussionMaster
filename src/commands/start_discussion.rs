@@ -74,7 +74,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .get(&message.author.id)
         .and_then(|state| state.channel_id)
     {
-        voice_chat_channel_id::write(ctx, id.as_u64().to_owned()).await;
+        voice_chat_channel_id::write(ctx, Some(id)).await;
     } else {
         return DiscussionError::VcIsNotJoined.into();
     }

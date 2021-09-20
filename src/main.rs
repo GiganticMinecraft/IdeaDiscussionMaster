@@ -6,7 +6,7 @@ use std::{
     collections::HashMap,
     env,
     sync::{
-        atomic::{AtomicU16, AtomicU64},
+        atomic::AtomicU16,
         Arc,
     },
 };
@@ -51,7 +51,7 @@ async fn main() {
 
         data.insert::<RecordId>(Arc::new(AtomicU16::new(0)));
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
-        data.insert::<VoiceChatChannelId>(Arc::new(AtomicU64::new(0)));
+        data.insert::<VoiceChatChannelId>(Arc::new(RwLock::new(None)));
     }
 
     if let Err(reason) = client.start().await {
