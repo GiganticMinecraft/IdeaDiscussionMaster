@@ -28,7 +28,7 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません。");
+    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません");
 
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
@@ -41,7 +41,7 @@ async fn main() {
         .framework(framework)
         .event_handler(Handler)
         .await
-        .expect("Err creating client");
+        .expect("クライアントの作成中にエラーが発生しました");
 
     {
         let mut data = client.data.write().await;
