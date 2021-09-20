@@ -43,10 +43,10 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();
     };
 
+    let record_id = record_id::read(ctx).await.unwrap();
     let current_agenda_id = if let Some(id) = agendas::find_current_agenda_id(ctx).await {
         id
     } else {
-        let record_id = record_id::read(ctx).await;
         let _ = message
             .channel_id
             .send_message(&ctx.http, |msg| {
@@ -65,8 +65,6 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
     } else {
         return Ok(());
     }
-
-    let record_id = record_id::read(ctx).await;
 
     let _ = message
         .channel_id

@@ -14,7 +14,7 @@ use crate::{
 #[aliases("svo")]
 #[description = "投票を開始するコマンドです。"]
 pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
-    let record_id = record_id::read(ctx).await;
+    let record_id = record_id::read(ctx).await.unwrap();
     let current_agenda_id = agendas::find_current_agenda_id(ctx).await;
     let description = vec![
         "提起されている議題についての採決を行います。",

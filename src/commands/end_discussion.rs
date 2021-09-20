@@ -29,7 +29,7 @@ use crate::{
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     voice_chat_channel_id::clear(ctx).await;
 
-    let record_id = record_id::read(ctx).await;
+    let record_id = record_id::read(ctx).await.unwrap();
     let cached_agendas = agendas::read(ctx).await;
     let agendas_result = agenda_status::AgendaStatus::iter()
         .map(|state| {

@@ -5,10 +5,7 @@ use serenity::{
 use std::{
     collections::HashMap,
     env,
-    sync::{
-        atomic::AtomicU16,
-        Arc,
-    },
+    sync::Arc,
 };
 use tokio::sync::RwLock;
 
@@ -49,7 +46,7 @@ async fn main() {
     {
         let mut data = client.data.write().await;
 
-        data.insert::<RecordId>(Arc::new(AtomicU16::new(0)));
+        data.insert::<RecordId>(Arc::new(RwLock::new(None)));
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
         data.insert::<VoiceChatChannelId>(Arc::new(RwLock::new(None)));
     }

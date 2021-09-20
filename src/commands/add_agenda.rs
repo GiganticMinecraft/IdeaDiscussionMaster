@@ -49,7 +49,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
 
     agendas::update_status(ctx, issue_id, AgendaStatus::New).await;
 
-    let record_id = record_id::read(ctx).await;
+    let record_id = record_id::read(ctx).await.unwrap();
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
         return err.into();
     };

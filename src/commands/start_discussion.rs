@@ -79,7 +79,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         return DiscussionError::VcIsNotJoined.into();
     }
 
-    record_id::write(ctx, record_id).await;
+    record_id::write(ctx, Some(record_id)).await;
 
     agendas::clear_all(ctx).await;
     for relation in record_relations.iter() {
