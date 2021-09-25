@@ -15,7 +15,7 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
-        status::agenda_status,
+        status::agenda_status::AgendaStatus,
     },
     globals::{agendas, record_id},
 };
@@ -30,7 +30,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     let issue_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
+            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
         }
     };
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
@@ -39,19 +39,19 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             if issue.is_idea_ticket() {
                 issue.id
             } else {
-                return Err(DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).to_string().into());
+                return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
             }
         }
         Err(err) => {
-            return Err(err.to_string().into());
+            return err.into();
         }
     };
 
-    agendas::write(ctx, issue_id, agenda_status::AgendaStatus::New).await;
+    agendas::update_status(ctx, issue_id, AgendaStatus::New).await;
 
-    let record_id = record_id::read(ctx).await;
+    let record_id = record_id::read(ctx).await.unwrap();
     if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
-        return Err(err.to_string().into());
+        return err.into();
     };
 
     message

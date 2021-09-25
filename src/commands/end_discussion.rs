@@ -19,7 +19,7 @@ use crate::{
         discord_embed, redmine_api,
         status::{agenda_status, record_status, trait_status::Status},
     },
-    globals::{agendas, current_agenda_id, record_id, voice_chat_channel_id, voted_message_ids},
+    globals::{agendas, record_id, voice_chat_channel_id},
 };
 
 #[command]
@@ -27,18 +27,16 @@ use crate::{
 #[usage = "(引数なし)"]
 #[description = "会議を終了するコマンドです。\n議事をまとめ、議事録を終了するまでを行います。"]
 async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
-    current_agenda_id::clear(ctx).await;
     voice_chat_channel_id::clear(ctx).await;
-    voted_message_ids::clear(ctx).await;
 
-    let record_id = record_id::read(ctx).await;
+    let record_id = record_id::read(ctx).await.unwrap();
     let cached_agendas = agendas::read(ctx).await;
     let agendas_result = agenda_status::AgendaStatus::iter()
         .map(|state| {
             let issue_ids = {
                 let ids = cached_agendas
                     .iter()
-                    .filter(|(_, status)| **status == state)
+                    .filter(|(_, agenda)| agenda.status == state)
                     .map(|(id, _)| id)
                     .collect_vec();
                 if ids.is_empty() {
@@ -76,17 +74,17 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
         .collect_vec();
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     if let Err(err) = redmine_api.add_comments(record_id, agendas_result).await {
-        return Err(err.to_string().into());
+        return err.into();
     }
     if let Err(err) = redmine_api
         .update_issue_status(record_id, record_status::RecordStatus::Done.id())
         .await
     {
-        return Err(err.to_string().into());
+        return err.into();
     }
 
     record_id::clear(ctx).await;
-    agendas::clear(ctx).await;
+    agendas::clear_all(ctx).await;
 
     Ok(())
 }

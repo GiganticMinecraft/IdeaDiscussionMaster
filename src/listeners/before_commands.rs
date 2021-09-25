@@ -48,7 +48,7 @@ pub async fn before(ctx: &Context, message: &Message, command_name: &str) -> boo
         return true;
     }
 
-    let record_id_exists = record_id::read(ctx).await != 0;
+    let record_id_exists = record_id::read(ctx).await.is_some();
     if command_name == "start_discussion" && record_id_exists {
         let _ = message.reply(ctx, "会議はすでに始まっています。").await;
 

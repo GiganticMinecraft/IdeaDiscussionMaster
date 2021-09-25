@@ -5,10 +5,7 @@ use serenity::{
 use std::{
     collections::HashMap,
     env,
-    sync::{
-        atomic::{AtomicU16, AtomicU64},
-        Arc,
-    },
+    sync::Arc,
 };
 use tokio::sync::RwLock;
 
@@ -18,8 +15,8 @@ use idea_discussion_master::{
         start_votes::*,
     },
     globals::{
-        agendas::Agendas, current_agenda_id::CurrentAgendaId, record_id::RecordId,
-        voice_chat_channel_id::VoiceChatChannelId, voted_message_ids::VotedMessageIds,
+        agendas::Agendas, record_id::RecordId,
+        voice_chat_channel_id::VoiceChatChannelId,
     },
     listeners::{after_commands::after, before_commands::before, listener::Handler},
 };
@@ -31,7 +28,7 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません。");
+    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません");
 
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
@@ -44,16 +41,14 @@ async fn main() {
         .framework(framework)
         .event_handler(Handler)
         .await
-        .expect("Err creating client");
+        .expect("クライアントの作成中にエラーが発生しました");
 
     {
         let mut data = client.data.write().await;
 
-        data.insert::<RecordId>(Arc::new(AtomicU16::new(0)));
+        data.insert::<RecordId>(Arc::new(RwLock::new(None)));
         data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
-        data.insert::<CurrentAgendaId>(Arc::new(AtomicU16::new(0)));
-        data.insert::<VotedMessageIds>(Arc::new(RwLock::new(HashMap::default())));
-        data.insert::<VoiceChatChannelId>(Arc::new(AtomicU64::new(0)));
+        data.insert::<VoiceChatChannelId>(Arc::new(RwLock::new(None)));
     }
 
     if let Err(reason) = client.start().await {

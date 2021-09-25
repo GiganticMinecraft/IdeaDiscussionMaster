@@ -17,9 +17,8 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs}, discord_embed, discussion, redmine_api,
-        status::agenda_status,
     },
-    globals::{agendas, record_id, voice_chat_channel_id},
+    globals::{agendas::{self, Agenda}, record_id, voice_chat_channel_id},
 };
 
 #[command]
@@ -32,11 +31,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
         _ => {
-            return Err(
-                DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber)
-                    .to_string()
-                    .into(),
-            );
+            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
         }
     };
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
@@ -54,11 +49,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .filter(|num| num != &issue.id)
                     .collect_vec()
             } else {
-                return Err(DiscussionError::TicketIsNotFound.to_string().into());
+                return DiscussionError::TicketIsNotFound.into();
             }
         }
         Err(err) => {
-            return Err(err.to_string().into());
+            return err.into();
         }
     };
     let record_relations = {
@@ -79,16 +74,16 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         .get(&message.author.id)
         .and_then(|state| state.channel_id)
     {
-        voice_chat_channel_id::write(ctx, id.as_u64().to_owned()).await;
+        voice_chat_channel_id::write(ctx, Some(id)).await;
     } else {
-        return Err(DiscussionError::VcIsNotJoined.to_string().into());
+        return DiscussionError::VcIsNotJoined.into();
     }
 
-    record_id::write(ctx, record_id).await;
+    record_id::write(ctx, Some(record_id)).await;
 
-    agendas::clear(ctx).await;
+    agendas::clear_all(ctx).await;
     for relation in record_relations.iter() {
-        agendas::write(ctx, relation.to_owned(), agenda_status::AgendaStatus::New).await;
+        agendas::write(ctx, relation.to_owned(), Agenda::default()).await;
     }
 
     let _ = message

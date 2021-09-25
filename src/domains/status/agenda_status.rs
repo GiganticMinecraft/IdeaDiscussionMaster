@@ -7,9 +7,11 @@ use crate::domains::status::trait_status;
 pub enum AgendaStatus {
     #[strum(ascii_case_insensitive, props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
+    #[strum(ascii_case_insensitive, props(ja = "進行中", emoji = "▶", id = "2"))]
+    InProgress,
     #[strum(
         ascii_case_insensitive,
-        props(ja = "承認", emoji = "⭕", is_done = "true", id="17")
+        props(ja = "承認", emoji = "⭕", is_done = "true", id = "17")
     )]
     Approved,
     #[strum(
@@ -21,7 +23,9 @@ pub enum AgendaStatus {
 
 impl trait_status::Status for AgendaStatus {
     fn id(self) -> u16 {
-        self.get_str("id").and_then(|str| str.parse::<u16>().ok()).unwrap_or(1)
+        self.get_str("id")
+            .and_then(|str| str.parse::<u16>().ok())
+            .unwrap_or(1)
     }
 }
 
@@ -44,12 +48,29 @@ impl AgendaStatus {
     }
 
     pub fn from_alias(str: &str) -> Option<Self> {
-        Self::iter().find(|status| status.to_string().to_lowercase().starts_with(str))
+        Self::iter().find(|status| {
+            status
+                .to_string()
+                .to_lowercase()
+                .starts_with(&str.to_lowercase())
+        })
     }
 
     pub fn done_statuses() -> Vec<Self> {
         Self::iter()
             .filter(|status| status.get_str("is_done").is_some())
             .collect_vec()
+    }
+
+    pub fn is_done(&self) -> bool {
+        Self::done_statuses().contains(self)
+    }
+
+    pub fn is_new(&self) -> bool {
+        *self == Self::New
+    }
+
+    pub fn is_in_progress(&self) -> bool {
+        *self == Self::InProgress
     }
 }
