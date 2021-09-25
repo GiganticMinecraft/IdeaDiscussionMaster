@@ -11,7 +11,7 @@ pub enum AgendaStatus {
     InProgress,
     #[strum(
         ascii_case_insensitive,
-        props(ja = "承認", emoji = "⭕", is_done = "true", id="17")
+        props(ja = "承認", emoji = "⭕", is_done = "true", id = "17")
     )]
     Approved,
     #[strum(
@@ -23,7 +23,9 @@ pub enum AgendaStatus {
 
 impl trait_status::Status for AgendaStatus {
     fn id(self) -> u16 {
-        self.get_str("id").and_then(|str| str.parse::<u16>().ok()).unwrap_or(1)
+        self.get_str("id")
+            .and_then(|str| str.parse::<u16>().ok())
+            .unwrap_or(1)
     }
 }
 
@@ -46,7 +48,12 @@ impl AgendaStatus {
     }
 
     pub fn from_alias(str: &str) -> Option<Self> {
-        Self::iter().find(|status| status.to_string().to_lowercase().starts_with(str))
+        Self::iter().find(|status| {
+            status
+                .to_string()
+                .to_lowercase()
+                .starts_with(&str.to_lowercase())
+        })
     }
 
     pub fn done_statuses() -> Vec<Self> {
