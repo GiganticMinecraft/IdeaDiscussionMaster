@@ -1,25 +1,17 @@
-use serenity::{
-    framework::{standard::macros::group, StandardFramework},
-    prelude::Client,
-};
-use std::{
-    collections::HashMap,
-    env,
-    sync::Arc,
-};
-use tokio::sync::RwLock;
-
 use idea_discussion_master::{
     commands::{
         add_agenda::*, end_discussion::*, end_votes::*, help::*, start_discussion::*,
         start_votes::*,
     },
-    globals::{
-        agendas::Agendas, record_id::RecordId,
-        voice_chat_channel_id::VoiceChatChannelId,
-    },
-    listeners::{after_commands::after, before_commands::before, listener::Handler},
+    globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
+    listeners::{self, after_commands, before_commands},
 };
+use serenity::{
+    framework::{standard::macros::group, StandardFramework},
+    prelude::Client,
+};
+use std::{collections::HashMap, env, sync::Arc};
+use tokio::sync::RwLock;
 
 #[group]
 #[only_in(guilds)]
@@ -32,14 +24,14 @@ async fn main() {
 
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
-        .after(after)
-        .before(before)
+        .after(after_commands)
+        .before(before_commands)
         .group(&GENERAL_GROUP)
         .help(&MY_HELP);
 
     let mut client = Client::builder(&token)
         .framework(framework)
-        .event_handler(Handler)
+        .event_handler(listeners::Handler)
         .await
         .expect("クライアントの作成中にエラーが発生しました");
 
