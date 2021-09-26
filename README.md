@@ -1,4 +1,5 @@
 # IdeaDiscussionMaster
+
 ギガンティック☆整地鯖公式Discordにて、アイデア会議を円滑に進行するためのDiscord Botです。
 
 ## コマンド
@@ -34,7 +35,7 @@
 
 こちらの[docker-compose.yml][3]を使用することで容易に起動可能です。この際、[当該yml][3]と同じディレクトリに[前述の環境設定ファイル][4]が存在する必要があります。
 
-使用例: [restart_docker.sh][5]
+使用例: [restart-docker.sh][5]
 
 ## License
 
@@ -44,4 +45,4 @@
 [2]: https://github.com/Lucky3028/IdeaDiscussionMaster/pkgs/container/idea-discussion-master
 [3]: ./attachments/docker-compose.yml
 [4]: #環境設定ファイルについて（.env）
-[5]: ./attachments/restart_docker.sh
+[5]: ./attachments/restart-docker.sh
