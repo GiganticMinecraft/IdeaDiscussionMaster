@@ -56,6 +56,11 @@ pub async fn start_votes(ctx: &Context, message: &Message) -> CommandResult {
 
     let vc_id = voice_chat_channel_id::read(ctx).await.unwrap();
     loop {
+        // end_votesコマンド等で議題が次に行っている場合処理を終了させないと永遠にループする
+        if agendas::find_current_agenda_id(ctx).await != Some(current_agenda_id) {
+            break;
+        }
+
         let vc_members = discussion::fetch_voice_states(ctx, message.guild_id)
             .await
             .iter()
