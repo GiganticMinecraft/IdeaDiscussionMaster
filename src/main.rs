@@ -1,7 +1,7 @@
 use idea_discussion_master::{
     commands::{
-        add_agenda::*, end_discussion::*, end_votes::*, help::*, start_discussion::*,
-        start_votes::*,
+        add_agenda::*, end_discussion::*, end_votes::*, help::*, show_agendas::*,
+        start_discussion::*, start_votes::*,
     },
     globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
     listeners::{self, after_commands, before_commands},
@@ -15,7 +15,14 @@ use tokio::sync::RwLock;
 
 #[group]
 #[only_in(guilds)]
-#[commands(start_discussion, end_discussion, start_votes, end_votes, add_agenda)]
+#[commands(
+    start_discussion,
+    end_discussion,
+    start_votes,
+    end_votes,
+    add_agenda,
+    show_agendas
+)]
 struct General;
 
 #[tokio::main]
