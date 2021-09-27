@@ -62,8 +62,6 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
             .delete_message(&ctx.http, id)
             .await;
         agendas::update_votes_message_id(ctx, current_agenda_id, None).await;
-    } else {
-        return Ok(());
     }
 
     let _ = message
