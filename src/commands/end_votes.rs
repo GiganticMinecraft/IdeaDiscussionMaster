@@ -57,10 +57,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
     };
 
     if let Some(id) = agendas::find_votes_message_id(ctx, current_agenda_id).await {
-        let _ = message
-            .channel_id
-            .delete_message(&ctx.http, id)
-            .await;
+        let _ = message.channel_id.delete_message(&ctx.http, id).await;
         agendas::update_votes_message_id(ctx, current_agenda_id, None).await;
     }
 
