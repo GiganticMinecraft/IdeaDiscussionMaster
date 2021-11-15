@@ -9,7 +9,6 @@ jobs:
   build_image:
     runs-on: ubuntu-latest
     env:
-      DOCKER_BUILDKIT: 1
       IMAGE: ghcr.io/lucky3028/idea-discussion-master
     steps:
       - uses: actions/checkout@v2
