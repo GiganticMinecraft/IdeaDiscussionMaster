@@ -20,7 +20,8 @@ jobs:
           registry: ghcr.io
           username: lucky3028
           password: ${{ secrets.GHCR_PAT }}
-      - name: Build and push
+      - name: Build
+        if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -29,4 +30,13 @@ jobs:
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - run: docker images
+      - name: Build and Push
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile2
+          push: true
+          tags: ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
