@@ -1,5 +1,5 @@
 FROM lukemathwalker/cargo-chef:0.1.32-rust-1.56 AS chef
-WORKDIR app
+WORKDIR /app
 
 FROM chef AS planner
 COPY ./Cargo.toml .
