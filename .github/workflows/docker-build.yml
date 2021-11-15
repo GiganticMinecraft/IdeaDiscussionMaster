@@ -26,7 +26,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile2
           load: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=gha
@@ -36,7 +35,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile2
           push: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=gha
