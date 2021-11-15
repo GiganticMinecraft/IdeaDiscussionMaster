@@ -1,26 +1,22 @@
-# builder
-FROM ekidd/rust-musl-builder:stable AS builder
+FROM lukemathwalker/cargo-chef:0.1.32-rust-1.56 AS chef
+WORKDIR /app
 
-## Build Cache Dependency Library
-RUN mkdir /tmp/app
-WORKDIR /tmp/app
+FROM chef AS planner
+COPY ./Cargo.toml .
+COPY ./Cargo.lock .
+COPY ./src .
+RUN cargo chef prepare --recipe-path recipe.json
 
-## Build Dependency Library with DummyVersion.toml/lock
-COPY --chown=rust:rust DummyVersion.toml ./Cargo.toml
-COPY --chown=rust:rust DummyVersion.lock ./Cargo.lock
-RUN mkdir -p src/ && touch src/lib.rs
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
+COPY ./Cargo.toml .
+COPY ./Cargo.lock .
+COPY ./src .
 RUN cargo build --release
 
-## Build Base Library with Cargo.toml/lock
-COPY --chown=rust:rust Cargo.toml ./Cargo.toml
-COPY --chown=rust:rust Cargo.lock ./Cargo.lock
-COPY --chown=rust:rust ./src/ ./src/
-RUN cargo build --release && strip /tmp/app/target/x86_64-unknown-linux-musl/release/idea-discussion-master
-
-# executor
 FROM gcr.io/distroless/cc:latest
 USER nonroot
 WORKDIR /app
-COPY --from=builder /tmp/app/target/x86_64-unknown-linux-musl/release/idea-discussion-master .
-
+COPY --from=builder /app/target/release/idea-discussion-master .
 ENTRYPOINT ["/app/idea-discussion-master"]
