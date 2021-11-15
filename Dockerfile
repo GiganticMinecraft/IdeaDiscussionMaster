@@ -11,10 +11,8 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 RUN cargo build --release
 
-FROM debian:bullseye-slim
-RUN groupadd -g 61000 docker
-RUN useradd -g 61000 -l -m -s /bin/false -u 61000 docker
-USER docker
-WORKDIR /home/docker
-COPY --from=builder --chown=docker:docker /app/target/release/idea-discussion-master .
-ENTRYPOINT ["/home/docker/idea-discussion-master"]
+FROM gcr.io/distroless/cc:latest
+USER nonroot
+WORKDIR /app
+COPY --from=builder /app/target/release/idea-discussion-master .
+ENTRYPOINT ["/app/idea-discussion-master"]
