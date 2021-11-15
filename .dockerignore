@@ -1,0 +1,10 @@
+.github/
+.idea/
+attachments/
+
+.env.example
+.gitignore
+debug.sh
+LICENSE
+README.md
+Dockerfile
