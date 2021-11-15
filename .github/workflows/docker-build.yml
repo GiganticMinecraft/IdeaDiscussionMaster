@@ -23,7 +23,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./Dockerfile2
+          context: .
+          file: ./Dockerfile2
           load: true
           tags: ${{ env.IMAGE }}:latest
           cache-from: type=gha
