@@ -16,6 +16,7 @@ COPY ./src .
 RUN cargo build --release
 
 FROM debian:bullseye-slim
+RUN groupadd -g 61000 docker
 RUN useradd -g 61000 -l -m -s /bin/false -u 61000 docker
 USER docker
 WORKDIR /home/docker
