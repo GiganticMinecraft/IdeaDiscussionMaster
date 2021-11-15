@@ -2,9 +2,11 @@ name: Build and Publish Docker
 
 on:
   push:
-    branches: main
+    branches:
+      - main
   pull_request:
-    branches: main
+    branches:
+      - main
 
 jobs:
   build_and_publish_images:
