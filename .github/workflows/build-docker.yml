@@ -45,29 +45,29 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build_and_push_image
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v2
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: build_and_push_image
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Make .env
-        run: |
-          cd attachments
-          echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
-          echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
-          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
-          cd ../
-      - name: Install SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+  #     - name: Make .env
+  #       run: |
+  #         cd attachments
+  #         echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
+  #         echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
+  #         echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
+  #         cd ../
+  #     - name: Install SSH Key
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         chmod 700 ~/.ssh
+  #         echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+  #         chmod 600 ~/.ssh/id_rsa
 
-      - name: Rsync .env, docker-compose.yml, and restart bash
-        run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
+  #     - name: Rsync .env, docker-compose.yml, and restart bash
+  #       run: rsync -auvz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ./attachments/ ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }}:${{ secrets.SERVER_SSH_PATH }}
 
-      - name: Restart docker
-        run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} "cd ${{ secrets.SERVER_SSH_PATH }};chmod +x restart-docker.sh;./restart-docker.sh"
+  #     - name: Restart docker
+  #       run: ssh -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_SSH_USER }}@${{ secrets.SERVER_SSH_ADDRESS }} "cd ${{ secrets.SERVER_SSH_PATH }};chmod +x restart-docker.sh;./restart-docker.sh"
