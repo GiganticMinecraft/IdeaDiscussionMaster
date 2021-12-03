@@ -19,7 +19,7 @@ chrono = "0.4.19"
 regex = "1.5.4"
 itertools = "0.10.1"
 strum = { version = "0.21.0", features = ["derive"] }
-test-case = "1.2.0"
+test-case = "1.2.1"
 mockall = "0.10.2"
 cfg-if = "1.0.0"
 futures = "0.3.18"
