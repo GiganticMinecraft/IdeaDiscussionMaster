@@ -17,7 +17,7 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         redmine_api,
-        status::{agenda_status, record_status},
+        status::{AgendaStatus, RecordStatus},
     },
     globals::{agendas, record_id, voice_chat_channel_id},
     utils::discord_embed,
@@ -32,7 +32,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
 
     let record_id = record_id::read(ctx).await.unwrap();
     let cached_agendas = agendas::read(ctx).await;
-    let agendas_result = agenda_status::AgendaStatus::iter()
+    let agendas_result = AgendaStatus::iter()
         .map(|state| {
             let issue_ids = {
                 let ids = cached_agendas
@@ -78,7 +78,7 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
         return err.into();
     }
     if let Err(err) = redmine_api
-        .update_issue_status(record_id, record_status::RecordStatus::Done.id())
+        .update_issue_status(record_id, RecordStatus::Done.id())
         .await
     {
         return err.into();

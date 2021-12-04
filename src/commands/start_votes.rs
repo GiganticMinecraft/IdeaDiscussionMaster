@@ -1,6 +1,6 @@
 use crate::{
     commands::end_votes,
-    domains::status::agenda_status::AgendaStatus,
+    domains::status::AgendaStatus,
     globals::{agendas, record_id, voice_chat_channel_id},
     utils::{discord_embed, discussion},
 };

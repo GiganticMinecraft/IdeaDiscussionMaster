@@ -3,7 +3,7 @@ use regex::Regex;
 use serenity::{builder, utils::Color};
 
 use crate::{
-    domains::{redmine, redmine_api, status::agenda_status},
+    domains::{redmine, redmine_api, status::AgendaStatus},
     utils::discord_embed,
 };
 
@@ -72,13 +72,13 @@ pub fn votes_result_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
     current_agenda_id: u16,
-    status: agenda_status::AgendaStatus,
+    status: AgendaStatus,
 ) -> &mut builder::CreateEmbed {
     match status {
-        agenda_status::AgendaStatus::Approved => {
+        AgendaStatus::Approved => {
             discord_embed::default_success_embed(embed, record_id)
         }
-        agenda_status::AgendaStatus::Declined => {
+        AgendaStatus::Declined => {
             discord_embed::default_failure_embed(embed, record_id)
         }
         _ => embed,
