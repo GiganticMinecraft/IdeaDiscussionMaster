@@ -17,7 +17,7 @@ use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
         redmine_api,
-        status::{agenda_status::AgendaStatus, trait_status::Status},
+        status::agenda_status::AgendaStatus,
     },
     globals::{agendas, record_id},
     utils::{discord_embed, discussion},

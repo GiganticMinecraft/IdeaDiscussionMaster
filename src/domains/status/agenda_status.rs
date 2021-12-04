@@ -1,8 +1,6 @@
 use itertools::Itertools;
 use strum::{Display, EnumIter, EnumProperty, EnumString, IntoEnumIterator};
 
-use crate::domains::status::trait_status;
-
 #[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq)]
 pub enum AgendaStatus {
     #[strum(ascii_case_insensitive, props(ja = "新規", emoji = "🆕", id = "1"))]
@@ -19,14 +17,6 @@ pub enum AgendaStatus {
         props(ja = "却下", emoji = "❌", is_done = "true", id = "6")
     )]
     Declined,
-}
-
-impl trait_status::Status for AgendaStatus {
-    fn id(self) -> u16 {
-        self.get_str("id")
-            .and_then(|str| str.parse::<u16>().ok())
-            .unwrap_or(1)
-    }
 }
 
 #[allow(clippy::op_ref)]
@@ -72,5 +62,11 @@ impl AgendaStatus {
 
     pub fn is_in_progress(&self) -> bool {
         *self == Self::InProgress
+    }
+
+    pub fn id(&self) -> u16 {
+        self.get_str("id")
+            .and_then(|str| str.parse::<u16>().ok())
+            .unwrap_or(1)
     }
 }
