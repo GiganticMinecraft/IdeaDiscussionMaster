@@ -15,10 +15,11 @@ cfg_if::cfg_if! {
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
-        discord_embed, discussion, redmine_api,
-        status::agenda_status::AgendaStatus,
+        redmine_api,
+        status::AgendaStatus,
     },
     globals::{agendas, record_id},
+    utils::{discord_embed, discussion},
 };
 
 #[command]

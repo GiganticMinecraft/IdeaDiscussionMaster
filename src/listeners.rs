@@ -1,11 +1,11 @@
+use crate::globals::record_id;
 use serenity::{
     async_trait,
     framework::standard::{macros::hook, CommandResult},
-    model::{channel::Message, id::RoleId, gateway::Ready},
+    model::{channel::Message, gateway::Ready, id::RoleId},
     prelude::{Context, EventHandler},
 };
 use std::env;
-use crate::globals::record_id;
 
 pub struct Handler;
 
@@ -18,12 +18,6 @@ impl EventHandler for Handler {
 
 #[hook]
 pub async fn before_commands(ctx: &Context, message: &Message, command_name: &str) -> bool {
-    println!(
-        "Running command '{}' invoked by '{}'",
-        command_name,
-        message.author.tag()
-    );
-
     if message.author.bot {
         return false;
     }

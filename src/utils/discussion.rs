@@ -7,7 +7,7 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-use crate::{globals::agendas, domains::status::agenda_status::AgendaStatus};
+use crate::{globals::agendas, domains::status::AgendaStatus};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let cached_agendas = agendas::read(ctx).await;

@@ -1,7 +1,8 @@
 use crate::{
     commands::end_votes,
-    domains::{discord_embed, discussion, status::agenda_status::AgendaStatus},
+    domains::status::AgendaStatus,
     globals::{agendas, record_id, voice_chat_channel_id},
+    utils::{discord_embed, discussion},
 };
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult, Delimiter},

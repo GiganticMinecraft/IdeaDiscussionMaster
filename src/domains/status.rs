@@ -1,3 +1,4 @@
-pub mod agenda_status;
-pub mod record_status;
-pub mod trait_status;
+mod agenda_status;
+mod record_status;
+pub use agenda_status::AgendaStatus;
+pub use record_status::RecordStatus;

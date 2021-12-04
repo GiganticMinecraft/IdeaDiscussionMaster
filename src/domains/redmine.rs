@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use itertools::Itertools;
 
-use crate::domains::status::agenda_status;
+use crate::domains::status::AgendaStatus;
 
 #[derive(Debug, Deserialize, Default, PartialEq)]
 pub struct RedmineProject {
@@ -41,7 +41,7 @@ impl RedmineIssue {
     pub fn is_idea_ticket(&self) -> bool {
         self.project.name == "アイデア提案用プロジェクト"
             && self.tracker.name == "アイデア提案"
-            && !agenda_status::AgendaStatus::done_statuses()
+            && !AgendaStatus::done_statuses()
                 .iter()
                 .map(|status| status.ja())
                 .contains(&self.status.name)
@@ -50,7 +50,7 @@ impl RedmineIssue {
     pub fn is_idea_discussion_record(&self) -> bool {
         self.project.name == "アイデア会議議事録"
             && self.tracker.name == "アイデア会議"
-            && self.status.name == agenda_status::AgendaStatus::New.ja()
+            && self.status.name == AgendaStatus::New.ja()
     }
 }
 
