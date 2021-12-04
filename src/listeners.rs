@@ -18,12 +18,6 @@ impl EventHandler for Handler {
 
 #[hook]
 pub async fn before_commands(ctx: &Context, message: &Message, command_name: &str) -> bool {
-    println!(
-        "Running command '{}' invoked by '{}'",
-        command_name,
-        message.author.tag()
-    );
-
     if message.author.bot {
         return false;
     }
