@@ -1,5 +1,5 @@
 use mockall::automock;
-use reqwest::{header, Client};
+use reqwest::{header, Client, StatusCode};
 use serde_json::json;
 use std::{collections::HashMap, env};
 
@@ -99,7 +99,7 @@ impl RedmineClient {
             .send()
             .await?;
 
-        Ok(response)
+        check_reqwest_status(response.status()).map(|_| response)
     }
 }
 
@@ -115,7 +115,7 @@ async fn fetch(
         .send()
         .await?;
 
-    Ok(response)
+    check_reqwest_status(response.status()).map(|_| response)
 }
 
 async fn update_issue(
@@ -137,5 +137,17 @@ async fn update_issue(
         .send()
         .await?;
 
-    Ok(response)
+    check_reqwest_status(response.status()).map(|_| response)
+}
+
+fn check_reqwest_status(status: StatusCode) -> Result<(), custom_error::DiscussionError> {
+    match status {
+        StatusCode::OK => Ok(()),
+        StatusCode::NOT_FOUND | StatusCode::FORBIDDEN => {
+            Err(custom_error::DiscussionError::TicketIsNotFound)
+        }
+        _ => Err(custom_error::DiscussionError::UnknownError(
+            custom_error::Error::Reqwest(status.as_str().to_string()),
+        )),
+    }
 }
