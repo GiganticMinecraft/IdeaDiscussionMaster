@@ -1,11 +1,11 @@
+use crate::globals::record_id;
 use serenity::{
     async_trait,
     framework::standard::{macros::hook, CommandResult},
-    model::{channel::Message, id::RoleId, gateway::Ready},
+    model::{channel::Message, gateway::Ready, id::RoleId},
     prelude::{Context, EventHandler},
 };
 use std::env;
-use crate::globals::record_id;
 
 pub struct Handler;
 
