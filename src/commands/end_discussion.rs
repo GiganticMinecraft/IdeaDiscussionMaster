@@ -16,10 +16,11 @@ cfg_if::cfg_if! {
 
 use crate::{
     domains::{
-        discord_embed, redmine_api,
+        redmine_api,
         status::{agenda_status, record_status, trait_status::Status},
     },
     globals::{agendas, record_id, voice_chat_channel_id},
+    utils::discord_embed,
 };
 
 #[command]

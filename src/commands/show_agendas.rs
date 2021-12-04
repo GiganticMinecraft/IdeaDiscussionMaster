@@ -1,6 +1,6 @@
 use crate::{
-    domains::discord_embed,
     globals::{agendas, record_id},
+    utils::discord_embed,
 };
 use itertools::Itertools;
 use serenity::{

@@ -2,7 +2,10 @@ use chrono::Utc;
 use regex::Regex;
 use serenity::{builder, utils::Color};
 
-use crate::domains::{discord_embed, redmine, redmine_api, status::agenda_status};
+use crate::{
+    domains::{redmine, redmine_api, status::agenda_status},
+    utils::discord_embed,
+};
 
 pub fn default_embed(
     embed: &mut builder::CreateEmbed,
