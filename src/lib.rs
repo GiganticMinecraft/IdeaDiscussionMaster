@@ -12,9 +12,7 @@ mod test {
     use test_case::test_case;
 
     use crate::domains::{
-        redmine, redmine_api,
-        redmine_client::MockRedmineClient,
-        status::AgendaStatus,
+        redmine, redmine_api, redmine_client::MockRedmineClient, status::AgendaStatus,
     };
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
