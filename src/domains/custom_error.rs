@@ -1,6 +1,6 @@
+use serenity::framework::standard::CommandResult;
 use std::fmt;
 use strum::EnumMessage;
-use serenity::framework::standard::CommandResult;
 
 #[derive(Debug)]
 pub enum Error {

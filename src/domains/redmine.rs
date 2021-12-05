@@ -1,5 +1,5 @@
-use serde::Deserialize;
 use itertools::Itertools;
+use serde::Deserialize;
 
 use crate::domains::status::AgendaStatus;
 

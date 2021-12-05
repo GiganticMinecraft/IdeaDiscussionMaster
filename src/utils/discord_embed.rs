@@ -75,12 +75,8 @@ pub fn votes_result_embed(
     status: AgendaStatus,
 ) -> &mut builder::CreateEmbed {
     match status {
-        AgendaStatus::Approved => {
-            discord_embed::default_success_embed(embed, record_id)
-        }
-        AgendaStatus::Declined => {
-            discord_embed::default_failure_embed(embed, record_id)
-        }
+        AgendaStatus::Approved => discord_embed::default_success_embed(embed, record_id),
+        AgendaStatus::Declined => discord_embed::default_failure_embed(embed, record_id),
         _ => embed,
     }
     .title(format!(

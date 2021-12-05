@@ -1,4 +1,7 @@
-use serenity::{prelude::{Context, TypeMapKey}, model::id::ChannelId};
+use serenity::{
+    model::id::ChannelId,
+    prelude::{Context, TypeMapKey},
+};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
