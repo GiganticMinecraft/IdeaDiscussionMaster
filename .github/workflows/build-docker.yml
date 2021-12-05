@@ -17,7 +17,7 @@ jobs:
       IMAGE: ghcr.io/lucky3028/idea-discussion-master
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt install -qq -y musl-tools --no-install-recommends
+      - run: sudo apt update -qq && sudo apt install -qq -y musl-tools libssl-dev --no-install-recommends
       - run: rustup target add x86_64-unknown-linux-musl
       - run: cargo build --release --target=x86_64-unknown-linux-musl
       # - name: Setup Docker Buildx
