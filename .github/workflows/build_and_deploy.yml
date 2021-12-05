@@ -88,6 +88,8 @@ jobs:
               IdentityFile ~/.ssh/id_rsa
               Port ${{ secrets.SERVER_SSH_PORT }}
       - name: Rsync files
-        run: rsync -auvz --delete ./attachments/ vps:${{ secrets.SERVER_SSH_PATH }}
+        run: rsync -auvz --delete ./attachments/ vps:~/idea/
+      - name: Move files
+        run: ssh vps "echo ${{ secrets.USER_PASS }} | sudo -S mv ~/idea/ ${{ secrets.SERVER_SSH_PATH }}"
       # - name: Restart bot
       #   run: ssh vps "cd ${{ secrets.SERVER_SSH_PATH }};echo ${{ secrets.USER_PASS }} | sudo -S mv run-idea.service /etc/systemd/system/;sudo systemctl restart run-idea.service"
