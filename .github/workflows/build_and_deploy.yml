@@ -1,0 +1,93 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+      - "renovate.json"
+      - ".env.example"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v1
+      - name: Build binary
+        run: cargo build --release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: ./target/release/idea-discussion-master
+
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v1
+      - name: Run Clippy
+        uses: actions-rs/clippy-check@v1.0.7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all-features
+      - name: Run formatter
+        run: cargo fmt --all -- --check
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v1
+      - name: Run tests
+        run: cargo test --release
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - lint
+      - test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: my-artifact
+          path: ./attachments/
+      - name: Make .env
+        working-directory: ./attachments
+        run: |
+          echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
+          echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
+          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
+      - run: sed -i -e "s#--PATH--#${{ secrets.SERVER_SSH_PATH }}#" run-idea.service
+        working-directory: ./attachments
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          config: |
+            Host vps
+              HostName ${{ secrets.SERVER_SSH_ADDRESS }}
+              User ${{ secrets.SERVER_SSH_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              Port ${{ secrets.SERVER_SSH_PORT }}
+      - name: Rsync files
+        run: rsync -auvz --delete ./attachments/ vps:${{ secrets.SERVER_SSH_PATH }}
+      # - name: Restart bot
+      #   run: ssh vps "cd ${{ secrets.SERVER_SSH_PATH }};echo ${{ secrets.USER_PASS }} | sudo -S mv run-idea.service /etc/systemd/system/;sudo systemctl restart run-idea.service"

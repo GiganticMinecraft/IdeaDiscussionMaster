@@ -1,0 +1,11 @@
+[Unit]
+Description=アイデア会議進行用のBot
+
+[Service]
+Type=oneshot
+ExecStart=--PATH--/start-bot.sh
+ExecStop=/bin/kill -WINCH ${MAINPID}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
