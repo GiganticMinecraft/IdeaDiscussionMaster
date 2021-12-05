@@ -1,8 +1,0 @@
-version: "3"
-services:
-  bot:
-    image: ghcr.io/lucky3028/idea-discussion-master:latest
-    container_name: idea-discussion-master
-    restart: always
-    env_file:
-      - .env
