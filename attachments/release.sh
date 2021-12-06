@@ -9,6 +9,8 @@ fi
 sudo systemctl stop run-idea
 sudo systemctl disable run-idea
 
+find "$1" -type f -print0 | xargs -0 sudo rm -rf
+
 find . -type f -print0 | xargs -0 sudo chown root:root
 sudo mv -f run-idea.service /etc/systemd/system
 find . -type f -print0 | xargs -0 sudo chmod +x
