@@ -71,12 +71,12 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         .await;
 
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    if let Err(err) = redmine_api
-        .update_issue_status(current_agenda_id, status.id())
-        .await
-    {
-        return err.into();
-    }
+    // if let Err(err) = redmine_api
+    //     .update_issue_status(current_agenda_id, status.id())
+    //     .await
+    // {
+    //     return err.into();
+    // }
 
     agendas::update_status(ctx, current_agenda_id, status).await;
 
