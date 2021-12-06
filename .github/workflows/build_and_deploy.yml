@@ -75,20 +75,20 @@ jobs:
           echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
           echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
           echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
-      - run: sed -i -e "s#--PATH--#${{ secrets.SERVER_SSH_PATH }}#g" run-idea.service
+      - run: sed -i -e "s#--PATH--#${{ secrets.SSH_PATH }}#g" run-idea.service
         working-directory: ./attachments
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
           config: |
             Host vps
-              HostName ${{ secrets.SERVER_SSH_ADDRESS }}
-              User ${{ secrets.SERVER_SSH_USER }}
+              HostName ${{ secrets.SSH_ADDRESS }}
+              User ${{ secrets.SSH_USER }}
               IdentityFile ~/.ssh/id_rsa
-              Port ${{ secrets.SERVER_SSH_PORT }}
+              Port ${{ secrets.SSH_PORT }}
       - name: Rsync files
         run: rsync -auvz --delete ./attachments/ vps:~/idea/
       - name: Launch
-        run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh ${{ secrets.SERVER_SSH_PATH }}"
+        run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh ${{ secrets.SSH_PATH }}"
