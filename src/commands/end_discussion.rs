@@ -1,5 +1,6 @@
 use crate::{
     domains::{
+        redmine,
         status::{AgendaStatus, RecordStatus},
         RedmineClient,
     },

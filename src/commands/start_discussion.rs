@@ -1,7 +1,7 @@
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
-        RedmineClient
+        redmine, RedmineClient,
     },
     globals::{
         agendas::{self, Agenda},
@@ -94,7 +94,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .title("会議を開始しました")
                     .field(
                         "議事録チケット",
-                        format!("{}/issues/{}", redmine_client::REDMINE_URL, record_id),
+                        format!("{}/issues/{}", redmine::REDMINE_URL, record_id),
                         false,
                     )
             })
