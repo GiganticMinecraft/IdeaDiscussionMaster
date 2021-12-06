@@ -2,7 +2,6 @@ use mockall::automock;
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
 use std::{collections::HashMap, env};
-
 use crate::domains::{custom_error, redmine, redmine_api};
 
 pub struct RedmineClient {
