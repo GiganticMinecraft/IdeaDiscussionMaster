@@ -6,6 +6,7 @@ Type=oneshot
 ExecStart=--PATH--/start-bot.sh
 ExecStop=/bin/kill -WINCH ${MAINPID}
 Restart=always
+WorkingDirectory=--PATH--
 
 [Install]
 WantedBy=multi-user.target
