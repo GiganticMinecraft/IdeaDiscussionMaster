@@ -147,7 +147,11 @@ fn check_reqwest_status(status: StatusCode) -> Result<(), custom_error::Discussi
             Err(custom_error::DiscussionError::TicketIsNotFound)
         }
         _ => Err(custom_error::DiscussionError::UnknownError(
-            custom_error::Error::Reqwest(format!("{}: {}", status.as_str(), status.canonical_reason().unwrap_or_default())),
+            custom_error::Error::Reqwest(format!(
+                "{}: {}",
+                status.as_str(),
+                status.canonical_reason().unwrap_or_default()
+            )),
         )),
     }
 }
