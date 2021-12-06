@@ -4,6 +4,7 @@ use serde_json::json;
 use std::{collections::HashMap, env};
 use crate::domains::{custom_error, redmine, redmine_api};
 
+#[warn(dead_code)]
 pub struct RedmineClient {
     reqwest_client: Client,
     api_key: String,
@@ -19,6 +20,7 @@ impl RedmineClient {
         }
     }
 
+    #[warn(dead_code)]
     pub async fn fetch_issue(
         &self,
         issue_id: u16,
@@ -30,6 +32,7 @@ impl RedmineClient {
             .issue)
     }
 
+    #[warn(dead_code)]
     pub async fn fetch_issue_with_relations(
         &self,
         issue_id: u16,
@@ -44,6 +47,7 @@ impl RedmineClient {
             .issue)
     }
 
+    #[warn(dead_code)]
     pub async fn update_issue_status(
         &self,
         issue_id: u16,
@@ -58,6 +62,7 @@ impl RedmineClient {
         update_issue(self, issue_id, json_value).await
     }
 
+    #[warn(dead_code)]
     pub async fn add_comments(
         &self,
         issue_id: u16,
@@ -73,6 +78,7 @@ impl RedmineClient {
         update_issue(self, issue_id, json_value).await
     }
 
+    #[warn(dead_code)]
     pub async fn add_relation(
         &self,
         record_id: u16,
