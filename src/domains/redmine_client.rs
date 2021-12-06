@@ -143,11 +143,15 @@ async fn update_issue(
 fn check_reqwest_status(status: StatusCode) -> Result<(), custom_error::DiscussionError> {
     match status {
         StatusCode::OK => Ok(()),
-        StatusCode::NOT_FOUND | StatusCode::FORBIDDEN => {
+        StatusCode::NOT_FOUND | StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
             Err(custom_error::DiscussionError::TicketIsNotFound)
         }
         _ => Err(custom_error::DiscussionError::UnknownError(
-            custom_error::Error::Reqwest(status.as_str().to_string()),
+            custom_error::Error::Reqwest(format!(
+                "{}: {}",
+                status.as_str(),
+                status.canonical_reason().unwrap_or_default()
+            )),
         )),
     }
 }
