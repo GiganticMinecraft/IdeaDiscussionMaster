@@ -84,6 +84,9 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
     //     return err.into();
     // }
 
+    println!("Discussion finished: #{}", record_id);
+    println!("Result:\n {}", agendas_result.iter().join(", "));
+
     record_id::clear(ctx).await;
     agendas::clear_all(ctx).await;
 

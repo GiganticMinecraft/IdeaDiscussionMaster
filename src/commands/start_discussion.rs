@@ -89,7 +89,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     for relation in record_relations.iter() {
         agendas::write(ctx, relation.to_owned(), Agenda::default()).await;
     }
-    println!("records: {}", record_relations.iter().join(", "));
+    println!(
+        "Agendas({}): {}",
+        record_relations.len(),
+        record_relations.iter().join(", ")
+    );
 
     let _ = message
         .channel_id
@@ -106,6 +110,13 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         })
         .await;
 
+    println!("Discussion started: #{}", record_id);
+    println!(
+        "Agendas({}): {}",
+        record_relations.len(),
+        record_relations.iter().join(", ")
+    );
+
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
     let next_redmine_issue = redmine_api
         .fetch_issue(next_agenda_id.unwrap_or_default())
@@ -119,6 +130,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             })
         })
         .await;
+    println!("Next agenda: #{}", next_agenda_id.unwrap_or_default());
 
     Ok(())
 }

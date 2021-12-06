@@ -70,6 +70,8 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         })
         .await;
 
+    println!("Vote finished: #{} {}", current_agenda_id, status);
+
     let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
     // if let Err(err) = redmine_api
     //     .update_issue_status(current_agenda_id, status.id())
@@ -94,6 +96,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
             })
         })
         .await;
+    println!("Next agenda: #{}", next_agenda_id.unwrap_or_default());
 
     Ok(())
 }
