@@ -143,7 +143,7 @@ async fn update_issue(
 fn check_reqwest_status(status: StatusCode) -> Result<(), custom_error::DiscussionError> {
     match status {
         StatusCode::OK => Ok(()),
-        StatusCode::NOT_FOUND | StatusCode::FORBIDDEN => {
+        StatusCode::NOT_FOUND | StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
             Err(custom_error::DiscussionError::TicketIsNotFound)
         }
         _ => Err(custom_error::DiscussionError::UnknownError(
