@@ -1,12 +1,4 @@
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
-use crate::domains::{custom_error, redmine};
+use crate::domains::{custom_error, redmine, RedmineClient};
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 

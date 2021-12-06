@@ -3,20 +3,12 @@ use serenity::{
     model::channel::Message,
     prelude::Context,
 };
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
         redmine_api,
         status::AgendaStatus,
+        RedmineClient
     },
     globals::{agendas, record_id},
     utils::{discord_embed, discussion},

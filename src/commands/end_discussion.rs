@@ -1,3 +1,12 @@
+use crate::{
+    domains::{
+        redmine_api,
+        status::{AgendaStatus, RecordStatus},
+        RedmineClient,
+    },
+    globals::{agendas, record_id, voice_chat_channel_id},
+    utils::discord_embed,
+};
 use itertools::Itertools;
 use serenity::{
     framework::standard::{macros::command, CommandResult},
@@ -5,23 +14,6 @@ use serenity::{
     prelude::Context,
 };
 use strum::IntoEnumIterator;
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
-use crate::{
-    domains::{
-        redmine_api,
-        status::{AgendaStatus, RecordStatus},
-    },
-    globals::{agendas, record_id, voice_chat_channel_id},
-    utils::discord_embed,
-};
 
 #[command]
 #[aliases("eid", "edi")]

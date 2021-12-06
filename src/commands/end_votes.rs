@@ -1,27 +1,19 @@
+use crate::{
+    domains::{
+        custom_error::{DiscussionError, SpecifiedArgs},
+        redmine_api,
+        status::AgendaStatus,
+        RedmineClient,
+    },
+    globals::{agendas, record_id},
+    utils::{discord_embed, discussion},
+};
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::channel::Message,
     prelude::Context,
 };
 use std::str::FromStr;
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
-use crate::{
-    domains::{
-        custom_error::{DiscussionError, SpecifiedArgs},
-        redmine_api,
-        status::AgendaStatus,
-    },
-    globals::{agendas, record_id},
-    utils::{discord_embed, discussion},
-};
 
 #[command]
 #[aliases("evo")]

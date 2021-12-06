@@ -12,7 +12,7 @@ mod test {
     use test_case::test_case;
 
     use crate::domains::{
-        redmine, redmine_api, redmine_client::MockRedmineClient, status::AgendaStatus,
+        redmine, redmine_api, RedmineClient, status::AgendaStatus,
     };
 
     #[test_case("new" => AgendaStatus::New; "newから(insensitive)")]
@@ -83,7 +83,7 @@ mod test {
 
     #[tokio::test]
     async fn test_fetch_redmine_issue() {
-        let mut client = MockRedmineClient::default();
+        let mut client = RedmineClient::default();
         client
             .expect_fetch_issue()
             .returning(|_| Ok(redmine::RedmineIssueResult::default().issue));

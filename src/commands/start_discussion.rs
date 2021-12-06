@@ -1,29 +1,21 @@
-use futures::stream::{self, StreamExt};
-use itertools::Itertools;
-use serenity::{
-    framework::standard::{macros::command, Args, CommandResult},
-    model::channel::Message,
-    prelude::Context,
-};
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
         redmine_api,
+        RedmineClient
     },
     globals::{
         agendas::{self, Agenda},
         record_id, voice_chat_channel_id,
     },
     utils::{discord_embed, discussion},
+};
+use futures::stream::{self, StreamExt};
+use itertools::Itertools;
+use serenity::{
+    framework::standard::{macros::command, Args, CommandResult},
+    model::channel::Message,
+    prelude::Context,
 };
 
 #[command]
