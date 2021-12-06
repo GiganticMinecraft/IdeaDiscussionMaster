@@ -25,7 +25,6 @@ use crate::{
 #[command]
 #[aliases("aag", "ada")]
 #[usage = "[議題のチケット番号]"]
-#[min_args(1)]
 #[description = "議題を追加するコマンドです。\n議題の提示までを行います。"]
 async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。

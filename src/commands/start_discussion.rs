@@ -29,7 +29,6 @@ use crate::{
 #[command]
 #[aliases("sid", "sdi")]
 #[usage = "[議事録のチケット番号]"]
-#[min_args(1)]
 #[description = "会議を開始するコマンドです。\n議題の提示までを行います。"]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
@@ -90,6 +89,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     for relation in record_relations.iter() {
         agendas::write(ctx, relation.to_owned(), Agenda::default()).await;
     }
+    println!("records: {}", record_relations.iter().join(", "));
 
     let _ = message
         .channel_id
