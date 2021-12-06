@@ -1,7 +1,6 @@
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
-        redmine_api,
         status::AgendaStatus,
         RedmineClient,
     },
@@ -64,8 +63,8 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
 
     println!("Vote finished: #{} {}", current_agenda_id, status);
 
-    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    // if let Err(err) = redmine_api
+    let redmine_client = RedmineClient::new();
+    // if let Err(err) = redmine_client
     //     .update_issue_status(current_agenda_id, status.id())
     //     .await
     // {
@@ -75,7 +74,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
     agendas::update_status(ctx, current_agenda_id, status).await;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-    let next_redmine_issue = redmine_api
+    let next_redmine_issue = redmine_client
         .fetch_issue(next_agenda_id.unwrap_or_default())
         .await
         .ok();

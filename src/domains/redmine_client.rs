@@ -1,8 +1,9 @@
-use mockall::automock;
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
 use std::{collections::HashMap, env};
-use crate::domains::{custom_error, redmine, redmine_api};
+use crate::domains::{custom_error, redmine};
+
+pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
 #[warn(dead_code)]
 pub struct RedmineClient {
@@ -10,7 +11,6 @@ pub struct RedmineClient {
     api_key: String,
 }
 
-#[automock]
 impl RedmineClient {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
@@ -86,7 +86,7 @@ impl RedmineClient {
     ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let url = format!(
             "{}/issues/{}/relations.json?key={}",
-            redmine_api::REDMINE_URL,
+            REDMINE_URL,
             record_id,
             self.api_key
         );
@@ -113,7 +113,7 @@ async fn fetch(
     issue_id: u16,
     query: Option<HashMap<&str, &str>>,
 ) -> Result<reqwest::Response, custom_error::DiscussionError> {
-    let url = format!("{}/issues/{}.json", redmine_api::REDMINE_URL, issue_id);
+    let url = format!("{}/issues/{}.json", REDMINE_URL, issue_id);
     let response = client
         .get(url)
         .query(&query.unwrap_or_default())
@@ -130,7 +130,7 @@ async fn update_issue(
 ) -> Result<reqwest::Response, custom_error::DiscussionError> {
     let url = format!(
         "{}/issues/{}.json?key={}",
-        redmine_api::REDMINE_URL,
+        REDMINE_URL,
         issue_id,
         client.api_key
     );

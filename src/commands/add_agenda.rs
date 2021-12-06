@@ -6,7 +6,6 @@ use serenity::{
 use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
-        redmine_api,
         status::AgendaStatus,
         RedmineClient
     },
@@ -26,8 +25,8 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
             return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
         }
     };
-    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    let issue_id = match redmine_api.fetch_issue(issue_id).await {
+    let redmine_client = RedmineClient::new();
+    let issue_id = match redmine_client.fetch_issue(issue_id).await {
         Ok(issue) => {
             if issue.is_idea_ticket() {
                 issue.id
@@ -43,7 +42,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     agendas::update_status(ctx, issue_id, AgendaStatus::New).await;
 
     let record_id = record_id::read(ctx).await.unwrap();
-    if let Err(err) = redmine_api.add_relation(record_id, issue_id).await {
+    if let Err(err) = redmine_client.add_relation(record_id, issue_id).await {
         return err.into();
     };
 
@@ -59,7 +58,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
         .await?;
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-    let next_redmine_issue = redmine_api
+    let next_redmine_issue = redmine_client
         .fetch_issue(next_agenda_id.unwrap_or_default())
         .await
         .ok();

@@ -1,7 +1,8 @@
 use itertools::Itertools;
 use serde::Deserialize;
-
 use crate::domains::status::AgendaStatus;
+
+pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
 #[derive(Debug, Deserialize, Default, PartialEq)]
 pub struct RedmineProject {
