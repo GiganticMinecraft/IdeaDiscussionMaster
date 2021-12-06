@@ -12,7 +12,7 @@ sudo systemctl disable run-idea
 find . -type f -print0 | xargs -0 sudo chown root:root
 sudo mv -f run-idea.service /etc/systemd/system
 find . -type f -print0 | xargs -0 sudo chmod +x
-find . -type f -print0 | xargs -0 --replace=res_files sudo mv -f res_files $1
+find . -type f -print0 | xargs -0 --replace=res_files sudo mv -f res_files "$1"
 
 sudo systemctl enable run-idea
 sudo systemctl restart run-idea
