@@ -10,7 +10,7 @@ sudo systemctl stop run-idea
 sudo systemctl disable run-idea
 
 find . -type f -print0 | xargs -0 sudo chown root:root
-sudo mv run-idea.service /etc/systemd/system
+sudo mv -f run-idea.service /etc/systemd/system
 find . -type f -print0 | xargs -0 sudo chmod +x
 find . -type f -print0 | xargs -0 --replace=res_files sudo mv -f res_files $1
 
