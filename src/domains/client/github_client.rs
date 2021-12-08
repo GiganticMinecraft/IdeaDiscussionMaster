@@ -26,7 +26,7 @@ impl GitHubClient {
     ) -> Result<reqwest::Response, reqwest::Error> {
         let content = json!({
             "title": title,
-            "content": content,
+            "body": content,
             "labels": labels
         });
 
