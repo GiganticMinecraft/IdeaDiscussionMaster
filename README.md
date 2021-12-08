@@ -32,14 +32,6 @@
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
 |GITHUB_KEY|GitHubのPersonalAccessToken。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
 
-## Docker
-
-イメージは[こちらのページ][2]の`latest`タグのものを使用してください。
-
-こちらの[docker-compose.yml][3]を使用することで容易に起動可能です。この際、[当該yml][3]と同じディレクトリに[前述の環境設定ファイル][4]が存在する必要があります。
-
-使用例: [restart-docker.sh][5]
-
 ## License
 
 [MIT License](./LICENSE)
