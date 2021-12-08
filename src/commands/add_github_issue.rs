@@ -1,6 +1,8 @@
 use crate::domains::{
     custom_error::{DiscussionError, SpecifiedArgs},
-    redmine, GitHubClient, RedmineClient,
+    redmine,
+    status::AgendaStatus,
+    GitHubClient, RedmineClient,
 };
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
@@ -50,6 +52,11 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
     let agendas = agendas
         .iter()
         .filter_map(|res| res.as_ref().ok())
+        .filter(|agenda| {
+            AgendaStatus::from_ja(&agenda.status.name)
+                .map(|status| status == AgendaStatus::Approved)
+                .unwrap_or(false)
+        })
         .collect_vec();
 
     let record_url = format!("{}/issues/{}", redmine::REDMINE_URL, record.id);
