@@ -1,4 +1,4 @@
-name: reviewdog
+name: lint for GHActions
 on:
   push:
     paths:
