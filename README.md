@@ -13,6 +13,7 @@
 |end_discussion|会議を終了するコマンド。会議結果を表示し、議事録チケットに結果を記載して、チケットと会議を終了する。|eid, edi|`\eid`|
 |show_agendas|すべての議題の進行状況を表示する。|sha|`\sha`|
 |create_next_record|次回の議事録チケットを作成する|cnr|`\cnr`|
+|ghissue|SeichiAssistにIssueを追加するコマンド。||`\ghissue [チケット番号]`, `\ghissue 12345`|
 
 ### 議題ステータス
 
