@@ -4,14 +4,14 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
     paths-ignore:
       - "**.md"
       - "renovate.json"
       - ".env.example"
       - ".github/workflows/renovate.yml"
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
