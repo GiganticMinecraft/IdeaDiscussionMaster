@@ -40,8 +40,11 @@ pub struct RedmineIssue {
 
 impl RedmineIssue {
     pub fn is_idea_ticket(&self) -> bool {
-        self.project.name == "アイデア提案用プロジェクト"
-            && self.tracker.name == "アイデア提案"
+        self.project.name == "アイデア提案用プロジェクト" && self.tracker.name == "アイデア提案"
+    }
+
+    pub fn is_undone_idea_ticket(&self) -> bool {
+        self.is_idea_ticket()
             && !AgendaStatus::done_statuses()
                 .iter()
                 .map(|status| status.ja())
