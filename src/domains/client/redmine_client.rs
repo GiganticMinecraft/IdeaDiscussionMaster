@@ -1,7 +1,7 @@
+use crate::domains::{custom_error, redmine};
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
 use std::{collections::HashMap, env};
-use crate::domains::{custom_error, redmine};
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
@@ -86,9 +86,7 @@ impl RedmineClient {
     ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let url = format!(
             "{}/issues/{}/relations.json?key={}",
-            REDMINE_URL,
-            record_id,
-            self.api_key
+            REDMINE_URL, record_id, self.api_key
         );
         let json_value = json!({
           "relation": {
@@ -130,9 +128,7 @@ async fn update_issue(
 ) -> Result<reqwest::Response, custom_error::DiscussionError> {
     let url = format!(
         "{}/issues/{}.json?key={}",
-        REDMINE_URL,
-        issue_id,
-        client.api_key
+        REDMINE_URL, issue_id, client.api_key
     );
     let response = client
         .reqwest_client

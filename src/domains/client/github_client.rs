@@ -1,6 +1,6 @@
 use reqwest::{header, Client};
-use std::env;
 use serde_json::json;
+use std::env;
 
 const GITHUB_URL: &str = "https://api.github.com/repos/GiganticMinecraft/SeichiAssist/issues";
 
@@ -18,7 +18,12 @@ impl GitHubClient {
         }
     }
 
-    pub async fn create_issue(&self, title: &str, content: &str, labels: Vec<&str>) -> Result<reqwest::Response, reqwest::Error> {
+    pub async fn create_issue(
+        &self,
+        title: &str,
+        content: &str,
+        labels: Vec<&str>,
+    ) -> Result<reqwest::Response, reqwest::Error> {
         let content = json!({
             "title": title,
             "content": content,

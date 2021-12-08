@@ -1,16 +1,16 @@
+use crate::{
+    domains::{
+        client::RedmineClient,
+        custom_error::{DiscussionError, SpecifiedArgs},
+        status::AgendaStatus,
+    },
+    globals::{agendas, record_id},
+    utils::{discord_embed, discussion},
+};
 use serenity::{
     framework::standard::{macros::command, Args, CommandResult},
     model::channel::Message,
     prelude::Context,
-};
-use crate::{
-    domains::{
-        custom_error::{DiscussionError, SpecifiedArgs},
-        status::AgendaStatus,
-        client::RedmineClient
-    },
-    globals::{agendas, record_id},
-    utils::{discord_embed, discussion},
 };
 
 #[command]
