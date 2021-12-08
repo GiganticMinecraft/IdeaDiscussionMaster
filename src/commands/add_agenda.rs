@@ -28,7 +28,7 @@ async fn add_agenda(ctx: &Context, message: &Message, mut args: Args) -> Command
     let redmine_client = RedmineClient::new();
     let issue_id = match redmine_client.fetch_issue(issue_id).await {
         Ok(issue) => {
-            if issue.is_idea_ticket() {
+            if issue.is_undone_idea_ticket() {
                 issue.id
             } else {
                 return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();

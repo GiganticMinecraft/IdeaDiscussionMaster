@@ -35,14 +35,8 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     let redmine_client = RedmineClient::new();
     let record_relations = match redmine_client.fetch_issue_with_relations(record_id).await {
         Ok(issue) => {
-            if issue.is_idea_discussion_record() {
-                issue
-                    .relations
-                    .iter()
-                    .filter(|rel| rel.relation_type == "relates")
-                    .flat_map(|rel| vec![rel.issue_id, rel.issue_to_id])
-                    .filter(|num| num != &issue.id)
-                    .collect_vec()
+            if issue.is_undone_idea_discussion_record() {
+                issue.relations()
             } else {
                 return DiscussionError::TicketIsNotFound.into();
             }
@@ -59,7 +53,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
         issues
             .iter()
             .filter_map(|res| res.as_ref().ok())
-            .filter(|issue| issue.is_idea_ticket())
+            .filter(|issue| issue.is_undone_idea_ticket())
             .map(|issue| issue.id)
             .collect_vec()
     };
