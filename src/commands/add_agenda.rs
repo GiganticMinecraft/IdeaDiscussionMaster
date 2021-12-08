@@ -7,7 +7,7 @@ use crate::{
     domains::{
         custom_error::{DiscussionError, SpecifiedArgs},
         status::AgendaStatus,
-        RedmineClient
+        client::RedmineClient
     },
     globals::{agendas, record_id},
     utils::{discord_embed, discussion},

@@ -1,7 +1,8 @@
 use crate::{
     domains::{
+        client::RedmineClient,
         custom_error::{DiscussionError, SpecifiedArgs},
-        redmine, RedmineClient,
+        redmine,
     },
     globals::{
         agendas::{self, Agenda},

@@ -1,8 +1,8 @@
 use crate::domains::{
+    client::{GitHubClient, RedmineClient},
     custom_error::{DiscussionError, SpecifiedArgs},
     redmine,
     status::AgendaStatus,
-    GitHubClient, RedmineClient,
 };
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
