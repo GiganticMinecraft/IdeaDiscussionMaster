@@ -3,7 +3,7 @@ use regex::Regex;
 use serenity::{builder, utils::Color};
 
 use crate::{
-    domains::{redmine, redmine_api, status::AgendaStatus},
+    domains::{redmine, status::AgendaStatus},
     utils::discord_embed,
 };
 
@@ -49,7 +49,7 @@ pub fn next_agenda_embed(
             .title(format!("次の議題は#{}です", issue.id))
             .field(
                 "議題チケット",
-                format!("{}/issues/{}", redmine_api::REDMINE_URL, issue.id),
+                format!("{}/issues/{}", redmine::REDMINE_URL, issue.id),
                 false,
             )
             .field("タイトル", subject, false)

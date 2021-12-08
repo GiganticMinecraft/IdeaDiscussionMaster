@@ -1,7 +1,8 @@
+use crate::domains::status::AgendaStatus;
 use itertools::Itertools;
 use serde::Deserialize;
 
-use crate::domains::status::AgendaStatus;
+pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
 #[derive(Debug, Deserialize, Default, PartialEq)]
 pub struct RedmineProject {
@@ -39,8 +40,11 @@ pub struct RedmineIssue {
 
 impl RedmineIssue {
     pub fn is_idea_ticket(&self) -> bool {
-        self.project.name == "アイデア提案用プロジェクト"
-            && self.tracker.name == "アイデア提案"
+        self.project.name == "アイデア提案用プロジェクト" && self.tracker.name == "アイデア提案"
+    }
+
+    pub fn is_undone_idea_ticket(&self) -> bool {
+        self.is_idea_ticket()
             && !AgendaStatus::done_statuses()
                 .iter()
                 .map(|status| status.ja())
@@ -48,9 +52,19 @@ impl RedmineIssue {
     }
 
     pub fn is_idea_discussion_record(&self) -> bool {
-        self.project.name == "アイデア会議議事録"
-            && self.tracker.name == "アイデア会議"
-            && self.status.name == AgendaStatus::New.ja()
+        self.project.name == "アイデア会議議事録" && self.tracker.name == "アイデア会議"
+    }
+
+    pub fn is_undone_idea_discussion_record(&self) -> bool {
+        self.is_idea_discussion_record() && self.status.name == AgendaStatus::New.ja()
+    }
+
+    pub fn relations(&self) -> Vec<u16> {
+        self.relations
+            .iter()
+            .filter(|rel| rel.relation_type == "relates")
+            .flat_map(|rel| vec![rel.issue_id, rel.issue_to_id])
+            .collect_vec()
     }
 }
 

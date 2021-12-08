@@ -1,29 +1,21 @@
-use futures::stream::{self, StreamExt};
-use itertools::Itertools;
-use serenity::{
-    framework::standard::{macros::command, Args, CommandResult},
-    model::channel::Message,
-    prelude::Context,
-};
-
-cfg_if::cfg_if! {
-    if #[cfg(test)] {
-        pub use crate::domains::redmine_client::MockRedmineClient as RedmineClient;
-    } else {
-        pub use crate::domains::redmine_client::RedmineClient;
-    }
-}
-
 use crate::{
     domains::{
+        client::RedmineClient,
         custom_error::{DiscussionError, SpecifiedArgs},
-        redmine_api,
+        redmine,
     },
     globals::{
         agendas::{self, Agenda},
         record_id, voice_chat_channel_id,
     },
     utils::{discord_embed, discussion},
+};
+use futures::stream::{self, StreamExt};
+use itertools::Itertools;
+use serenity::{
+    framework::standard::{macros::command, Args, CommandResult},
+    model::channel::Message,
+    prelude::Context,
 };
 
 #[command]
@@ -41,17 +33,11 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     // 指定された番号の議事録チケットがあるかどうかRedmineのAPIを利用して確認。
     // Redmineと通信を行い、議事録チケットが存在したら、関連チケットのチケット番号をVecで返す。
     // Redmineとの通信でエラーが起きるor未実施の議事録チケットが存在しない場合は処理を中止。
-    let redmine_api = redmine_api::RedmineApi::new(RedmineClient::new());
-    let record_relations = match redmine_api.fetch_issue_with_relations(record_id).await {
+    let redmine_client = RedmineClient::new();
+    let record_relations = match redmine_client.fetch_issue_with_relations(record_id).await {
         Ok(issue) => {
-            if issue.is_idea_discussion_record() {
-                issue
-                    .relations
-                    .iter()
-                    .filter(|rel| rel.relation_type == "relates")
-                    .flat_map(|rel| vec![rel.issue_id, rel.issue_to_id])
-                    .filter(|num| num != &issue.id)
-                    .collect_vec()
+            if issue.is_undone_idea_discussion_record() {
+                issue.relations()
             } else {
                 return DiscussionError::TicketIsNotFound.into();
             }
@@ -62,13 +48,13 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     };
     let record_relations = {
         let issues = stream::iter(record_relations)
-            .then(|id| redmine_api.fetch_issue(id))
+            .then(|id| redmine_client.fetch_issue(id))
             .collect::<Vec<_>>()
             .await;
         issues
             .iter()
             .filter_map(|res| res.as_ref().ok())
-            .filter(|issue| issue.is_idea_ticket())
+            .filter(|issue| issue.is_undone_idea_ticket())
             .map(|issue| issue.id)
             .collect_vec()
     };
@@ -103,7 +89,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
                     .title("会議を開始しました")
                     .field(
                         "議事録チケット",
-                        format!("{}/issues/{}", redmine_api::REDMINE_URL, record_id),
+                        format!("{}/issues/{}", redmine::REDMINE_URL, record_id),
                         false,
                     )
             })
@@ -118,7 +104,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
     );
 
     let next_agenda_id = discussion::go_to_next_agenda(ctx).await;
-    let next_redmine_issue = redmine_api
+    let next_redmine_issue = redmine_client
         .fetch_issue(next_agenda_id.unwrap_or_default())
         .await
         .ok();

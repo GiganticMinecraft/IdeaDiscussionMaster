@@ -1,16 +1,16 @@
-use mockall::automock;
+use crate::domains::{custom_error, redmine};
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
 use std::{collections::HashMap, env};
 
-use crate::domains::{custom_error, redmine, redmine_api};
+pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
+#[warn(dead_code)]
 pub struct RedmineClient {
     reqwest_client: Client,
     api_key: String,
 }
 
-#[automock]
 impl RedmineClient {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
@@ -20,6 +20,7 @@ impl RedmineClient {
         }
     }
 
+    #[warn(dead_code)]
     pub async fn fetch_issue(
         &self,
         issue_id: u16,
@@ -31,6 +32,7 @@ impl RedmineClient {
             .issue)
     }
 
+    #[warn(dead_code)]
     pub async fn fetch_issue_with_relations(
         &self,
         issue_id: u16,
@@ -45,6 +47,7 @@ impl RedmineClient {
             .issue)
     }
 
+    #[warn(dead_code)]
     pub async fn update_issue_status(
         &self,
         issue_id: u16,
@@ -59,6 +62,7 @@ impl RedmineClient {
         update_issue(self, issue_id, json_value).await
     }
 
+    #[warn(dead_code)]
     pub async fn add_comments(
         &self,
         issue_id: u16,
@@ -74,6 +78,7 @@ impl RedmineClient {
         update_issue(self, issue_id, json_value).await
     }
 
+    #[warn(dead_code)]
     pub async fn add_relation(
         &self,
         record_id: u16,
@@ -81,9 +86,7 @@ impl RedmineClient {
     ) -> Result<reqwest::Response, custom_error::DiscussionError> {
         let url = format!(
             "{}/issues/{}/relations.json?key={}",
-            redmine_api::REDMINE_URL,
-            record_id,
-            self.api_key
+            REDMINE_URL, record_id, self.api_key
         );
         let json_value = json!({
           "relation": {
@@ -108,7 +111,7 @@ async fn fetch(
     issue_id: u16,
     query: Option<HashMap<&str, &str>>,
 ) -> Result<reqwest::Response, custom_error::DiscussionError> {
-    let url = format!("{}/issues/{}.json", redmine_api::REDMINE_URL, issue_id);
+    let url = format!("{}/issues/{}.json", REDMINE_URL, issue_id);
     let response = client
         .get(url)
         .query(&query.unwrap_or_default())
@@ -125,9 +128,7 @@ async fn update_issue(
 ) -> Result<reqwest::Response, custom_error::DiscussionError> {
     let url = format!(
         "{}/issues/{}.json?key={}",
-        redmine_api::REDMINE_URL,
-        issue_id,
-        client.api_key
+        REDMINE_URL, issue_id, client.api_key
     );
     let response = client
         .reqwest_client
