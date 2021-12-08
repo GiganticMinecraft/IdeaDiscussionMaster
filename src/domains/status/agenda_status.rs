@@ -19,7 +19,6 @@ pub enum AgendaStatus {
     Declined,
 }
 
-#[allow(clippy::op_ref)]
 impl AgendaStatus {
     pub fn emoji(self) -> String {
         self.get_str("emoji").unwrap().to_string()
@@ -34,7 +33,7 @@ impl AgendaStatus {
     }
 
     pub fn from_ja(str: &str) -> Option<Self> {
-        Self::iter().find(|status| str == &status.ja())
+        Self::iter().find(|status| *str == status.ja())
     }
 
     pub fn from_alias(str: &str) -> Option<Self> {
