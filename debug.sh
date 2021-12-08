@@ -1,3 +1,3 @@
 #!/bin/bash
-source ./.env
-DISCORD_TOKEN=$DISCORD_TOKEN REDMINE_KEY=$REDMINE_KEY EXECUTABLE_ROLE_ID=$EXECUTABLE_ROLE_ID cargo run
+set -a; eval "$(cat .env <(echo) <(declare -x))"; set +a;
+cargo run
