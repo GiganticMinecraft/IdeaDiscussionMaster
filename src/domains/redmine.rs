@@ -52,9 +52,13 @@ impl RedmineIssue {
     }
 
     pub fn is_idea_discussion_record(&self) -> bool {
-        self.project.name == "アイデア会議議事録"
-            && self.tracker.name == "アイデア会議"
-            && self.status.name == AgendaStatus::New.ja()
+        self.project.name == "アイデア会議議事録" && self.tracker.name == "アイデア会議"
+    }
+
+    pub fn is_undone_idea_discussion_record(&self) -> bool {
+        self.is_idea_discussion_record() && self.status.name == AgendaStatus::New.ja()
+    }
+
     }
 }
 
