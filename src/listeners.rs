@@ -7,6 +7,8 @@ use serenity::{
 };
 use std::env;
 
+const IGNORE_COMMANDS: &[&str] = &["help", "add_github_issue"];
+
 pub struct Handler;
 
 #[async_trait]
@@ -47,7 +49,7 @@ pub async fn before_commands(ctx: &Context, message: &Message, command_name: &st
         return false;
     }
 
-    if command_name == "help" {
+    if IGNORE_COMMANDS.contains(&command_name) {
         return true;
     }
 
