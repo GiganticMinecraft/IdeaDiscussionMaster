@@ -48,6 +48,14 @@ mod test {
         AgendaStatus::from_alias(str)
     }
 
+    #[test_case("新規" => Some(AgendaStatus::New))]
+    #[test_case("進行中" => Some(AgendaStatus::InProgress))]
+    #[test_case("承認" => Some(AgendaStatus::Approved))]
+    #[test_case("却下" => Some(AgendaStatus::Declined))]
+    fn agenda_status_from_ja(str: &str) -> Option<AgendaStatus> {
+        AgendaStatus::from_ja(str)
+    }
+
     #[test_case(AgendaStatus::New => 1)]
     #[test_case(AgendaStatus::InProgress => 2)]
     #[test_case(AgendaStatus::Approved => 17)]
@@ -57,7 +65,7 @@ mod test {
     }
 
     #[test]
-    fn agenda_statuses_can_be_done() {
+    fn agenda_statuses_done_statuses() {
         assert_eq!(
             AgendaStatus::done_statuses(),
             vec!(AgendaStatus::Approved, AgendaStatus::Declined)
