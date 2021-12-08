@@ -58,6 +58,7 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
                 .unwrap_or(false)
         })
         .collect_vec();
+    println!("{:?}", agendas);
 
     let record_url = format!("{}/issues/{}", redmine::REDMINE_URL, record.id);
     // 「第◯回」の表記を抜き出す
@@ -75,13 +76,17 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
             agenda_url, record_number, record_url
         );
 
-        let _ = GitHubClient::new()
+        match GitHubClient::new()
             .create_issue(
                 &title,
                 &content,
                 vec!["Tracked: Redmine", "Status/Idea: Accepted✅"],
             )
-            .await;
+            .await
+        {
+            Ok(res) => println!("{} {:?}", res.status(), res.status().canonical_reason()),
+            Err(e) => println!("{:?}", e),
+        };
     }
 
     let _ = message

@@ -30,6 +30,7 @@
 |DISCORD_TOKEN|DiscordBotのToken。[Discord Developer Portal][1]から入手。|
 |REDMINE_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要。|
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
+|GITHUB_KEY|GitHubのPersonalAccessToken。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
 
 ## Docker
 
