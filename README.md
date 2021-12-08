@@ -37,7 +37,3 @@
 [MIT License](./LICENSE)
 
 [1]: https://discord.com/developers/docs
-[2]: https://github.com/Lucky3028/IdeaDiscussionMaster/pkgs/container/idea-discussion-master
-[3]: ./attachments/docker-compose.yml
-[4]: #環境設定ファイルについて（.env）
-[5]: ./attachments/restart-docker.sh
