@@ -1,6 +1,6 @@
+use crate::domains::status::AgendaStatus;
 use itertools::Itertools;
 use serde::Deserialize;
-use crate::domains::status::AgendaStatus;
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
@@ -59,6 +59,12 @@ impl RedmineIssue {
         self.is_idea_discussion_record() && self.status.name == AgendaStatus::New.ja()
     }
 
+    pub fn relations(&self) -> Vec<u16> {
+        self.relations
+            .iter()
+            .filter(|rel| rel.relation_type == "relates")
+            .flat_map(|rel| vec![rel.issue_id, rel.issue_to_id])
+            .collect_vec()
     }
 }
 
