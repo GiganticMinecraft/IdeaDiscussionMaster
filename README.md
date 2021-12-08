@@ -11,8 +11,8 @@
 |end_votes|投票を終了するコマンド。指定されたステータスで議題チケットを更新・記録して、次の議題を選択・提示する。|evo|`\evo` [[議題ステータス]](#議題ステータス), `\evo 承認`, `\evo approved`, `\evo app`|
 |add_agenda|議題を追加するコマンド。指定されたチケットを議事録チケットに関連付け、現在の議題を再抽選、表示する。|ada, aag|`\ada [チケット番号]`, `\sid 1000`|
 |end_discussion|会議を終了するコマンド。会議結果を表示し、議事録チケットに結果を記載して、チケットと会議を終了する。|eid, edi|`\eid`|
-|show_agendas|すべての議題の進行状況を表示する。|sha|`\sha`|
-|create_next_record|次回の議事録チケットを作成する|cnr|`\cnr`|
+|show_agendas|すべての議題の進行状況を表示するコマンド。|sha|`\sha`|
+|create_next_record|次回の議事録チケットを作成するコマンド。|cnr|`\cnr`|
 |ghissue|SeichiAssistにIssueを追加するコマンド。||`\ghissue [チケット番号]`, `\ghissue 12345`|
 
 ### 議題ステータス
@@ -33,20 +33,8 @@
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
 |GITHUB_KEY|GitHubのPersonalAccessToken。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
 
-## Docker
-
-イメージは[こちらのページ][2]の`latest`タグのものを使用してください。
-
-こちらの[docker-compose.yml][3]を使用することで容易に起動可能です。この際、[当該yml][3]と同じディレクトリに[前述の環境設定ファイル][4]が存在する必要があります。
-
-使用例: [restart-docker.sh][5]
-
 ## License
 
 [MIT License](./LICENSE)
 
 [1]: https://discord.com/developers/docs
-[2]: https://github.com/Lucky3028/IdeaDiscussionMaster/pkgs/container/idea-discussion-master
-[3]: ./attachments/docker-compose.yml
-[4]: #環境設定ファイルについて（.env）
-[5]: ./attachments/restart-docker.sh
