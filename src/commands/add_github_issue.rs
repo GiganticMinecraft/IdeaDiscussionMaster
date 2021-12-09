@@ -110,15 +110,12 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
         &unissued.iter().join(", "),
         "Redmineにコメントを記載できなかったものは以下",
         &uncommented.iter().join(", "),
-        "以上に挙げたもの以外は正常に処理を終了しました。"
-    ].iter().join("\n");
+        "以上に挙げたもの以外は正常に処理を終了しました。",
+    ]
+    .iter()
+    .join("\n");
 
-    let _ = message
-        .reply(
-            &ctx.http,
-            result_messages,
-        )
-        .await;
+    let _ = message.reply(&ctx.http, result_messages).await;
 
     Ok(())
 }
