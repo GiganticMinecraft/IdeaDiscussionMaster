@@ -1,6 +1,7 @@
 use crate::domains::{
     client::{GitHubClient, RedmineClient},
     custom_error::{DiscussionError, SpecifiedArgs},
+    github::CreateIssueResponse,
     redmine,
     status::AgendaStatus,
 };
@@ -58,43 +59,87 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
                 .unwrap_or(false)
         })
         .collect_vec();
-    println!("{:?}", agendas);
 
     let record_url = format!("{}/issues/{}", redmine::REDMINE_URL, record.id);
-    // 「第◯回」の表記を抜き出す
+    // 「第◯回」の表記を議事録のタイトルから抜き出す
     let record_number = Regex::new("第[0-9]{1,9}回")
         .unwrap()
         .captures(&record.subject)
         .and_then(|cap| cap.get(0))
         .map_or("", |m| m.as_str());
+
     // GitHubのIssueを作っていく
+    let mut github_issue_results: Vec<(u16, Option<String>)> = Vec::new();
     for agenda in agendas {
-        let title = format!("Redmine Idea #{}", agenda.id);
-        let agenda_url = format!("{}/issues/{}", redmine::REDMINE_URL, agenda.id);
-        let content = format!(
-            "{}\n[{}アイデア会議]({})にて承認されたアイデア。",
-            agenda_url, record_number, record_url
-        );
-
-        match GitHubClient::new()
-            .create_issue(
-                &title,
-                &content,
-                vec!["Tracked: Redmine", "Status/Idea: Accepted✅"],
-            )
-            .await
-        {
-            Ok(res) => println!("{} {:?}", res.status(), res.status().canonical_reason()),
-            Err(e) => println!("{:?}", e),
-        };
+        let res = make_github_issue(&agenda.id, &record_url, record_number).await;
+        github_issue_results.push((agenda.id, res.ok()));
     }
+    let (issued, unissued): (Vec<_>, Vec<_>) = github_issue_results
+        .iter()
+        .partition(|(_, url)| url.is_some());
+    let issued = issued
+        .iter()
+        .map(|(id, url)| (id, url.as_ref().unwrap()))
+        .collect_vec();
+    let unissued = unissued.iter().map(|tup| tup.0).collect_vec();
 
-    let _ = message
-        .reply(
-            &ctx.http,
-            "すべての指定されたチケットについてIssueを作成しました。",
-        )
-        .await;
+    // GitHubにIssueを作成できたもののみ、RedmineにそのIssueのURLを記載する
+    let mut redmine_issue_results: Vec<Option<u16>> = Vec::new();
+    for (agenda_id, issue_url) in &issued {
+        let contents = format!(
+            "GitHubにIssueを作成しました。以下URLより確認できます。\n{}",
+            issue_url
+        );
+        let result = redmine_client
+            .add_comments(**agenda_id, vec![contents])
+            .await
+            .ok()
+            .map(|_| **agenda_id);
+        redmine_issue_results.push(result);
+    }
+    let commented = redmine_issue_results.iter().flatten().collect_vec();
+    let uncommented = issued
+        .into_iter()
+        .map(|tup| tup.0)
+        .filter(|id| !commented.iter().contains(id))
+        .collect_vec();
+
+    let result_messages = vec![
+        "それぞれの議題につき",
+        "GitHubにIssueを作成できなかったものは以下",
+        &unissued.iter().join(", "),
+        "Redmineにコメントを記載できなかったものは以下",
+        &uncommented.iter().join(", "),
+        "以上に挙げたもの以外は正常に処理を終了しました。",
+    ]
+    .iter()
+    .join("\n");
+
+    let _ = message.reply(&ctx.http, result_messages).await;
 
     Ok(())
+}
+
+async fn make_github_issue(
+    agenda_id: &u16,
+    record_url: &str,
+    record_number: &str,
+) -> Result<String, DiscussionError> {
+    let title = format!("Redmine Idea #{}", agenda_id);
+    let agenda_url = format!("{}/issues/{}", redmine::REDMINE_URL, agenda_id);
+    let content = format!(
+        "{}\n[{}アイデア会議]({})にて承認されたアイデア。",
+        agenda_url, record_number, record_url
+    );
+
+    Ok(GitHubClient::new()
+        .create_issue(
+            &title,
+            &content,
+            vec!["Tracked: Redmine", "Status/Idea: Accepted✅"],
+        )
+        .await?
+        .json::<CreateIssueResponse>()
+        .await?
+        .html_url)
 }
