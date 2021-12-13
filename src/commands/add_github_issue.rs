@@ -132,7 +132,8 @@ async fn make_github_issue(
         agenda_url, record_number, record_url
     );
 
-    Ok(GitHubClient::new().await
+    Ok(GitHubClient::new()
+        .await
         .create_issue(
             &title,
             &content,
