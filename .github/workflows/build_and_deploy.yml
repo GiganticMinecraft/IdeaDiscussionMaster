@@ -82,7 +82,8 @@ jobs:
           echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
           echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
           echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
-          echo "GITHUB_KEY=${{ secrets.GH_KEY }}" >> .env
+          echo "GH_APP_RSA_KEY_PATH=${{ secrets.GH_APP_RSA_KEY_PATH }}" >> .env
+          echo "GH_APP_ID=${{ secrets.GH_APP_ID }}" >> .env
       - run: sed -i -e "s#--PATH--#${{ secrets.SSH_PATH }}#g" run-idea.service
         working-directory: ./attachments
       - name: Install SSH key

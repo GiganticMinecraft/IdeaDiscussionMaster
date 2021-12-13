@@ -133,6 +133,7 @@ async fn make_github_issue(
     );
 
     Ok(GitHubClient::new()
+        .await
         .create_issue(
             &title,
             &content,
