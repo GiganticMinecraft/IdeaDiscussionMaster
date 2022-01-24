@@ -1,5 +1,5 @@
 use crate::{
-    domains::{redmine, status::AgendaStatus},
+    domains::{client::RedmineClient, redmine, status::AgendaStatus, status::RecordStatus},
     globals::{agendas, record_id, voice_chat_channel_id},
     utils::discord_embed,
 };
@@ -61,16 +61,19 @@ async fn end_discussion(ctx: &Context, message: &Message) -> CommandResult {
         .iter()
         .map(|(status, issue_ids)| format!("[{}]\n{}\n", status, issue_ids.join(" ")))
         .collect_vec();
-    // let redmine_client = RedmineClient::new();
-    // if let Err(err) = redmine_client.add_comments(record_id, agendas_result).await {
-    //     return err.into();
-    // }
-    // if let Err(err) = redmine_client
-    //     .update_issue_status(record_id, RecordStatus::Done.id())
-    //     .await
-    // {
-    //     return err.into();
-    // }
+    let redmine_client = RedmineClient::new();
+    if let Err(err) = redmine_client
+        .add_comments(record_id, agendas_result.clone())
+        .await
+    {
+        return err.into();
+    }
+    if let Err(err) = redmine_client
+        .update_issue_status(record_id, RecordStatus::Done.id())
+        .await
+    {
+        return err.into();
+    }
 
     println!("Discussion finished: #{}", record_id);
     println!("Result:\n {}", agendas_result.iter().join(", "));

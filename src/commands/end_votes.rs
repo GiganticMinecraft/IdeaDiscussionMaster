@@ -64,12 +64,12 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
     println!("Vote finished: #{} {}", current_agenda_id, status);
 
     let redmine_client = RedmineClient::new();
-    // if let Err(err) = redmine_client
-    //     .update_issue_status(current_agenda_id, status.id())
-    //     .await
-    // {
-    //     return err.into();
-    // }
+    if let Err(err) = redmine_client
+        .update_issue_status(current_agenda_id, status.id())
+        .await
+    {
+        return err.into();
+    }
 
     agendas::update_status(ctx, current_agenda_id, status).await;
 
