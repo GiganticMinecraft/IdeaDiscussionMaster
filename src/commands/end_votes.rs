@@ -28,7 +28,7 @@ pub async fn end_votes(ctx: &Context, message: &Message, mut args: Args) -> Comm
         {
             status
         } else {
-            return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();
+            return DiscussionError::TicketStatusIsNotDone.into();
         }
     } else {
         return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketStatus).into();

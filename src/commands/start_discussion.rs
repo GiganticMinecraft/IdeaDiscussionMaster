@@ -39,7 +39,7 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             if issue.is_undone_idea_discussion_record() {
                 issue.relations()
             } else {
-                return DiscussionError::TicketIsNotFound.into();
+                return DiscussionError::TicketIsNotUndoneIdeaDiscussionRecord.into();
             }
         }
         Err(err) => {
