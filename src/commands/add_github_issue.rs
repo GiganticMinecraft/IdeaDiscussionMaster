@@ -31,7 +31,7 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
             if record.is_idea_discussion_record() {
                 record
             } else {
-                return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
+                return DiscussionError::TicketIsNotIdeaDiscussionRecord.into();
             }
         }
         Err(err) => return err.into(),
@@ -44,7 +44,7 @@ async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> C
         .filter(|num| record.relations().contains(num))
         .collect_vec();
     if agendas.is_empty() {
-        return DiscussionError::ArgIsNotSpecified(SpecifiedArgs::TicketNumber).into();
+        return DiscussionError::TicketIsNotIdea.into();
     }
     let agendas = stream::iter(agendas)
         .then(|id| redmine_client.fetch_issue(id))

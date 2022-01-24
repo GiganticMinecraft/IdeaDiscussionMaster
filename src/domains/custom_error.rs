@@ -20,6 +20,16 @@ pub enum DiscussionError {
     ArgIsNotSpecified(SpecifiedArgs),
     #[strum(message = "チケットが存在しません。")]
     TicketIsNotFound,
+    #[strum(message = "チケットはアイデア提案用プロジェクトのアイデアではありません。")]
+    TicketIsNotIdea,
+    #[strum(message = "チケットはアイデア提案用プロジェクトの未議論アイデアではありません。")]
+    TicketIsNotUndoneIdea,
+    #[strum(message = "チケットはアイデア会議議事録プロジェクトの議事録ではありません。")]
+    TicketIsNotIdeaDiscussionRecord,
+    #[strum(message = "チケットはアイデア会議議事録プロジェクトの未終了議事録ではありません。")]
+    TicketIsNotUndoneIdeaDiscussionRecord,
+    #[strum(message = "チケットのステータスは終了ステータスとして適切なものではありません。")]
+    TicketStatusIsNotDone,
     #[strum(message = "VCに参加されていません。")]
     VcIsNotJoined,
     #[strum(
