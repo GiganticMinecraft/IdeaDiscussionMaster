@@ -47,15 +47,15 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
-      - name: Change current directory
-        run: cd ./attachments
       - name: Make GitHub App Secret Key
+        working-directory: ./attachments
         # 秘密鍵は改行が含まれているのでヒアドキュメントを利用して書き込む
         run: |
           cat > key.pem <<EOD
           ${{ secrets.GH_APP_RSA_KEY }}
           EOD
       - name: Make .env
+        working-directory: ./attachments
         run: |
           cat > .env <<EOD
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
@@ -76,6 +76,7 @@ jobs:
               IdentityFile ~/.ssh/id_rsa
               Port ${{ secrets.SSH_PORT }}
       - name: Rsync files
+        working-directory: ./attachments
         run: rsync -auvz --delete ./ vps:~/idea/
       - name: Launch
         run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh"
