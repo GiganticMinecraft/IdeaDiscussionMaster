@@ -1,11 +1,10 @@
-use crate::globals::record_id;
+use crate::{globals::record_id, utils};
 use serenity::{
     async_trait,
     framework::standard::{macros::hook, CommandResult},
     model::{channel::Message, gateway::Ready, id::RoleId},
     prelude::{Context, EventHandler},
 };
-use std::env;
 
 const IGNORE_COMMANDS: &[&str] = &["help", "add_github_issue"];
 
@@ -32,10 +31,11 @@ pub async fn before_commands(ctx: &Context, message: &Message, command_name: &st
             &ctx.http,
             message.guild_id.unwrap(),
             RoleId::from(
-                env::var("EXECUTABLE_ROLE_ID")
+                utils::Env::new()
+                    .discord_executor_role_id
+                    .parse::<u64>()
                     .ok()
-                    .and_then(|str| str.parse::<u64>().ok())
-                    .unwrap_or(0),
+                    .unwrap(),
             ),
         )
         .await
