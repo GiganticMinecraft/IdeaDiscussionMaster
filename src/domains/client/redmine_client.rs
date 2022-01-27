@@ -1,7 +1,10 @@
-use crate::domains::{custom_error, redmine};
+use crate::{
+    domains::{custom_error, redmine},
+    utils,
+};
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
-use std::{collections::HashMap, env};
+use std::collections::HashMap;
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
 
@@ -16,7 +19,7 @@ impl RedmineClient {
     pub fn new() -> Self {
         RedmineClient {
             reqwest_client: Client::new(),
-            api_key: env::var("REDMINE_KEY").unwrap_or_default(),
+            api_key: utils::Env::new().redmine_api_key,
         }
     }
 

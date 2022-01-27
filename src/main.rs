@@ -5,12 +5,13 @@ use idea_discussion_master::{
     },
     globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
     listeners::{self, after_commands, before_commands},
+    utils,
 };
 use serenity::{
     framework::{standard::macros::group, StandardFramework},
     prelude::Client,
 };
-use std::{collections::HashMap, env, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
 
 #[group]
@@ -28,8 +29,6 @@ struct General;
 
 #[tokio::main]
 async fn main() {
-    let token = env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません");
-
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
         .after(after_commands)
@@ -37,7 +36,7 @@ async fn main() {
         .group(&GENERAL_GROUP)
         .help(&MY_HELP);
 
-    let mut client = Client::builder(&token)
+    let mut client = Client::builder(&utils::Env::new().discord_token)
         .framework(framework)
         .event_handler(listeners::Handler)
         .await
