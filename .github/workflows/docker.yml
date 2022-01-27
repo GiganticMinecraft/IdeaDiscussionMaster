@@ -47,10 +47,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Make .env
-        working-directory: ./attachments
         # TODO: secret key
-        run: |
-          cat > .env <<EOD
+        run: cat > ./attachments/.env <<EOD
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
           REDMINE_KEY=${{ secrets.REDMINE_KEY }}
           EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}
