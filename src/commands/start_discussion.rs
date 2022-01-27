@@ -23,6 +23,16 @@ use serenity::{
 #[usage = "[議事録のチケット番号]"]
 #[description = "会議を開始するコマンドです。\n議題の提示までを行います。"]
 async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
+    if let Some(id) = discussion::fetch_voice_states(ctx, message.guild_id)
+        .await
+        .get(&message.author.id)
+        .and_then(|state| state.channel_id)
+    {
+        voice_chat_channel_id::write(ctx, Some(id)).await;
+    } else {
+        return DiscussionError::VcIsNotJoined.into();
+    }
+
     // 引数に渡されたであろう番号の文字列をu16にparse。渡されていないかparseできなければ処理を中止。
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
@@ -58,16 +68,6 @@ async fn start_discussion(ctx: &Context, message: &Message, mut args: Args) -> C
             .map(|issue| issue.id)
             .collect_vec()
     };
-
-    if let Some(id) = discussion::fetch_voice_states(ctx, message.guild_id)
-        .await
-        .get(&message.author.id)
-        .and_then(|state| state.channel_id)
-    {
-        voice_chat_channel_id::write(ctx, Some(id)).await;
-    } else {
-        return DiscussionError::VcIsNotJoined.into();
-    }
 
     record_id::write(ctx, Some(record_id)).await;
 
