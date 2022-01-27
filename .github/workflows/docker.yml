@@ -49,7 +49,11 @@ jobs:
       - name: Change current directory
         run: cd ./attachments
       - name: Make GitHub App Secret Key
-        run: echo ${{ secrets.GH_APP_RSA_KEY }} > key.pem
+        # 秘密鍵は改行が含まれているのでヒアドキュメントを利用して書き込む
+        run: |
+          cat > key.pem <<EOD
+          ${{ secrets.GH_APP_RSA_KEY }}
+          EOD
       - name: Make .env
         run: |
           cat > .env <<EOD
