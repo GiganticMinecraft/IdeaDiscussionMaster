@@ -1,15 +1,6 @@
-name: Build and Deploy
+name: Build
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "**/README.md"
-      - "renovate.json"
-      - ".env.example"
-      - ".github/workflows/**"
-      - "!.github/workflows/build_and_deploy.yml"
   pull_request:
     branches:
       - main
@@ -18,7 +9,7 @@ on:
       - "renovate.json"
       - ".env.example"
       - ".github/workflows/**"
-      - "!.github/workflows/build_and_deploy.yml"
+      - "!.github/workflows/build-binary.yml"
 
 jobs:
   build:

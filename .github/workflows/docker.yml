@@ -1,11 +1,19 @@
-name: Build and push docker image
-on: [push]
-  # push:
-  #   branches:
-  #     - main
+name: Build and deploy docker image
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".env.example"
+      - "LICENSE"
+      - "README.md"
+      - "renovate.json"
+      - ".github/workflows/**"
+      - "!.github/workflows/docker.yml"
 
 jobs:
   build:
+    name: Build and push
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -31,3 +39,34 @@ jobs:
           tags: ${{ steps.image.outputs.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v2
+      - name: Make .env
+        working-directory: ./attachments
+        # TODO: secret key
+        run: |
+          echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" > .env
+          echo "REDMINE_KEY=${{ secrets.REDMINE_KEY }}" >> .env
+          echo "EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}" >> .env
+          echo "GH_APP_RSA_KEY_PATH=${{ secrets.GH_APP_RSA_KEY_PATH }}" >> .env
+          echo "GH_APP_ID=${{ secrets.GH_APP_ID }}" >> .env
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          config: |
+            Host vps
+              HostName ${{ secrets.SSH_ADDRESS }}
+              User ${{ secrets.SSH_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              Port ${{ secrets.SSH_PORT }}
+      - name: Rsync files
+        run: rsync -auvz --delete ./attachments/ vps:~/idea/
+      - name: Launch
+        run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh"
