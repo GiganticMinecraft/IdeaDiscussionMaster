@@ -46,9 +46,11 @@ jobs:
       - build
     steps:
       - uses: actions/checkout@v2
+      - name: Change current directory
+        run: cd ./attachments
+      - name: Make GitHub App Secret Key
+        run: echo ${{ secrets.GH_APP_RSA_KEY }} > key.pem
       - name: Make .env
-        working-directory: ./attachments
-        # TODO: secret key
         run: |
           cat > .env <<EOD
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
@@ -69,6 +71,6 @@ jobs:
               IdentityFile ~/.ssh/id_rsa
               Port ${{ secrets.SSH_PORT }}
       - name: Rsync files
-        run: rsync -auvz --delete ./attachments/ vps:~/idea/
+        run: rsync -auvz --delete ./ vps:~/idea/
       - name: Launch
         run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh"
