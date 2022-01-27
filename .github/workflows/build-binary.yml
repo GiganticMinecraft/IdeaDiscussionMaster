@@ -21,7 +21,7 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v1
       - name: Build binary
-        run: cargo build --release
+        run: cargo build
 
   lint:
     runs-on: ubuntu-latest
@@ -48,4 +48,4 @@ jobs:
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v1
       - name: Run tests
-        run: cargo test --release
+        run: cargo test
