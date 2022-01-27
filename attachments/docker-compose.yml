@@ -1,0 +1,7 @@
+version: '3'
+services:
+  bot:
+    image: ghcr.io/giganticminecraft/idea-discussion-master:latest
+    restart: always
+    env_file:
+      - ./.env
