@@ -61,7 +61,6 @@ jobs:
           DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
           REDMINE_KEY=${{ secrets.REDMINE_KEY }}
           EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}
-          GH_APP_RSA_KEY_PATH=${{ secrets.GH_APP_RSA_KEY_PATH }}
           GH_APP_ID=${{ secrets.GH_APP_ID }}
           EOD
       - name: Install SSH key
