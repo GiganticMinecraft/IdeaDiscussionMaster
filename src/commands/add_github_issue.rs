@@ -17,7 +17,7 @@ use serenity::{
 #[command]
 #[aliases("agi", "ghissue", "ghi")]
 #[usage = "[議事録のチケット番号] [..GitHubに起票する議題のチケット番号（半角スペースで区切る）]"]
-#[description = "指定した議事録の指定した議題チケットについてSeichiAssistのリポジトリでIssueを作成します。存在しない議題は無視されます。"]
+#[description = "指定した議事録の指定した議題チケットについてSeichiAssistのリポジトリでIssueを作成します。承認されていないもしくは存在しない議題は無視されます。"]
 async fn add_github_issue(ctx: &Context, message: &Message, mut args: Args) -> CommandResult {
     let record_id = match args.single::<u16>() {
         Ok(id) if id > 0 => id,
