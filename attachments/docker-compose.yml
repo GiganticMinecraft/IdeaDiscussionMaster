@@ -5,5 +5,5 @@ services:
     restart: always
     env_file:
       - ./.env
-     volumes:
+    volumes:
       - ./key.pem:/key.pem
