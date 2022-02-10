@@ -32,7 +32,7 @@
 |REDMINE_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要。|
 |EXECUTABLE_ROLE_ID|DiscordロールのロールID。ここで指定したIDのロールをもつユーザーだけが本Botのコマンドを実行できる。|
 |GH_APP_ID|GitHub AppのID。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
-|GH_APP_RSA_KEY_PATH|GitHub AppのPrivateSSHキーへのファイルパス。|
+|GH_APP_RSA_KEY_PATH|GitHub AppのPrivateSSHキーへのファイルパス。コンテナ側のマウントされるパスなので注意。|
 
 ## License
 
