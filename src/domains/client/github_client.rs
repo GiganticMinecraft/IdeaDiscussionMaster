@@ -21,7 +21,7 @@ impl GitHubClient {
 
     async fn create_token() -> Result<String, CError> {
         let env = utils::Env::new();
-        let path = env.github_secret_key.0;
+        let path = env.github_secret_key;
         let app_id = env.github_app_id;
 
         Ok(publish_token(app_id, path, "GiganticMinecraft")
