@@ -1,35 +1,43 @@
-use std::env;
+use crate::utils::secret_key::SecretKey;
+use std::{env, path::PathBuf};
 
 pub struct Env {
     pub discord_token: String,
     pub redmine_api_key: String,
-    pub discord_executor_role_id: String,
-    pub github_app_id: String,
-    pub github_secret_key_path: String,
+    pub discord_executor_role_id: u64,
+    pub github_app_id: u64,
+    pub github_secret_key: PathBuf,
 }
 
 impl Env {
     pub fn new() -> Self {
-        let path_str = env::var("GH_APP_RSA_KEY_PATH")
-            .expect("GitHubAppの秘密鍵へのファイルパスが見つかりません");
-        let path = std::path::Path::new(&path_str);
-        if !path.exists() || !path.is_file() {
-            panic!("指定されたGitHubAppの秘密鍵は存在しません")
-        }
+        let discord_token =
+            env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが指定されていません");
+        let redmine_api_key =
+            env::var("REDMINE_KEY").expect("RedmineのAPIキーが指定されていません");
+        let discord_executor_role_id = env::var("EXECUTABLE_ROLE_ID")
+            .ok()
+            .and_then(|id| id.parse::<u64>().ok())
+            .expect("DiscordのロールIDが指定されていないか形式が正しくありません");
+        let github_app_id = env::var("GH_APP_ID")
+            .ok()
+            .and_then(|id| id.parse::<u64>().ok())
+            .expect("GitHubAppのIDが指定されていないか形式が正しくありません");
+        let github_secret_key = SecretKey::new(env::var("GH_APP_RSA_KEY_PATH").ok())
+            .expect("GitHubAppの秘密鍵ファイルが見つからないかファイルではありません")
+            .0;
 
         Self {
-            discord_token: env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが見つかりません"),
-            redmine_api_key: env::var("REDMINE_KEY").expect("RedmineのAPIキーが見つかりません"),
-            discord_executor_role_id: env::var("EXECUTABLE_ROLE_ID")
-                .expect("コマンドを実行できるDiscordのロールIDが見つかりません"),
-            github_app_id: env::var("GH_APP_ID").expect("GitHubAppのIDが見つかりません"),
-            github_secret_key_path: env::var("GH_APP_RSA_KEY_PATH")
-                .expect("GitHubAppの秘密鍵へのファイルパスが見つかりません"),
+            discord_token,
+            redmine_api_key,
+            discord_executor_role_id,
+            github_app_id,
+            github_secret_key,
         }
     }
 }
 
-impl Default for Env {
+impl std::default::Default for Env {
     fn default() -> Self {
         Self::new()
     }

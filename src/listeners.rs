@@ -30,13 +30,7 @@ pub async fn before_commands(ctx: &Context, message: &Message, command_name: &st
         .has_role(
             &ctx.http,
             message.guild_id.unwrap(),
-            RoleId::from(
-                utils::Env::new()
-                    .discord_executor_role_id
-                    .parse::<u64>()
-                    .ok()
-                    .unwrap(),
-            ),
+            RoleId::from(utils::Env::new().discord_executor_role_id),
         )
         .await
         .ok()
