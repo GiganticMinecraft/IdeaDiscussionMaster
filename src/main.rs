@@ -1,16 +1,15 @@
 use anyhow::{anyhow, Context};
 use idea_discussion_master::{
     commands::{
-        add_agenda::*, add_github_issue::*, end_discussion::*, end_votes::*, help::*,
+        add_agenda::*, add_github_issue::*, end_discussion::*, end_votes::*,
         show_agendas::*, start_discussion::*, start_votes::*,
     },
     globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
-    listeners::{self, after_commands, before_commands},
     utils,
 };
 use serenity::{
     client::Client,
-    framework::{standard::macros::group, StandardFramework},
+    framework::{standard::macros::group},
 };
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
