@@ -28,7 +28,7 @@ use tokio::sync::RwLock;
 struct General;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let framework = StandardFramework::new()
         .configure(|config| config.prefix("\\"))
         .after(after_commands)
@@ -53,4 +53,6 @@ async fn main() {
     if let Err(reason) = client.start().await {
         eprintln!("クライアントの起動に失敗しました: {:?}", reason);
     }
+
+    Ok(())
 }
