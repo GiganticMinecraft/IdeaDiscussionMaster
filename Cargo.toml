@@ -24,4 +24,4 @@ anyhow = "1.0"
 [dependencies.serenity]
 version = "0.10"
 default-features = false
-features = ["builder", "cache", "client", "framework", "gateway", "http", "standard_framework", "utils", "rustls_backend", "model", "unstable_discord_api"]
+features = ["cache", "client", "framework", "gateway", "standard_framework", "rustls_backend", "model", "unstable_discord_api"]
