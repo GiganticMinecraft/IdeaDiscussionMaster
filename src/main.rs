@@ -1,3 +1,4 @@
+use anyhow::{anyhow, Context};
 use idea_discussion_master::{
     commands::{
         add_agenda::*, add_github_issue::*, end_discussion::*, end_votes::*, help::*,
@@ -8,8 +9,8 @@ use idea_discussion_master::{
     utils,
 };
 use serenity::{
+    client::Client,
     framework::{standard::macros::group, StandardFramework},
-    prelude::Client,
 };
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
@@ -27,18 +28,22 @@ use tokio::sync::RwLock;
 )]
 struct General;
 
+async fn build_bot_client() -> anyhow::Result<Client> {
+    let utils::Env {
+        discord_token,
+        discord_application_id,
+        ..
+    } = utils::Env::new();
+
+    Client::builder(discord_token)
+        .application_id(discord_application_id)
+        .await
+        .with_context(|| anyhow!("Failed to build bot"))
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let framework = StandardFramework::new()
-        .configure(|config| config.prefix("\\"))
-        .after(after_commands)
-        .before(before_commands)
-        .group(&GENERAL_GROUP)
-        .help(&MY_HELP);
-
-    let mut client = Client::builder(&utils::Env::new().discord_token)
-        .framework(framework)
-        .event_handler(listeners::Handler)
+    let mut client = build_bot_client()
         .await
         .expect("クライアントの作成中にエラーが発生しました");
 
