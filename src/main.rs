@@ -1,31 +1,11 @@
 use anyhow::{anyhow, Context};
 use idea_discussion_master::{
-    commands::{
-        add_agenda::*, add_github_issue::*, end_discussion::*, end_votes::*,
-        show_agendas::*, start_discussion::*, start_votes::*,
-    },
     globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
     utils,
 };
-use serenity::{
-    client::Client,
-    framework::{standard::macros::group},
-};
+use serenity::{client::Client};
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
-
-#[group]
-#[only_in(guilds)]
-#[commands(
-    start_discussion,
-    end_discussion,
-    start_votes,
-    end_votes,
-    add_agenda,
-    show_agendas,
-    add_github_issue
-)]
-struct General;
 
 async fn build_bot_client() -> anyhow::Result<Client> {
     let utils::Env {
