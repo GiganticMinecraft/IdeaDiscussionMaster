@@ -1,4 +1,3 @@
-use serenity::framework::standard::CommandResult;
 use std::fmt;
 use strum::EnumMessage;
 
@@ -79,12 +78,6 @@ impl From<reqwest::Error> for DiscussionError {
 impl From<Box<(dyn std::error::Error)>> for DiscussionError {
     fn from(err: Box<(dyn std::error::Error)>) -> DiscussionError {
         Self::UnknownError(Error::Other(err.to_string()))
-    }
-}
-
-impl From<DiscussionError> for CommandResult {
-    fn from(err: DiscussionError) -> CommandResult {
-        Err(err.to_string().into())
     }
 }
 
