@@ -1,5 +1,4 @@
-pub mod commands;
 pub mod domains;
 pub mod globals;
-pub mod listeners;
+pub mod slash_command;
 pub mod utils;
