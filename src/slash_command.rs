@@ -67,8 +67,11 @@ impl SlashCommandOptionBuilder {
         }
     }
 
-    pub fn add_choice(&mut self, choice: (String, SlashCommandChoice)) -> &mut Self {
-        self.choices.push(choice);
+    pub fn add_choice<T: ToString>(
+        &mut self,
+        (name, choice): (T, SlashCommandChoice),
+    ) -> &mut Self {
+        self.choices.push((name.to_string(), choice));
 
         self
     }
