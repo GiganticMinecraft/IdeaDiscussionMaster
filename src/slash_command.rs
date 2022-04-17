@@ -71,6 +71,13 @@ impl SlashCommandOptionBuilder {
         &mut self,
         (name, choice): (T, SlashCommandChoice),
     ) -> &mut Self {
+        match &self.kind {
+            ApplicationCommandOptionType::Integer => assert_eq!(choice, SlashCommandChoice::Int),
+            ApplicationCommandOptionType::Number => assert_eq!(choice, SlashCommandChoice::Number),
+            ApplicationCommandOptionType::String => assert_eq!(choice, SlashCommandChoice::String),
+            _ => panic!("can't choice to this kind of command option!"),
+        }
+
         self.choices.push((name.to_string(), choice));
 
         self
@@ -83,24 +90,32 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn min_int(&mut self, value: i32) -> &mut Self {
+        assert_eq!(self.kind, ApplicationCommandOptionType::Integer);
+
         self.builder = self.builder.min_int_value(value).to_owned();
 
         self
     }
 
     pub fn max_int(&mut self, value: i32) -> &mut Self {
+        assert_eq!(self.kind, ApplicationCommandOptionType::Integer);
+
         self.builder = self.builder.max_int_value(value).to_owned();
 
         self
     }
 
     pub fn min_number(&mut self, value: f64) -> &mut Self {
+        assert_eq!(self.kind, ApplicationCommandOptionType::Number);
+
         self.builder = self.builder.min_number_value(value).to_owned();
 
         self
     }
 
     pub fn max_number(&mut self, value: f64) -> &mut Self {
+        assert_eq!(self.kind, ApplicationCommandOptionType::Number);
+
         self.builder = self.builder.max_number_value(value).to_owned();
 
         self
