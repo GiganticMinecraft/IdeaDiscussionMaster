@@ -3,7 +3,7 @@ use serenity::{
     model::interactions::application_command::ApplicationCommandOptionType,
 };
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum SlashCommandChoice {
     String(String),
     Int(i32),
@@ -71,11 +71,16 @@ impl SlashCommandOptionBuilder {
         &mut self,
         (name, choice): (T, SlashCommandChoice),
     ) -> &mut Self {
-        match &self.kind {
-            ApplicationCommandOptionType::Integer => assert_eq!(choice, SlashCommandChoice::Int),
-            ApplicationCommandOptionType::Number => assert_eq!(choice, SlashCommandChoice::Number),
-            ApplicationCommandOptionType::String => assert_eq!(choice, SlashCommandChoice::String),
-            _ => panic!("can't choice to this kind of command option!"),
+        match choice {
+            SlashCommandChoice::Int(_) => {
+                assert_eq!(self.kind, ApplicationCommandOptionType::Integer)
+            }
+            SlashCommandChoice::Number(_) => {
+                assert_eq!(self.kind, ApplicationCommandOptionType::Number)
+            }
+            SlashCommandChoice::String(_) => {
+                assert_eq!(self.kind, ApplicationCommandOptionType::String)
+            }
         }
 
         self.choices.push((name.to_string(), choice));
