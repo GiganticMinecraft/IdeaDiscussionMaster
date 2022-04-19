@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Context};
 use idea_discussion_master::{
     commands::{self, InteractionResponse},
-    globals::{agendas::Agendas, record_id::RecordId, voice_chat_channel_id::VoiceChatChannelId},
     utils::{
         commands::{
             application_interactions::{ApplicationInteractions, SlashCommandType},
@@ -19,8 +18,7 @@ use serenity::{
         interactions::{application_command::ApplicationCommand, Interaction},
     },
 };
-use std::{collections::HashMap, sync::Arc};
-use tokio::sync::RwLock;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 struct Handler;
@@ -116,14 +114,6 @@ async fn main() -> anyhow::Result<()> {
     let mut client = build_bot_client()
         .await
         .expect("クライアントの作成中にエラーが発生しました");
-
-    {
-        let mut data = client.data.write().await;
-
-        data.insert::<RecordId>(Arc::new(RwLock::new(None)));
-        data.insert::<Agendas>(Arc::new(RwLock::new(HashMap::default())));
-        data.insert::<VoiceChatChannelId>(Arc::new(RwLock::new(None)));
-    }
 
     if let Err(reason) = client.start().await {
         eprintln!("クライアントの起動に失敗しました: {:?}", reason);
