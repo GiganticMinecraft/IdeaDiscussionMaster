@@ -12,17 +12,6 @@ on:
       - "!.github/workflows/build-binary.yml"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    env:
-      CARGO_INCREMENTAL: 0
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache dependencies
-        uses: Swatinem/rust-cache@v1
-      - name: Build binary
-        run: cargo build
-
   lint:
     runs-on: ubuntu-latest
     env:
