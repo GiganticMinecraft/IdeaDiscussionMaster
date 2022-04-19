@@ -38,4 +38,8 @@
 
 [MIT License](./LICENSE)
 
+### Some codes are licensed under the other one
+
+See [this file](./src/utils/commands/README.md).
+
 [1]: https://discord.com/developers/docs
