@@ -1,3 +1,4 @@
+use crate::commands::Executor;
 use serenity::{
     builder::{CreateApplicationCommand, CreateApplicationCommandOption},
     model::interactions::application_command::ApplicationCommandOptionType,
@@ -10,19 +11,23 @@ pub enum SlashCommandChoice {
     Number(f64),
 }
 
+type OptExecutor = Option<Executor>;
+
 #[derive(Clone)]
 pub struct SlashCommandBuilder {
     pub name: String,
     pub description: String,
     pub options: Vec<SlashCommandOptionBuilder>,
+    pub executor: OptExecutor,
 }
 
 impl SlashCommandBuilder {
-    pub fn new<T: ToString>(name: T, description: T) -> Self {
+    pub fn new<T: ToString>(name: T, description: T, executor: OptExecutor) -> Self {
         Self {
             name: name.to_string(),
             description: description.to_string(),
             options: vec![],
+            executor,
         }
     }
 
@@ -33,6 +38,15 @@ impl SlashCommandBuilder {
     }
 
     pub fn build(&self) -> CreateApplicationCommand {
+        // 自分のOptionsにSubCommandを持たない限り、SubCommandはExecutorを持たなくてはいけない
+        if self
+            .options
+            .iter()
+            .all(|o| o.kind != ApplicationCommandOptionType::SubCommand)
+        {
+            assert!(self.has_executor());
+        }
+
         let builder = &mut CreateApplicationCommand::default();
         builder.name(&self.name);
         builder.description(&self.description);
@@ -53,10 +67,22 @@ pub struct SlashCommandOptionBuilder {
     pub kind: ApplicationCommandOptionType,
     pub choices: Vec<(String, SlashCommandChoice)>,
     pub options: Vec<Self>,
+    pub executor: OptExecutor,
 }
 
 impl SlashCommandOptionBuilder {
-    pub fn new<T: ToString>(name: T, description: T, kind: ApplicationCommandOptionType) -> Self {
+    pub fn new<T: ToString>(
+        name: T,
+        description: T,
+        kind: ApplicationCommandOptionType,
+        executor: OptExecutor,
+    ) -> Self {
+        if kind == ApplicationCommandOptionType::SubCommand {
+            assert!(executor.is_some())
+        } else {
+            assert!(executor.is_none())
+        }
+
         Self {
             builder: CreateApplicationCommandOption::default(),
             name: name.to_string(),
@@ -64,6 +90,7 @@ impl SlashCommandOptionBuilder {
             kind,
             choices: vec![],
             options: vec![],
+            executor,
         }
     }
 
@@ -127,6 +154,11 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn add_option(&mut self, value: &mut Self) -> &mut Self {
+        // SubCommandはSubCommandを自身のOptionsに含められない
+        if self.kind == ApplicationCommandOptionType::SubCommand {
+            assert_ne!(value.kind, ApplicationCommandOptionType::SubCommand);
+        }
+
         self.options.push(value.to_owned());
 
         self
@@ -151,5 +183,34 @@ impl SlashCommandOptionBuilder {
         });
 
         builder.to_owned()
+    }
+}
+
+pub trait SlashCommandBuilderExt {
+    fn has_executor(&self) -> bool;
+    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder>;
+}
+
+impl SlashCommandBuilderExt for SlashCommandBuilder {
+    fn has_executor(&self) -> bool {
+        self.executor.is_some()
+    }
+
+    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder> {
+        self.options
+            .iter()
+            .find(|o| o.kind == ApplicationCommandOptionType::SubCommand)
+    }
+}
+
+impl SlashCommandBuilderExt for SlashCommandOptionBuilder {
+    fn has_executor(&self) -> bool {
+        self.executor.is_some()
+    }
+
+    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder> {
+        self.options
+            .iter()
+            .find(|o| o.kind == ApplicationCommandOptionType::SubCommand)
     }
 }
