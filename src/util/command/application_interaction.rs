@@ -1,7 +1,7 @@
 use serenity::model::interactions::application_command::ApplicationCommandInteractionDataOptionValue as OptionValue;
 
 #[derive(Debug, Clone)]
-pub enum SlashCommandType {
+pub enum SlashCommand {
     Command(String),
     SubCommand(String),
     Option(Box<OptionValue>),
@@ -9,13 +9,13 @@ pub enum SlashCommandType {
 
 #[derive(Debug, Clone)]
 pub enum ApplicationInteractions {
-    SlashCommand(SlashCommandType),
+    SlashCommand(SlashCommand),
 }
 
 impl TryInto<String> for ApplicationInteractions {
     type Error = anyhow::Error;
     fn try_into(self) -> anyhow::Result<String> {
-        if let ApplicationInteractions::SlashCommand(SlashCommandType::Option(b)) = self {
+        if let ApplicationInteractions::SlashCommand(SlashCommand::Option(b)) = self {
             if let OptionValue::String(v) = *b {
                 return Ok(v);
             }
@@ -28,7 +28,7 @@ impl TryInto<String> for ApplicationInteractions {
 impl TryInto<i64> for ApplicationInteractions {
     type Error = anyhow::Error;
     fn try_into(self) -> anyhow::Result<i64> {
-        if let ApplicationInteractions::SlashCommand(SlashCommandType::Option(b)) = self {
+        if let ApplicationInteractions::SlashCommand(SlashCommand::Option(b)) = self {
             if let OptionValue::Integer(v) = *b {
                 return Ok(v);
             }

@@ -1,4 +1,4 @@
-use super::application_interaction::{ApplicationInteractions, SlashCommandType};
+use super::application_interaction::{ApplicationInteractions, SlashCommand};
 use serenity::model::interactions::application_command::{
     ApplicationCommandInteractionData, ApplicationCommandInteractionDataOption,
     ApplicationCommandOptionType,
@@ -14,7 +14,7 @@ impl Parser for ApplicationCommandInteractionData {
     fn parse(&self) -> anyhow::Result<ParsedCmdData> {
         let mut items = vec![(
             "command".to_string(),
-            ApplicationInteractions::SlashCommand(SlashCommandType::Command(self.name.clone())),
+            ApplicationInteractions::SlashCommand(SlashCommand::Command(self.name.clone())),
         )];
 
         struct Parser<'a> {
@@ -38,9 +38,9 @@ impl Parser for ApplicationCommandInteractionData {
                         match o.kind {
                             OptionType::SubCommand => array.push((
                                 "sub_command".to_string(),
-                                ApplicationInteractions::SlashCommand(
-                                    SlashCommandType::SubCommand(o.name.clone()),
-                                ),
+                                ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(
+                                    o.name.clone(),
+                                )),
                             )),
                             OptionType::String
                             | OptionType::Integer
@@ -51,7 +51,7 @@ impl Parser for ApplicationCommandInteractionData {
                             | OptionType::Channel
                             | OptionType::Mentionable => array.push((
                                 o.name.clone(),
-                                ApplicationInteractions::SlashCommand(SlashCommandType::Option(
+                                ApplicationInteractions::SlashCommand(SlashCommand::Option(
                                     Box::new(o.resolved.as_ref().unwrap().clone()),
                                 )),
                             )),
