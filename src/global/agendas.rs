@@ -1,5 +1,5 @@
 use crate::{
-    domain::{id::AgendaId, status::AgendaStatus, Agenda},
+    domain::{id::IssueId, status::AgendaStatus, Agenda},
     util::HashSetExt,
 };
 use once_cell::sync::Lazy;
@@ -24,11 +24,11 @@ pub fn list() -> Agendas {
     AGENDAS.lock().unwrap().clone()
 }
 
-pub fn find_by_id(id: AgendaId) -> Option<Agenda> {
+pub fn find_by_id(id: IssueId) -> Option<Agenda> {
     list().iter().find(|agenda| agenda.id == id).copied()
 }
 
-pub fn update_status(id: AgendaId, status: AgendaStatus) -> Agendas {
+pub fn update_status(id: IssueId, status: AgendaStatus) -> Agendas {
     let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
     let new_agenda = Agenda { status, ..agenda };
 
@@ -38,7 +38,7 @@ pub fn update_status(id: AgendaId, status: AgendaStatus) -> Agendas {
     set.clone()
 }
 
-pub fn update_votes_message_id(id: AgendaId, votes_message_id: Option<MessageId>) -> Agendas {
+pub fn update_votes_message_id(id: IssueId, votes_message_id: Option<MessageId>) -> Agendas {
     let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
     let new_agenda = Agenda {
         votes_message_id,

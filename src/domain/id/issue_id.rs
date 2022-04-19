@@ -1,7 +1,7 @@
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
-pub struct AgendaId(pub u16);
+pub struct IssueId(pub u16);
 
-impl AgendaId {
+impl IssueId {
     pub fn new(id: u16) -> Self {
         assert!(id > 0);
 

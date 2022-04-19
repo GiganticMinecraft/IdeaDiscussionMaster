@@ -1,5 +1,5 @@
-mod agenda_id;
-pub use agenda_id::AgendaId;
+mod issue_id;
+pub use issue_id::IssueId;
 
 mod record_id;
 pub use record_id::RecordId;
