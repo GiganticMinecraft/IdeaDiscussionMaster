@@ -6,5 +6,4 @@ pub fn builder() -> SlashCommandBuilder {
         "アイデア会議を終了します。",
         Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
     )
-    .to_owned()
 }

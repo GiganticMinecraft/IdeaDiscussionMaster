@@ -1,4 +1,3 @@
-use crate::{domain::status::AgendaStatus, global::agendas};
 use serenity::{
     model::{
         id::{GuildId, UserId},
