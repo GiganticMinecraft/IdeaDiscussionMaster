@@ -8,19 +8,21 @@ use serenity::{
 };
 use std::collections::HashMap;
 
-pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
-    let cached_agendas = agendas::read(ctx).await;
-    let agenda_id = cached_agendas
-        .iter()
-        .find(|(_, agenda)| agenda.status.is_new())
-        .map(|(id, _)| id.to_owned());
+// TODO: なおす
 
-    if agenda_id.is_some() {
-        agendas::update_status(ctx, agenda_id.unwrap(), AgendaStatus::InProgress).await;
-    }
+// pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
+//     let cached_agendas = agendas::read(ctx).await;
+//     let agenda_id = cached_agendas
+//         .iter()
+//         .find(|(_, agenda)| agenda.status.is_new())
+//         .map(|(id, _)| id.to_owned());
 
-    agenda_id
-}
+//     if agenda_id.is_some() {
+//         agendas::update_status(ctx, agenda_id.unwrap(), AgendaStatus::InProgress).await;
+//     }
+
+//     agenda_id
+// }
 
 pub async fn fetch_voice_states(
     ctx: &Context,
