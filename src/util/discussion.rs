@@ -7,6 +7,8 @@ use serenity::{
 };
 use std::collections::HashMap;
 
+// TODO: return Result
+
 // TODO: なおす
 
 // pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
