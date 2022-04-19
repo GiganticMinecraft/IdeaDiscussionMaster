@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use strum::{Display, EnumIter, EnumProperty, EnumString, IntoEnumIterator};
 
-#[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq)]
+#[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq, Eq, Hash)]
 pub enum AgendaStatus {
     #[strum(ascii_case_insensitive, props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
