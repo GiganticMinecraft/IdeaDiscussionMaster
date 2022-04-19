@@ -1,11 +1,10 @@
+use crate::domains::status::AgendaStatus;
 use serenity::{
     model::id::MessageId,
     prelude::{Context, TypeMapKey},
 };
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::RwLock;
-
-use crate::domains::status::AgendaStatus;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Agenda {

@@ -1,3 +1,4 @@
+use crate::{domains::status::AgendaStatus, globals::agendas};
 use serenity::{
     model::{
         id::{GuildId, UserId},
@@ -6,8 +7,6 @@ use serenity::{
     prelude::Context,
 };
 use std::collections::HashMap;
-
-use crate::{domains::status::AgendaStatus, globals::agendas};
 
 pub async fn go_to_next_agenda(ctx: &Context) -> Option<u16> {
     let cached_agendas = agendas::read(ctx).await;
