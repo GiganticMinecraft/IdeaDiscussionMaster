@@ -1,97 +1,62 @@
-use crate::domains::status::AgendaStatus;
-use serenity::{
-    model::id::MessageId,
-    prelude::{Context, TypeMapKey},
+use crate::{
+    domains::{id::AgendaId, status::AgendaStatus, Agenda},
+    utils::HashSetExt,
 };
-use std::{collections::HashMap, sync::Arc};
-use tokio::sync::RwLock;
+use once_cell::sync::Lazy;
+use serenity::model::id::MessageId;
+use std::{
+    collections::HashSet,
+    sync::{Arc, Mutex},
+};
 
-#[derive(Clone, Copy, Debug)]
-pub struct Agenda {
-    pub status: AgendaStatus,
-    pub votes_message_id: Option<MessageId>,
+type Agendas = HashSet<Agenda>;
+
+static AGENDAS: Lazy<Arc<Mutex<Agendas>>> = Lazy::new(|| Arc::new(Mutex::new(HashSet::new())));
+
+pub fn add(agenda: Agenda) -> Agendas {
+    let mut set = AGENDAS.lock().unwrap();
+    set.insert(agenda);
+
+    set.clone()
 }
 
-impl Agenda {
-    pub fn new(status: AgendaStatus, votes_message_id: Option<MessageId>) -> Self {
-        Self {
-            status,
-            votes_message_id,
-        }
-    }
+pub fn list() -> Agendas {
+    AGENDAS.lock().unwrap().clone()
 }
 
-impl Default for Agenda {
-    fn default() -> Self {
-        Self::new(AgendaStatus::New, None)
-    }
+pub fn find_by_id(id: AgendaId) -> Option<Agenda> {
+    list().iter().find(|agenda| agenda.id == id).copied()
 }
 
-pub struct Agendas;
+pub fn update_status(id: AgendaId, status: AgendaStatus) -> Agendas {
+    let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
+    let new_agenda = Agenda { status, ..agenda };
 
-type AgendasType = HashMap<u16, Agenda>;
-type AgendasTypeMapKey = Arc<RwLock<AgendasType>>;
+    let mut set = AGENDAS.lock().unwrap();
+    set.update_or_insert(&agenda, new_agenda);
 
-impl TypeMapKey for Agendas {
-    type Value = AgendasTypeMapKey;
+    set.clone()
 }
 
-async fn get_lock(ctx: &Context) -> AgendasTypeMapKey {
-    let data_read = ctx.data.read().await;
-    data_read
-        .get::<Agendas>()
-        .expect("Expected Agendas in TypeMap.")
-        .clone()
+pub fn update_votes_message_id(id: AgendaId, votes_message_id: Option<MessageId>) -> Agendas {
+    let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
+    let new_agenda = Agenda {
+        votes_message_id,
+        ..agenda
+    };
+
+    let mut set = AGENDAS.lock().unwrap();
+    set.update_or_insert(&agenda, new_agenda);
+
+    set.clone()
 }
 
-pub async fn read(ctx: &Context) -> AgendasType {
-    let lock = get_lock(ctx).await;
-    let map = lock.read().await;
-    map.to_owned()
+pub fn find_current() -> Option<Agenda> {
+    list().iter().find(|agenda| agenda.status.is_new()).copied()
 }
 
-pub async fn write(ctx: &Context, id: u16, new_agenda: Agenda) {
-    let lock = get_lock(ctx).await;
-    let mut map = lock.write().await;
-    map.entry(id)
-        .and_modify(|agenda| *agenda = new_agenda)
-        .or_insert(new_agenda);
-}
+pub fn clear() -> Agendas {
+    AGENDAS.lock().unwrap().clear();
 
-pub async fn update_status(ctx: &Context, id: u16, new_status: AgendaStatus) {
-    let map = read(ctx).await;
-    let agenda = map
-        .get(&id)
-        .map_or(Agenda::default(), |agenda| agenda.to_owned());
-    write(ctx, id, Agenda::new(new_status, agenda.votes_message_id)).await;
-}
-
-pub async fn update_votes_message_id(ctx: &Context, id: u16, new_msg_id: Option<MessageId>) {
-    let map = read(ctx).await;
-    let agenda = map
-        .get(&id)
-        .map_or(Agenda::default(), |agenda| agenda.to_owned());
-    write(ctx, id, Agenda::new(agenda.status, new_msg_id)).await;
-}
-
-pub async fn find_current_agenda(ctx: &Context) -> Option<(u16, Agenda)> {
-    let map = read(ctx).await;
-    map.iter()
-        .find(|agenda| agenda.1.status.is_in_progress())
-        .map(|(id, agenda)| (id.to_owned(), agenda.to_owned()))
-}
-
-pub async fn find_current_agenda_id(ctx: &Context) -> Option<u16> {
-    find_current_agenda(ctx).await.map(|agenda| agenda.0)
-}
-
-pub async fn find_votes_message_id(ctx: &Context, id: u16) -> Option<MessageId> {
-    let map = read(ctx).await;
-    map.get(&id).and_then(|agenda| agenda.votes_message_id)
-}
-
-pub async fn clear_all(ctx: &Context) {
-    let lock = get_lock(ctx).await;
-    let mut map = lock.write().await;
-    map.clear();
+    list()
 }

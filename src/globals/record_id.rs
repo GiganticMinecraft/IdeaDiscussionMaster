@@ -1,35 +1,27 @@
-use serenity::prelude::{Context, TypeMapKey};
-use std::sync::Arc;
-use tokio::sync::RwLock;
+use crate::domains::id::RecordId;
+use once_cell::sync::Lazy;
+use std::sync::{Arc, Mutex};
 
-pub struct RecordId;
+type RecordIdOpt = Option<RecordId>;
 
-type LockTypeMapKey = Arc<RwLock<Option<u16>>>;
+static RECORD_ID: Lazy<Arc<Mutex<RecordIdOpt>>> = Lazy::new(|| Arc::new(Mutex::new(None)));
 
-impl TypeMapKey for RecordId {
-    type Value = LockTypeMapKey;
+pub fn get() -> RecordIdOpt {
+    *RECORD_ID.lock().unwrap()
 }
 
-async fn get_lock(ctx: &Context) -> LockTypeMapKey {
-    let data_read = ctx.data.read().await;
-    data_read
-        .get::<RecordId>()
-        .expect("Expected Agendas in TypeMap.")
-        .clone()
+pub fn update(id: RecordId) -> RecordIdOpt {
+    *RECORD_ID.lock().unwrap() = Some(id);
+
+    get()
 }
 
-pub async fn read(ctx: &Context) -> Option<u16> {
-    let lock = get_lock(ctx).await;
-    let id = lock.read().await;
-    id.to_owned()
+pub fn clear() -> RecordIdOpt {
+    *RECORD_ID.lock().unwrap() = None;
+
+    get()
 }
 
-pub async fn write(ctx: &Context, new_agenda_id: Option<u16>) {
-    let lock = get_lock(ctx).await;
-    let mut id = lock.write().await;
-    *id = new_agenda_id;
-}
-
-pub async fn clear(ctx: &Context) {
-    write(ctx, None).await;
+pub fn exists() -> bool {
+    RECORD_ID.lock().unwrap().is_some()
 }
