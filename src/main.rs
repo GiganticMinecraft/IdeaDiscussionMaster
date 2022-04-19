@@ -4,7 +4,7 @@ use idea_discussion_master::{
     util::{
         self,
         command::{
-            application_interaction::{ApplicationInteractions, SlashCommandType},
+            application_interaction::{ApplicationInteractions, SlashCommand},
             CommandExt, Parser,
         },
     },
@@ -54,7 +54,7 @@ impl EventHandler for Handler {
             let data = command.data.parse().unwrap();
             let (cmd, args) = data.split_first().unwrap();
             let cmd = match &cmd.1 {
-                ApplicationInteractions::SlashCommand(SlashCommandType::Command(cmd))
+                ApplicationInteractions::SlashCommand(SlashCommand::Command(cmd))
                     if command::all_command_names().contains(cmd) =>
                 {
                     Ok(cmd)
