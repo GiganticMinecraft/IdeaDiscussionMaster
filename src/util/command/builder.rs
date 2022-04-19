@@ -4,6 +4,8 @@ use serenity::{
     model::interactions::application_command::ApplicationCommandOptionType,
 };
 
+// TODO: assertをやめて、build()時にErrorとして返す
+
 #[derive(Clone, PartialEq)]
 pub enum SlashCommandChoice {
     String(String),
