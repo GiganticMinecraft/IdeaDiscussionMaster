@@ -1,12 +1,12 @@
 use anyhow::{anyhow, Context};
 use idea_discussion_master::{
-    commands::{self, InteractionResponse},
-    utils::{
-        commands::{
-            application_interactions::{ApplicationInteractions, SlashCommandType},
+    command::{self, InteractionResponse},
+    util::{
+        self,
+        command::{
+            application_interaction::{ApplicationInteractions, SlashCommandType},
             CommandExt, Parser,
         },
-        Env,
     },
 };
 use serenity::{
@@ -33,7 +33,7 @@ impl EventHandler for Handler {
 
         if let Ok(commands) = interactions {
             for cmd in commands.iter().filter(|cmd| {
-                !commands::all_command_names()
+                !command::all_command_names()
                     .iter()
                     .any(|s| cmd.name.starts_with(s))
             }) {
@@ -55,7 +55,7 @@ impl EventHandler for Handler {
             let (cmd, args) = data.split_first().unwrap();
             let cmd = match &cmd.1 {
                 ApplicationInteractions::SlashCommand(SlashCommandType::Command(cmd))
-                    if commands::all_command_names().contains(cmd) =>
+                    if command::all_command_names().contains(cmd) =>
                 {
                     Ok(cmd)
                 }
@@ -64,7 +64,7 @@ impl EventHandler for Handler {
             .unwrap();
             let args = args.iter().cloned().collect::<HashMap<_, _>>();
 
-            let result = match commands::executor(cmd)(args) {
+            let result = match command::executor(cmd)(args) {
                 Ok(res) => match res {
                     InteractionResponse::Message(m) => command.message(&ctx.http, m).await,
                     InteractionResponse::Embed(e) => command.embed(&ctx.http, e).await,
@@ -82,11 +82,11 @@ impl EventHandler for Handler {
 }
 
 async fn build_bot_client() -> anyhow::Result<Client> {
-    let Env {
+    let util::Env {
         discord_token,
         discord_application_id,
         ..
-    } = Env::new();
+    } = util::Env::new();
 
     Client::builder(discord_token)
         .application_id(discord_application_id)
@@ -100,7 +100,7 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
         serenity::model::id::GuildId(std::env::var("GUILD_ID").unwrap().parse().unwrap());
     let response =
         serenity::model::id::GuildId::set_application_commands(&guild_id, &http, |command| {
-            command.set_application_commands(commands::all_commands())
+            command.set_application_commands(command::all_commands())
         })
         .await;
 

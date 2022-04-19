@@ -1,4 +1,4 @@
-use super::application_interactions::{ApplicationInteractions, SlashCommandType};
+use super::application_interaction::{ApplicationInteractions, SlashCommandType};
 use serenity::model::interactions::application_command::{
     ApplicationCommandInteractionData, ApplicationCommandInteractionDataOption,
     ApplicationCommandOptionType,

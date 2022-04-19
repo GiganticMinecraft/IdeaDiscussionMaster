@@ -1,4 +1,4 @@
-use crate::domains::status::AgendaStatus;
+use crate::domain::status::AgendaStatus;
 use itertools::Itertools;
 use serde::Deserialize;
 

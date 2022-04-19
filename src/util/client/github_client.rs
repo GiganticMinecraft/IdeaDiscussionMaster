@@ -1,4 +1,4 @@
-use crate::utils;
+use crate::util;
 use create_github_app_token::{errors::Error as CError, publish_token};
 use reqwest::{header, Client};
 use serde_json::json;
@@ -20,7 +20,7 @@ impl GitHubClient {
     }
 
     async fn create_token() -> Result<String, CError> {
-        let env = utils::Env::new();
+        let env = util::Env::new();
         let path = env.github_secret_key;
         let app_id = env.github_app_id;
 

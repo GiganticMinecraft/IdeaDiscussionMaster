@@ -4,9 +4,9 @@ mod end;
 mod start;
 mod vote;
 
-use crate::utils::commands::{
-    application_interactions::ApplicationInteractions,
-    builders::{SlashCommandBuilder, SlashCommandBuilderExt},
+use crate::util::command::{
+    application_interaction::ApplicationInteractions,
+    builder::{SlashCommandBuilder, SlashCommandBuilderExt},
 };
 use serenity::builder::{CreateApplicationCommand, CreateEmbed};
 use std::collections::HashMap;

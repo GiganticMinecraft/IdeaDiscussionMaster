@@ -1,7 +1,4 @@
-use crate::{
-    domains::{redmine, status::AgendaStatus},
-    utils::discord_embed,
-};
+use crate::domain::{redmine, status::AgendaStatus};
 use chrono::Utc;
 use regex::Regex;
 use serenity::{builder, utils::Color};
@@ -64,7 +61,7 @@ pub fn no_current_agenda_embed(
     embed: &mut builder::CreateEmbed,
     record_id: u16,
 ) -> &mut builder::CreateEmbed {
-    discord_embed::default_failure_embed(embed, record_id).title("現在進行中の議題はありません")
+    default_failure_embed(embed, record_id).title("現在進行中の議題はありません")
 }
 
 pub fn votes_result_embed(
@@ -74,8 +71,8 @@ pub fn votes_result_embed(
     status: AgendaStatus,
 ) -> &mut builder::CreateEmbed {
     match status {
-        AgendaStatus::Approved => discord_embed::default_success_embed(embed, record_id),
-        AgendaStatus::Declined => discord_embed::default_failure_embed(embed, record_id),
+        AgendaStatus::Approved => default_success_embed(embed, record_id),
+        AgendaStatus::Declined => default_failure_embed(embed, record_id),
         _ => embed,
     }
     .title(format!(

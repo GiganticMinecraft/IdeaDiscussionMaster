@@ -1,7 +1,8 @@
 mod secret_key;
+use secret_key::SecretKey;
 
-pub mod clients;
-pub mod commands;
+pub mod client;
+pub mod command;
 pub mod discord_embed;
 pub mod discussion;
 

@@ -1,8 +1,6 @@
 use crate::{
-    commands::InteractionResponse,
-    utils::commands::builders::{
-        SlashCommandBuilder, SlashCommandChoice, SlashCommandOptionBuilder,
-    },
+    command::InteractionResponse,
+    util::command::builder::{SlashCommandBuilder, SlashCommandChoice, SlashCommandOptionBuilder},
 };
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 

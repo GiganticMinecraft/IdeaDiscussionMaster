@@ -1,4 +1,4 @@
-use crate::utils::secret_key::SecretKey;
+use super::SecretKey;
 use std::{env, path::PathBuf};
 
 pub struct Env {

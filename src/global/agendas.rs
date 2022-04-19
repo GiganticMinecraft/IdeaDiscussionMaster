@@ -1,6 +1,6 @@
 use crate::{
-    domains::{id::AgendaId, status::AgendaStatus, Agenda},
-    utils::HashSetExt,
+    domain::{id::AgendaId, status::AgendaStatus, Agenda},
+    util::HashSetExt,
 };
 use once_cell::sync::Lazy;
 use serenity::model::id::MessageId;

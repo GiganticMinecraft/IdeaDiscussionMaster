@@ -1,6 +1,6 @@
 use crate::{
-    domains::{custom_error, redmine},
-    utils,
+    domain::{custom_error, redmine},
+    util,
 };
 use reqwest::{header, Client, StatusCode};
 use serde_json::json;
@@ -19,7 +19,7 @@ impl RedmineClient {
     pub fn new() -> Self {
         RedmineClient {
             reqwest_client: Client::new(),
-            api_key: utils::Env::new().redmine_api_key,
+            api_key: util::Env::new().redmine_api_key,
         }
     }
 
