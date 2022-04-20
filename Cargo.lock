@@ -956,6 +956,7 @@ dependencies = [
  "serenity",
  "strum",
  "test-case",
+ "thiserror",
  "tokio",
 ]
 
