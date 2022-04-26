@@ -37,10 +37,4 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
     pub async fn add_note(&self, id: IssueId, note: Note) {
         self.repository.add_note(id, note).await;
     }
-
-    pub async fn add_notes(&self, id: IssueId, notes: Vec<Note>) {
-        for note in notes.into_iter() {
-            self.add_note(id, note).await;
-        }
-    }
 }
