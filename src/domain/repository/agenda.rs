@@ -7,6 +7,6 @@ use serenity::async_trait;
 #[async_trait]
 pub trait AgendaRepository {
     async fn find(&self, id: IssueId) -> Option<Agenda>;
-    async fn update(&self, id: IssueId, new_agenda: Agenda);
+    async fn update(&self, new_agenda: Agenda);
     async fn add_note(&self, id: IssueId, note: Note);
 }

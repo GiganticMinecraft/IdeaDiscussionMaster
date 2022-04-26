@@ -19,7 +19,7 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
 
         if let Some(agenda) = agenda {
             let new = agenda.accept();
-            self.repository.update(id, new).await;
+            self.repository.update(new).await;
         }
     }
 
@@ -28,7 +28,7 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
 
         if let Some(agenda) = agenda {
             let new = agenda.decline();
-            self.repository.update(id, new).await;
+            self.repository.update(new).await;
         }
     }
 
