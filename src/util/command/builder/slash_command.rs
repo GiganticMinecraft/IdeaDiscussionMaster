@@ -12,6 +12,7 @@ pub struct SlashCommandBuilder {
     pub executor: OptExecutor,
 }
 
+// TODO: assertをやめて、build()時にErrorとして返す
 impl SlashCommandBuilder {
     pub fn new<T: ToString>(name: T, description: T, executor: OptExecutor) -> Self {
         Self {

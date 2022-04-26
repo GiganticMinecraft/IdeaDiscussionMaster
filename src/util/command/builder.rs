@@ -1,5 +1,3 @@
-// TODO: assertをやめて、build()時にErrorとして返す
-
 mod slash_command;
 pub use slash_command::SlashCommandBuilder;
 
