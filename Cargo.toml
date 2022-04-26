@@ -19,6 +19,7 @@ create-github-app-token = "2.0"
 anyhow = "1.0"
 once_cell = "1.10"
 thiserror = "1.0"
+derive-new = "0.5"
 
 [dependencies.serenity]
 version = "0.10.10"
