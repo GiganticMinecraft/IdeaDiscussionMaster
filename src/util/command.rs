@@ -10,6 +10,9 @@ pub use command_ext::CommandExt;
 mod parser;
 pub use parser::Parser;
 
+mod slash_command_choice;
+pub use slash_command_choice::SlashCommandChoice;
+
 pub type Executor = fn(
     std::collections::HashMap<String, application_interaction::ApplicationInteractions>,
 ) -> anyhow::Result<InteractionResponse>;
