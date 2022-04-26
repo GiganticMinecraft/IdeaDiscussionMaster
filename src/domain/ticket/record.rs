@@ -1,5 +1,6 @@
 use crate::domain::{id::IssueId, status::record::RecordStatus};
 
+#[derive(Clone)]
 pub struct Record {
     pub id: IssueId,
     pub title: String,
