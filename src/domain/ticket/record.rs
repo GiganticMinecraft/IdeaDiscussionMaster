@@ -1,23 +1,16 @@
 use crate::domain::{id::IssueId, status::record::RecordStatus};
+use derive_new::new;
 
-#[derive(Clone)]
+#[derive(Clone, new)]
 pub struct Record {
     pub id: IssueId,
     pub title: String,
+    #[new(default)]
     pub status: RecordStatus,
     pub relations: Vec<IssueId>,
 }
 
 impl Record {
-    pub fn new(id: IssueId, title: String, relations: Vec<IssueId>) -> Self {
-        Self {
-            id,
-            title,
-            relations,
-            status: RecordStatus::New,
-        }
-    }
-
     pub fn close(self) -> Self {
         Self {
             status: RecordStatus::Closed,
