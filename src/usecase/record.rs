@@ -34,6 +34,10 @@ impl<R: RecordRepository> RecordUseCase<R> {
         }
     }
 
+    pub async fn add_relation(&self, id: IssueId, relation: IssueId) {
+        self.repository.add_relation(id, relation).await;
+    }
+
     // TODO: 切り出す
     #[allow(dead_code)]
     async fn find<P>(&self, f: P) -> Option<Record>
