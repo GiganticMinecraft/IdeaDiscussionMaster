@@ -1,4 +1,5 @@
-use crate::{command::InteractionResponse, util::command::builder::SlashCommandBuilder};
+use super::InteractionResponse;
+use crate::util::command::builder::SlashCommandBuilder;
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new(

@@ -1,4 +1,4 @@
-use crate::command::Executor;
+use crate::presentation::command::Executor;
 use serenity::{
     builder::{CreateApplicationCommand, CreateApplicationCommandOption},
     model::interactions::application_command::ApplicationCommandOptionType,
