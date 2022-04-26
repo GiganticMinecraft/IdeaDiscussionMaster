@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, status::RecordStatus};
+use crate::domain::{id::IssueId, status::record::RecordStatus};
 
 pub struct Record {
     pub id: IssueId,
@@ -19,7 +19,7 @@ impl Record {
 
     pub fn close(self) -> Self {
         Self {
-            status: RecordStatus::Done,
+            status: RecordStatus::Closed,
             ..self
         }
     }

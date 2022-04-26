@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, status::AgendaStatus};
+use crate::domain::{id::IssueId, status::agenda::AgendaStatus};
 
 #[derive(Debug, Clone)]
 pub struct Agenda {
