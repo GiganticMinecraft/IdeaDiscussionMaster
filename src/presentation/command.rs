@@ -5,12 +5,10 @@ mod start;
 mod vote;
 
 use crate::util::command::{
-    application_interaction::ApplicationInteractions,
     builder::{SlashCommandBuilder, SlashCommandBuilderExt},
-    InteractionResponse,
+    Executor, InteractionResponse,
 };
 use serenity::builder::CreateApplicationCommand;
-use std::collections::HashMap;
 
 fn all_builders() -> Vec<SlashCommandBuilder> {
     vec![
@@ -21,9 +19,6 @@ fn all_builders() -> Vec<SlashCommandBuilder> {
         vote::builder(),
     ]
 }
-
-pub type Executor =
-    fn(HashMap<String, ApplicationInteractions>) -> anyhow::Result<InteractionResponse>;
 
 pub fn executor<T: ToString>(command_name: T) -> Executor {
     let builder = all_builders();
