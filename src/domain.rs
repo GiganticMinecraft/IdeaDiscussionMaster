@@ -3,6 +3,8 @@ pub mod id;
 pub mod redmine;
 pub mod status;
 
+pub mod ticket;
+
 mod error;
 pub use error::MyError;
 
