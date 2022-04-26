@@ -6,6 +6,16 @@ pub struct Issue {
     pub labels: Vec<String>,
 }
 
+impl Issue {
+    pub fn new(title: String, content: String, labels: Vec<String>) -> Self {
+        Self {
+            title,
+            content,
+            labels,
+        }
+    }
+}
+
 // TODO: ここではない
 /// GitHubにIssueを作成したときのResponseをデシリアライズするための構造体
 #[derive(Deserialize)]
