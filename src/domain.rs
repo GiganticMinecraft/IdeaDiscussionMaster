@@ -5,6 +5,8 @@ pub mod status;
 
 pub mod ticket;
 
+pub mod repository;
+
 mod error;
 pub use error::MyError;
 
