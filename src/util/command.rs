@@ -1,6 +1,9 @@
 pub mod application_interaction;
 pub mod builder;
 
+mod interaction_response;
+pub use interaction_response::InteractionResponse;
+
 mod command_ext;
 pub use command_ext::CommandExt;
 

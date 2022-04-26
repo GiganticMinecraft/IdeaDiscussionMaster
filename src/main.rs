@@ -5,7 +5,7 @@ use idea_discussion_master::{
         self,
         command::{
             application_interaction::{ApplicationInteractions, SlashCommand},
-            CommandExt, Parser,
+            CommandExt, InteractionResponse, Parser,
         },
     },
 };
