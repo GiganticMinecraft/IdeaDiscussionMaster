@@ -1,3 +1,5 @@
+pub mod model;
+
 mod agenda;
 pub use agenda::AgendaUseCase;
 
