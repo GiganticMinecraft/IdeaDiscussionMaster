@@ -5,3 +5,9 @@ pub enum RecordStatus {
     New,
     Closed,
 }
+
+impl Default for RecordStatus {
+    fn default() -> Self {
+        Self::New
+    }
+}

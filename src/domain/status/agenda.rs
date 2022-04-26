@@ -31,3 +31,9 @@ impl AgendaStatus {
         self.get_str("emoji").unwrap().to_string()
     }
 }
+
+impl Default for AgendaStatus {
+    fn default() -> Self {
+        Self::New
+    }
+}
