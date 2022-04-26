@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, status::AgendaStatus, ticket::Note};
+use crate::domain::{id::IssueId, status::AgendaStatus};
 
 #[derive(Debug, Clone)]
 pub struct Agenda {
@@ -6,17 +6,15 @@ pub struct Agenda {
     pub title: String,
     pub description: String,
     pub status: AgendaStatus,
-    pub notes: Vec<Note>,
 }
 
 impl Agenda {
-    pub fn new(id: IssueId, title: String, description: String, notes: Vec<Note>) -> Self {
+    pub fn new(id: IssueId, title: String, description: String) -> Self {
         Self {
             id,
             title,
             description,
             status: AgendaStatus::New,
-            notes,
         }
     }
 
@@ -39,12 +37,5 @@ impl Agenda {
             status: AgendaStatus::Approved,
             ..self
         }
-    }
-
-    pub fn add_note(self, note: Note) -> Self {
-        let mut notes = self.notes;
-        notes.push(note);
-
-        Self { notes, ..self }
     }
 }

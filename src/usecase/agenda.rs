@@ -33,11 +33,12 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
     }
 
     pub async fn add_note(&self, id: IssueId, note: Note) {
-        let agenda = self.repository.find(id).await;
+        self.repository.add_note(id, note).await;
+    }
 
-        if let Some(agenda) = agenda {
-            let new = agenda.add_note(note);
-            self.repository.update(id, new).await;
+    pub async fn add_notes(&self, id: IssueId, notes: Vec<Note>) {
+        for note in notes.into_iter() {
+            self.add_note(id, note).await;
         }
     }
 }
