@@ -4,8 +4,10 @@ use crate::domain::{
     status::record::RecordStatus,
     ticket::{Note, Record},
 };
+use derive_new::new;
 use std::sync::Arc;
 
+#[derive(new)]
 pub struct RecordUseCase<R: RecordRepository> {
     repository: Arc<R>,
 }

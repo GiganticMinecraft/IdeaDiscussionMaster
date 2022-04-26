@@ -1,6 +1,8 @@
 use crate::domain::{gh_issue::Issue, repository::GitHubIssueRepository};
+use derive_new::new;
 use std::sync::Arc;
 
+#[derive(new)]
 pub struct GitHubIssueUseCase<R: GitHubIssueRepository> {
     repository: Arc<R>,
 }

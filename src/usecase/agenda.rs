@@ -3,8 +3,10 @@ use crate::domain::{
     repository::AgendaRepository,
     ticket::{Agenda, Note},
 };
+use derive_new::new;
 use std::sync::Arc;
 
+#[derive(new)]
 pub struct AgendaUseCase<R: AgendaRepository> {
     repository: Arc<R>,
 }

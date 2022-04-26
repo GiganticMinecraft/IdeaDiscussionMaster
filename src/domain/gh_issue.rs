@@ -1,19 +1,11 @@
+use derive_new::new;
 use serde::Deserialize;
 
+#[derive(new)]
 pub struct Issue {
     pub title: String,
     pub content: String,
     pub labels: Vec<String>,
-}
-
-impl Issue {
-    pub fn new(title: String, content: String, labels: Vec<String>) -> Self {
-        Self {
-            title,
-            content,
-            labels,
-        }
-    }
 }
 
 // TODO: ここではない
