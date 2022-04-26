@@ -1,4 +1,4 @@
-use crate::domain::id::IssueId;
+use crate::domain::{id::IssueId, status::record::RecordStatus, ticket::Record};
 use derive_new::new;
 
 #[derive(new)]
@@ -7,4 +7,10 @@ pub struct RecordDto {
     pub title: String,
     pub status: RecordStatus,
     pub relations: Vec<IssueId>,
+}
+
+impl From<Record> for RecordDto {
+    fn from(record: Record) -> Self {
+        Self::new(record.id, record.title, record.status, record.relations)
+    }
 }

@@ -1,10 +1,16 @@
-use crate::domain::id::IssueId;
+use crate::domain::{id::IssueId, status::agenda::AgendaStatus, ticket::Agenda};
 use derive_new::new;
 
 #[derive(new)]
 pub struct AgendaDto {
-    id: IssueId,
+    pub id: IssueId,
     pub title: String,
     pub description: String,
     pub status: AgendaStatus,
+}
+
+impl From<Agenda> for AgendaDto {
+    fn from(agenda: Agenda) -> Self {
+        Self::new(agenda.id, agenda.title, agenda.description, agenda.status)
+    }
 }
