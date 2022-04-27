@@ -6,7 +6,6 @@ pub struct Agenda {
     pub id: IssueId,
     pub title: String,
     pub description: String,
-    #[new(default)]
     pub status: AgendaStatus,
 }
 
