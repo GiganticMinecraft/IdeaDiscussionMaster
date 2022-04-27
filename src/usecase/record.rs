@@ -1,3 +1,4 @@
+use super::model::RecordDto;
 use crate::domain::{
     id::IssueId,
     repository::RecordRepository,
@@ -13,12 +14,18 @@ pub struct RecordUseCase<R: RecordRepository> {
 }
 
 impl<R: RecordRepository> RecordUseCase<R> {
-    pub async fn find_new_one(&self) -> Option<Record> {
-        self.find(|ticket| ticket.status == RecordStatus::New).await
+    pub async fn find_new_one(&self) -> Option<RecordDto> {
+        self.find(|ticket| ticket.status == RecordStatus::New)
+            .await
+            .map(|r| r.into())
     }
 
-    pub async fn find_by_id(&self, id: IssueId) -> Option<Record> {
+    async fn find_by_id_with_record(&self, id: IssueId) -> Option<Record> {
         self.find(|ticket| ticket.id == id).await
+    }
+
+    pub async fn find_by_id(&self, id: IssueId) -> Option<RecordDto> {
+        self.find_by_id_with_record(id).await.map(|r| r.into())
     }
 
     pub async fn add_note(&self, id: IssueId, note: Note) {
@@ -26,7 +33,7 @@ impl<R: RecordRepository> RecordUseCase<R> {
     }
 
     pub async fn close(&self, id: IssueId) {
-        let record = self.find_by_id(id).await;
+        let record = self.find_by_id_with_record(id).await;
 
         if let Some(record) = record {
             let new = record.close();

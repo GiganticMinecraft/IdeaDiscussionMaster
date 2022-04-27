@@ -1,8 +1,5 @@
-use crate::domain::{
-    id::IssueId,
-    repository::AgendaRepository,
-    ticket::{Agenda, Note},
-};
+use super::model::AgendaDto;
+use crate::domain::{id::IssueId, repository::AgendaRepository, ticket::Note};
 use derive_new::new;
 use std::sync::Arc;
 
@@ -12,14 +9,14 @@ pub struct AgendaUseCase<R: AgendaRepository> {
 }
 
 impl<R: AgendaRepository> AgendaUseCase<R> {
-    pub async fn find(&self, id: IssueId) -> Option<Agenda> {
-        self.repository.find(id).await
+    pub async fn find(&self, id: IssueId) -> anyhow::Result<AgendaDto> {
+        self.repository.find(id).await.map(|a| a.into())
     }
 
     pub async fn accept(&self, id: IssueId) {
         let agenda = self.repository.find(id).await;
 
-        if let Some(agenda) = agenda {
+        if let Ok(agenda) = agenda {
             let new = agenda.accept();
             self.repository.update(new).await;
         }
@@ -28,7 +25,7 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
     pub async fn decline(&self, id: IssueId) {
         let agenda = self.repository.find(id).await;
 
-        if let Some(agenda) = agenda {
+        if let Ok(agenda) = agenda {
             let new = agenda.decline();
             self.repository.update(new).await;
         }
