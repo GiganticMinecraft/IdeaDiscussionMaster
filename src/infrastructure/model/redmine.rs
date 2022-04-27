@@ -1,4 +1,9 @@
-use crate::domain::{id::IssueId, status::agenda::AgendaStatus, ticket::Agenda};
+use crate::domain::{
+    id::IssueId,
+    status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},
+    ticket::Agenda,
+    MyError,
+};
 use itertools::Itertools;
 use serde::Deserialize;
 
@@ -14,7 +19,16 @@ pub struct RedmineIssueTracker {
 
 #[derive(Debug, Deserialize, Default, PartialEq)]
 pub struct RedmineIssueStatus {
+    pub id: u16,
     pub name: String,
+}
+
+impl TryFrom<RedmineIssueStatus> for AgendaStatus {
+    type Error = anyhow::Error;
+    fn try_from(status: RedmineIssueStatus) -> anyhow::Result<Self> {
+        Self::from_id(status.id)
+            .ok_or_else(|| MyError::TicketHasUnexpectedStatus(status.id, status.name).into())
+    }
 }
 
 #[derive(Debug, Deserialize, Default, PartialEq)]
@@ -71,12 +85,17 @@ pub struct RedmineIssueResult {
     pub issue: RedmineIssue,
 }
 
-impl Into<Agenda> for RedmineIssueResult {
-    fn into(self) -> Agenda {
-        Agenda::new(
-            IssueId::new(self.issue.id),
-            self.issue.subject,
-            self.issue.description,
-        )
+impl TryFrom<RedmineIssueResult> for Agenda {
+    type Error = anyhow::Error;
+    fn try_from(res: RedmineIssueResult) -> anyhow::Result<Self> {
+        let issue = res.issue;
+        let status = issue.status.try_into()?;
+
+        Ok(Self::new(
+            IssueId::new(issue.id),
+            issue.subject,
+            issue.description,
+            status,
+        ))
     }
 }
