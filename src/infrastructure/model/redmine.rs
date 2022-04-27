@@ -59,8 +59,8 @@ impl RedmineIssue {
         self.is_idea_ticket()
             && !AgendaStatus::closed()
                 .iter()
-                .map(|status| status.ja())
-                .contains(&self.status.name)
+                .map(|status| status.id())
+                .contains(&self.status.id)
     }
 
     pub fn is_idea_discussion_record(&self) -> bool {
