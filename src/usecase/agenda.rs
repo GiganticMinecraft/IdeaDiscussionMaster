@@ -1,5 +1,5 @@
 use super::model::AgendaDto;
-use crate::domain::{id::IssueId, repository::AgendaRepository, ticket::Note, MyError};
+use crate::domain::{id::IssueId, repository::AgendaRepository, ticket::Note};
 use derive_new::new;
 use std::sync::Arc;
 
