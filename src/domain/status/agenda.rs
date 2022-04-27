@@ -1,22 +1,27 @@
+use super::StatusExt;
 use strum::{Display, EnumIter, EnumProperty, EnumString};
 
 // TODO: rename this file's name to agenda_status
 
 #[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq, Eq, Hash)]
 pub enum AgendaStatus {
-    #[strum(props(ja = "新規", emoji = "🆕"))]
+    #[strum(props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
-    #[strum(props(ja = "進行中", emoji = "▶"))]
+    #[strum(props(ja = "進行中", emoji = "▶", id = "2"))]
     InProgress,
-    #[strum(props(ja = "承認", emoji = "⭕"))]
+    #[strum(props(ja = "承認", emoji = "⭕", id = "17"))]
     Approved,
-    #[strum(props(ja = "却下", emoji = "❌"))]
+    #[strum(props(ja = "却下", emoji = "❌", id = "6"))]
     Declined,
 }
 
 impl AgendaStatus {
+    pub fn closed() -> Vec<Self> {
+        vec![Self::Approved, Self::Declined]
+    }
+
     pub fn is_closed(&self) -> bool {
-        *self == Self::Approved || *self == Self::Declined
+        Self::closed().iter().any(|s| s == self)
     }
 
     pub fn is_in_progress(&self) -> bool {
@@ -37,3 +42,5 @@ impl Default for AgendaStatus {
         Self::New
     }
 }
+
+impl StatusExt for AgendaStatus {}

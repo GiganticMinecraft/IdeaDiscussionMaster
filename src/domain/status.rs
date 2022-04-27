@@ -7,3 +7,14 @@ mod record_status;
 pub use record_status::RecordStatus;
 
 pub mod record;
+
+pub trait StatusExt {
+    fn id(&self) -> u16
+    where
+        Self: strum::EnumProperty,
+    {
+        self.get_str("id")
+            .and_then(|str| str.parse::<u16>().ok())
+            .unwrap_or(1)
+    }
+}
