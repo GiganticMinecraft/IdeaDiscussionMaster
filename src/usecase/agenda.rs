@@ -1,6 +1,10 @@
 use super::model::AgendaDto;
 use crate::domain::{
-    id::IssueId, repository::AgendaRepository, status::agenda::AgendaStatus, ticket::Note, MyError,
+    id::IssueId,
+    repository::AgendaRepository,
+    status::{agenda::AgendaStatus, StatusExt},
+    ticket::Note,
+    MyError,
 };
 use anyhow::ensure;
 use derive_new::new;

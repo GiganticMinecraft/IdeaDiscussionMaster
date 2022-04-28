@@ -17,4 +17,12 @@ impl Default for RecordStatus {
     }
 }
 
-impl StatusExt for RecordStatus {}
+impl StatusExt for RecordStatus {
+    fn is_new(&self) -> bool {
+        *self == Self::New
+    }
+
+    fn is_closed(&self) -> bool {
+        *self == Self::Closed
+    }
+}

@@ -20,10 +20,6 @@ impl AgendaStatus {
         vec![Self::Approved, Self::Declined]
     }
 
-    pub fn is_closed(&self) -> bool {
-        Self::closed().iter().any(|s| s == self)
-    }
-
     pub fn is_in_progress(&self) -> bool {
         *self == Self::InProgress
     }
@@ -43,4 +39,12 @@ impl Default for AgendaStatus {
     }
 }
 
-impl StatusExt for AgendaStatus {}
+impl StatusExt for AgendaStatus {
+    fn is_new(&self) -> bool {
+        *self == Self::New
+    }
+
+    fn is_closed(&self) -> bool {
+        Self::closed().iter().any(|s| s == self)
+    }
+}

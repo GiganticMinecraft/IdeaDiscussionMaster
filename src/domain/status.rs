@@ -26,4 +26,8 @@ pub trait StatusExt {
     {
         Self::iter().find(|s| s.id() == id)
     }
+
+    fn is_new(&self) -> bool;
+
+    fn is_closed(&self) -> bool;
 }
