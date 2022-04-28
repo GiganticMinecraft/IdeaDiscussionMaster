@@ -1,4 +1,4 @@
-use super::{super::model::redmine::RedmineIssueResult, RedminePersistenceImpl};
+use super::RedminePersistenceImpl;
 use crate::domain::{
     id::IssueId,
     repository::AgendaRepository,
@@ -6,7 +6,7 @@ use crate::domain::{
     ticket::{Agenda, Note},
     MyError,
 };
-use anyhow::{ensure, Context};
+use anyhow::ensure;
 use serde_json::json;
 use serenity::async_trait;
 
@@ -14,10 +14,6 @@ use serenity::async_trait;
 impl AgendaRepository for RedminePersistenceImpl<Agenda> {
     async fn find(&self, id: IssueId) -> anyhow::Result<Agenda> {
         let res = self.client.get(id).await?;
-        let res = res
-            .json::<RedmineIssueResult>()
-            .await
-            .context("Error while deserializing json")?;
         ensure!(res.issue.is_idea_ticket(), MyError::TicketIsNotIdea);
 
         res.try_into()

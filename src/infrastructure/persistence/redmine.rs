@@ -1,3 +1,4 @@
+use super::super::model::redmine::RedmineIssueResult;
 use crate::{
     domain::{id::IssueId, MyError},
     util::{client::REDMINE_URL, Env},
@@ -21,7 +22,7 @@ impl Redmine {
         }
     }
 
-    pub async fn get(&self, id: IssueId) -> anyhow::Result<Response> {
+    pub async fn get(&self, id: IssueId) -> anyhow::Result<RedmineIssueResult> {
         let url = self.generate_url(id);
         let res = self
             .client
@@ -30,8 +31,11 @@ impl Redmine {
             .send()
             .await
             .context(REQWEST_ERROR_CONTEXT)?;
+        let res = Self::map_by_http_status(res).await?;
 
-        Self::map_by_http_status(res).await
+        res.json::<RedmineIssueResult>()
+            .await
+            .context("Error while deserializing json")
     }
 
     pub async fn post(
