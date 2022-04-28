@@ -55,20 +55,8 @@ impl RedmineIssue {
         self.project.name == "アイデア提案用プロジェクト" && self.tracker.name == "アイデア提案"
     }
 
-    pub fn is_undone_idea_ticket(&self) -> bool {
-        self.is_idea_ticket()
-            && !AgendaStatus::closed()
-                .iter()
-                .map(|status| status.id())
-                .contains(&self.status.id)
-    }
-
     pub fn is_idea_discussion_record(&self) -> bool {
         self.project.name == "アイデア会議議事録" && self.tracker.name == "アイデア会議"
-    }
-
-    pub fn is_undone_idea_discussion_record(&self) -> bool {
-        self.is_idea_discussion_record() && self.status.name == AgendaStatus::New.ja()
     }
 
     pub fn relations(&self) -> Vec<u16> {
