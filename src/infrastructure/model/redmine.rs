@@ -1,7 +1,7 @@
 use crate::domain::{
     id::IssueId,
     status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},
-    ticket::Agenda,
+    ticket::{Agenda, Record},
     MyError,
 };
 use itertools::Itertools;
@@ -24,6 +24,14 @@ pub struct RedmineIssueStatus {
 }
 
 impl TryFrom<RedmineIssueStatus> for AgendaStatus {
+    type Error = anyhow::Error;
+    fn try_from(status: RedmineIssueStatus) -> anyhow::Result<Self> {
+        Self::from_id(status.id)
+            .ok_or_else(|| MyError::TicketHasUnexpectedStatus(status.id, status.name).into())
+    }
+}
+
+impl TryFrom<RedmineIssueStatus> for RecordStatus {
     type Error = anyhow::Error;
     fn try_from(status: RedmineIssueStatus) -> anyhow::Result<Self> {
         Self::from_id(status.id)
@@ -84,6 +92,26 @@ impl TryFrom<RedmineIssueResult> for Agenda {
             issue.subject,
             issue.description,
             status,
+        ))
+    }
+}
+
+impl TryFrom<RedmineIssueResult> for Record {
+    type Error = anyhow::Error;
+    fn try_from(res: RedmineIssueResult) -> anyhow::Result<Self> {
+        let issue = res.issue;
+        let status = issue.status.try_into()?;
+        let relations = issue
+            .relations()
+            .into_iter()
+            .map(|id| IssueId::new(id))
+            .collect_vec();
+
+        Ok(Self::new(
+            IssueId::new(issue.id),
+            issue.subject,
+            status,
+            relations,
         ))
     }
 }
