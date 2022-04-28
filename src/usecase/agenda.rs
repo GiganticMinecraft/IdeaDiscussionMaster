@@ -1,5 +1,8 @@
 use super::model::AgendaDto;
-use crate::domain::{id::IssueId, repository::AgendaRepository, ticket::Note};
+use crate::domain::{
+    id::IssueId, repository::AgendaRepository, status::agenda::AgendaStatus, ticket::Note, MyError,
+};
+use anyhow::ensure;
 use derive_new::new;
 use std::sync::Arc;
 
@@ -11,6 +14,13 @@ pub struct AgendaUseCase<R: AgendaRepository> {
 impl<R: AgendaRepository> AgendaUseCase<R> {
     pub async fn find(&self, id: IssueId) -> anyhow::Result<AgendaDto> {
         self.repository.find(id).await.map(|a| a.into())
+    }
+
+    pub async fn find_new(&self, id: IssueId) -> anyhow::Result<AgendaDto> {
+        let issue = self.find(id).await?;
+        ensure!(issue.status.is_new(), MyError::TicketIsNotUndoneIdea);
+
+        Ok(issue)
     }
 
     pub async fn accept(&self, id: IssueId) -> anyhow::Result<()> {
