@@ -5,7 +5,6 @@ use derive_new::new;
 pub struct Record {
     pub id: IssueId,
     pub title: String,
-    #[new(default)]
     pub status: RecordStatus,
     pub relations: Vec<IssueId>,
 }
