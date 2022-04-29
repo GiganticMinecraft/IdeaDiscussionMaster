@@ -1,6 +1,5 @@
 pub mod custom_error;
 pub mod id;
-pub mod redmine;
 pub mod status;
 
 pub mod ticket;

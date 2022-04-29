@@ -1,4 +1,5 @@
-use crate::domain::{id::IssueId, redmine, status::AgendaStatus};
+use super::REDMINE_URL;
+use crate::domain::{id::IssueId, status::AgendaStatus, ticket::Agenda};
 use chrono::Utc;
 use regex::Regex;
 use serenity::{builder, utils::Color};
@@ -36,18 +37,19 @@ impl CreateEmbedExt for builder::CreateEmbed {
 pub fn next_agenda_embed(
     embed: &mut builder::CreateEmbed,
     record_id: IssueId,
-    next_redmine_issue: Option<redmine::RedmineIssue>,
+    next_agenda: Option<Agenda>,
 ) -> &mut builder::CreateEmbed {
-    if let Some(issue) = next_redmine_issue {
+    if let Some(issue) = next_agenda {
         let reg = Regex::new(r"^\[.*\]\s").unwrap();
-        let subject = reg.replace(&issue.subject, "");
+        let subject = reg.replace(&issue.title, "");
+
         embed
             .simple_color()
             .with_record_id(record_id)
-            .title(format!("次の議題は#{}です", issue.id))
+            .title(format!("次の議題は#{}です", issue.id.0))
             .field(
                 "議題チケット",
-                format!("{}/issues/{}", redmine::REDMINE_URL, issue.id),
+                format!("{}/issues/{}", REDMINE_URL, issue.id.0),
                 false,
             )
             .field("タイトル", subject, false)

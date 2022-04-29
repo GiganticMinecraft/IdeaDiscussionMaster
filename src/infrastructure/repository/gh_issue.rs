@@ -1,7 +1,7 @@
 use super::{super::model::github::CreateIssueResponse, GitHubPersistenceImpl};
 use crate::{
     domain::{gh_issue::Issue, repository::GitHubIssueRepository},
-    util::client::GITHUB_URL,
+    util::GITHUB_URL,
 };
 use anyhow::{ensure, Context};
 use reqwest::header;

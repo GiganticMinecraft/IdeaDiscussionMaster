@@ -1,7 +1,7 @@
 use super::super::model::redmine::RedmineIssueResult;
 use crate::{
     domain::{id::IssueId, MyError},
-    util::{client::REDMINE_URL, Env},
+    util::{Env, REDMINE_URL},
 };
 use anyhow::{anyhow, Context};
 use reqwest::{header, Client, Response, StatusCode};
