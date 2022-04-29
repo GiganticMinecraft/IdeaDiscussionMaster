@@ -11,6 +11,20 @@ pub struct RepositoryModule {
     github_issue_repository: GHIssueRepoImpl,
 }
 
+impl RepositoryModule {
+    pub fn new(redmine_client: Redmine, github_client: GitHub) -> Self {
+        let agenda_repository = RedminePersistenceImpl::new(redmine_client.clone());
+        let record_repository = RedminePersistenceImpl::new(redmine_client.clone());
+        let github_issue_repository = GitHubPersistenceImpl::new(github_client.clone());
+
+        Self {
+            agenda_repository,
+            record_repository,
+            github_issue_repository,
+        }
+    }
+}
+
 pub trait RepositoryModuleExt {
     type AgendaRepo: AgendaRepository;
     type RecordRepo: RecordRepository;
@@ -34,19 +48,5 @@ impl RepositoryModuleExt for RepositoryModule {
     }
     fn github_issue_repository(&self) -> &Self::GHIssueRepo {
         &self.github_issue_repository
-    }
-}
-
-impl RepositoryModule {
-    pub fn new(redmine_client: Redmine, github_client: GitHub) -> Self {
-        let agenda_repository = RedminePersistenceImpl::new(redmine_client.clone());
-        let record_repository = RedminePersistenceImpl::new(redmine_client.clone());
-        let github_issue_repository = GitHubPersistenceImpl::new(github_client.clone());
-
-        Self {
-            agenda_repository,
-            record_repository,
-            github_issue_repository,
-        }
     }
 }
