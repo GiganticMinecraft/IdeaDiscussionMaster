@@ -7,7 +7,7 @@ use anyhow::ensure;
 use derive_new::new;
 use std::sync::Arc;
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct AgendaUseCase<R: RepositoryModuleExt> {
     repositories: Arc<R>,
 }

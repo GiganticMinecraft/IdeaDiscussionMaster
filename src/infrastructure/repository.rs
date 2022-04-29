@@ -6,13 +6,13 @@ use super::persistence::{GitHub, Redmine};
 use derive_new::new;
 use std::marker::PhantomData;
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct RedminePersistenceImpl<T> {
     pub client: Redmine,
     _marker: PhantomData<T>,
 }
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct GitHubPersistenceImpl<T> {
     pub client: GitHub,
     _marker: PhantomData<T>,

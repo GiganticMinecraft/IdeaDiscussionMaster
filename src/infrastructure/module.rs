@@ -5,6 +5,7 @@ type AgendaRepoImpl = RedminePersistenceImpl<Agenda>;
 type RecordRepoImpl = RedminePersistenceImpl<Record>;
 type GHIssueRepoImpl = GitHubPersistenceImpl<Issue>;
 
+#[derive(Clone)]
 pub struct RepositoryModule {
     agenda_repository: AgendaRepoImpl,
     record_repository: RecordRepoImpl,

@@ -7,6 +7,7 @@ use crate::{
 };
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Module {
     agenda_usecase: AgendaUseCase<RepositoryModule>,
     record_usecase: RecordUseCase<RepositoryModule>,

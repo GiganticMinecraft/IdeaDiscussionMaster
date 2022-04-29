@@ -5,7 +5,7 @@ use crate::{
 use derive_new::new;
 use std::sync::Arc;
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct GitHubIssueUseCase<R: RepositoryModuleExt> {
     repositories: Arc<R>,
 }
