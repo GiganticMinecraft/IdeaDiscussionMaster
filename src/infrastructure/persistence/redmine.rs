@@ -23,7 +23,7 @@ impl Redmine {
     }
 
     pub async fn get(&self, id: IssueId) -> anyhow::Result<RedmineIssueResult> {
-        let url = self.generate_url(id);
+        let url = self.issue_url(id);
         let res = self
             .client
             .get(url)
@@ -43,7 +43,14 @@ impl Redmine {
         id: IssueId,
         json_value: serde_json::Value,
     ) -> anyhow::Result<Response> {
-        let url = self.generate_url(id);
+        self.post_with_url(self.issue_url(id), json_value).await
+    }
+
+    pub async fn post_with_url(
+        &self,
+        url: String,
+        json_value: serde_json::Value,
+    ) -> anyhow::Result<Response> {
         let res = self
             .client
             .put(url)
@@ -56,8 +63,15 @@ impl Redmine {
         Self::map_by_http_status(res).await
     }
 
-    fn generate_url(&self, id: IssueId) -> String {
+    fn issue_url(&self, id: IssueId) -> String {
         format!("{}/issues/{}.json?{}", REDMINE_URL, id.0, self.token)
+    }
+
+    pub fn issue_relations_url(&self, id: IssueId) -> String {
+        format!(
+            "{}/issues/{}/relations.json?{}",
+            REDMINE_URL, id.0, self.token
+        )
     }
 
     async fn map_by_http_status(res: Response) -> anyhow::Result<Response> {
