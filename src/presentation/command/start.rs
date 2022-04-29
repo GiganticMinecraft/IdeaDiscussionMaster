@@ -1,5 +1,7 @@
-use super::InteractionResponse;
-use crate::util::command::builder::{SlashCommandBuilder, SlashCommandOptionBuilder};
+use crate::util::command::{
+    builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+    InteractionResponse,
+};
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 
 pub fn builder() -> SlashCommandBuilder {
