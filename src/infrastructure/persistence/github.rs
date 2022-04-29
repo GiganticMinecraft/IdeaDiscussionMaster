@@ -3,6 +3,7 @@ use create_github_app_token::publish_token;
 use reqwest::Client;
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct GitHub {
     pub client: Arc<Client>,
     pub token: String,

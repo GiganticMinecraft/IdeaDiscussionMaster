@@ -1,19 +1,24 @@
 use super::model::RecordDto;
-use crate::domain::{
-    id::IssueId, repository::RecordRepository, status::StatusExt, ticket::Note, MyError,
+use crate::{
+    domain::{id::IssueId, repository::RecordRepository, status::StatusExt, ticket::Note, MyError},
+    infrastructure::module::RepositoryModuleExt,
 };
 use anyhow::ensure;
 use derive_new::new;
 use std::sync::Arc;
 
 #[derive(new)]
-pub struct RecordUseCase<R: RecordRepository> {
-    repository: Arc<R>,
+pub struct RecordUseCase<R: RepositoryModuleExt> {
+    repositories: Arc<R>,
 }
 
-impl<R: RecordRepository> RecordUseCase<R> {
+impl<R: RepositoryModuleExt> RecordUseCase<R> {
     pub async fn find(&self, id: IssueId) -> anyhow::Result<RecordDto> {
-        self.repository.find(id).await.map(|r| r.into())
+        self.repositories
+            .record_repository()
+            .find(id)
+            .await
+            .map(|r| r.into())
     }
 
     pub async fn find_new(&self, id: IssueId) -> anyhow::Result<RecordDto> {
@@ -27,17 +32,24 @@ impl<R: RecordRepository> RecordUseCase<R> {
     }
 
     pub async fn add_note(&self, id: IssueId, note: Note) -> anyhow::Result<()> {
-        self.repository.add_note(id, note).await
+        self.repositories
+            .record_repository()
+            .add_note(id, note)
+            .await
     }
 
     pub async fn close(&self, id: IssueId) -> anyhow::Result<()> {
-        let record = self.repository.find(id).await?;
+        let repo = self.repositories.record_repository();
+        let record = repo.find(id).await?;
         let new = record.close();
 
-        self.repository.change_status(new).await
+        repo.change_status(new).await
     }
 
     pub async fn add_relation(&self, id: IssueId, relation: IssueId) -> anyhow::Result<()> {
-        self.repository.add_relation(id, relation).await
+        self.repositories
+            .record_repository()
+            .add_relation(id, relation)
+            .await
     }
 }

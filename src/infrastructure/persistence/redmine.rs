@@ -7,6 +7,7 @@ use anyhow::{anyhow, Context};
 use reqwest::{header, Client, Response, StatusCode};
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Redmine {
     pub client: Arc<Client>,
     pub token: String,
