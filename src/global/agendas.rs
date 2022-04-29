@@ -1,5 +1,9 @@
 use crate::{
-    domain::{id::IssueId, status::AgendaStatus, Agenda},
+    domain::{
+        id::IssueId,
+        status::{AgendaStatus, StatusExt},
+        Agenda,
+    },
     util::HashSetExt,
 };
 use once_cell::sync::Lazy;

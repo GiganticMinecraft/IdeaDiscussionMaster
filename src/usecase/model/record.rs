@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, redmine::Record, status::record::RecordStatus};
+use crate::domain::{id::IssueId, redmine::Record, status::RecordStatus};
 use derive_new::new;
 
 #[derive(new)]

@@ -1,12 +1,8 @@
-mod agenda_status;
-pub use agenda_status::AgendaStatus;
-
 pub mod agenda;
-
-mod record_status;
-pub use record_status::RecordStatus;
+pub use agenda::AgendaStatus;
 
 pub mod record;
+pub use record::RecordStatus;
 
 use strum::{EnumProperty, IntoEnumIterator};
 
