@@ -6,7 +6,7 @@ mod vote;
 
 use crate::util::command::{
     builder::{SlashCommandBuilder, SlashCommandBuilderExt},
-    Executor, InteractionResponse,
+    Executor,
 };
 use serenity::builder::CreateApplicationCommand;
 
