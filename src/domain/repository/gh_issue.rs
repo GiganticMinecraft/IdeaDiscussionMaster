@@ -1,4 +1,4 @@
-use crate::domain::gh_issue::Issue;
+use crate::domain::github::Issue;
 use serenity::async_trait;
 
 #[async_trait]

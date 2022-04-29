@@ -1,15 +1,11 @@
-pub mod custom_error;
+pub mod github;
 pub mod id;
-pub mod status;
-
-pub mod ticket;
-
+pub mod redmine;
 pub mod repository;
+pub mod status;
 
 mod error;
 pub use error::MyError;
 
 mod agenda;
 pub use agenda::Agenda;
-
-pub mod gh_issue;

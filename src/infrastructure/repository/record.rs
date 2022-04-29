@@ -3,7 +3,7 @@ use crate::domain::{
     id::IssueId,
     repository::RecordRepository,
     status::StatusExt,
-    ticket::{Note, Record},
+    redmine::{Note, Record},
     MyError,
 };
 use anyhow::ensure;

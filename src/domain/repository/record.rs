@@ -1,6 +1,6 @@
 use crate::domain::{
     id::IssueId,
-    ticket::{Note, Record},
+    redmine::{Note, Record},
 };
 use serenity::async_trait;
 

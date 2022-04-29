@@ -1,6 +1,8 @@
 use super::model::AgendaDto;
 use crate::{
-    domain::{id::IssueId, repository::AgendaRepository, status::StatusExt, ticket::Note, MyError},
+    domain::{
+        id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt, MyError,
+    },
     infrastructure::module::RepositoryModuleExt,
 };
 use anyhow::ensure;

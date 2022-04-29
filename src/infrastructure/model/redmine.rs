@@ -1,7 +1,7 @@
 use crate::domain::{
     id::IssueId,
+    redmine::{Agenda, Record},
     status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},
-    ticket::{Agenda, Record},
     MyError,
 };
 use itertools::Itertools;

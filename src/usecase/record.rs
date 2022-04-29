@@ -1,6 +1,8 @@
 use super::model::RecordDto;
 use crate::{
-    domain::{id::IssueId, repository::RecordRepository, status::StatusExt, ticket::Note, MyError},
+    domain::{
+        id::IssueId, redmine::Note, repository::RecordRepository, status::StatusExt, MyError,
+    },
     infrastructure::module::RepositoryModuleExt,
 };
 use anyhow::ensure;

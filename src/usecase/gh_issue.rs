@@ -1,5 +1,5 @@
 use crate::{
-    domain::{gh_issue::Issue, repository::GitHubIssueRepository},
+    domain::{github::Issue, repository::GitHubIssueRepository},
     infrastructure::module::RepositoryModuleExt,
 };
 use derive_new::new;
