@@ -1,8 +1,6 @@
 use super::StatusExt;
 use strum::{Display, EnumIter, EnumProperty, EnumString};
 
-// TODO: rename this file's name to agenda_status
-
 #[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq, Eq, Hash)]
 pub enum AgendaStatus {
     #[strum(props(ja = "新規", emoji = "🆕", id = "1"))]
