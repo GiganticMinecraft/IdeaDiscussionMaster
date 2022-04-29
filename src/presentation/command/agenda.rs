@@ -11,7 +11,7 @@ pub fn builder() -> SlashCommandBuilder {
                 "add",
                 "議題を追加します。",
                 ApplicationCommandOptionType::SubCommand,
-                Some(|_map| Ok(InteractionResponse::Message("".to_string()))), // TODO: .messageや.embedをできるように
+                Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
             )
             .add_option(
                 SlashCommandOptionBuilder::new(
