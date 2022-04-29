@@ -1,9 +1,6 @@
-use super::GitHubPersistenceImpl;
+use super::{super::model::github::CreateIssueResponse, GitHubPersistenceImpl};
 use crate::{
-    domain::{
-        gh_issue::{CreateIssueResponse, Issue},
-        repository::GitHubIssueRepository,
-    },
+    domain::{gh_issue::Issue, repository::GitHubIssueRepository},
     util::client::GITHUB_URL,
 };
 use anyhow::{ensure, Context};
