@@ -29,7 +29,7 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
         match agenda {
             Ok(agenda) => {
                 let new = agenda.accept();
-                self.repository.update(new).await
+                self.repository.change_status(new).await
             }
             Err(e) => Err(e),
         }
@@ -41,7 +41,7 @@ impl<R: AgendaRepository> AgendaUseCase<R> {
         match agenda {
             Ok(agenda) => {
                 let new = agenda.decline();
-                self.repository.update(new).await
+                self.repository.change_status(new).await
             }
             Err(e) => Err(e),
         }

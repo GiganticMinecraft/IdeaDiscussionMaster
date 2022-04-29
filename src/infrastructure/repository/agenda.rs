@@ -19,7 +19,7 @@ impl AgendaRepository for RedminePersistenceImpl<Agenda> {
         res.try_into()
     }
 
-    async fn update(&self, new_agenda: Agenda) -> anyhow::Result<()> {
+    async fn change_status(&self, new_agenda: Agenda) -> anyhow::Result<()> {
         let json_value = json!({
           "issue": {
             "status_id": new_agenda.status.id()

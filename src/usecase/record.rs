@@ -34,7 +34,7 @@ impl<R: RecordRepository> RecordUseCase<R> {
         let record = self.repository.find(id).await?;
         let new = record.close();
 
-        self.repository.update(new).await
+        self.repository.change_status(new).await
     }
 
     pub async fn add_relation(&self, id: IssueId, relation: IssueId) -> anyhow::Result<()> {
