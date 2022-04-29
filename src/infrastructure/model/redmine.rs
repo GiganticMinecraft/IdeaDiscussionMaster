@@ -100,12 +100,12 @@ impl TryFrom<RedmineIssueResult> for Record {
     type Error = anyhow::Error;
     fn try_from(res: RedmineIssueResult) -> anyhow::Result<Self> {
         let issue = res.issue;
-        let status = issue.status.try_into()?;
         let relations = issue
             .relations()
-            .into_iter()
-            .map(|id| IssueId::new(id))
+            .iter()
+            .map(|id| IssueId::new(*id))
             .collect_vec();
+        let status = issue.status.try_into()?;
 
         Ok(Self::new(
             IssueId::new(issue.id),
