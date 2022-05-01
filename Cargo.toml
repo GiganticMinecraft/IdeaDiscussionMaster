@@ -21,7 +21,7 @@ thiserror = "1.0"
 derive-new = "0.5"
 
 [dependencies.serenity]
-version = "0.10.10"
+version = "0.10"
 default-features = false
 features = ["cache", "client", "gateway", "rustls_backend", "model", "unstable_discord_api"]
 
