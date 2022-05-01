@@ -3,7 +3,7 @@ use serenity::model::interactions::application_command::ApplicationCommandOption
 
 pub trait SlashCommandBuilderExt {
     fn has_executor(&self) -> bool;
-    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder>;
+    fn sub_command(&self) -> Option<SlashCommandOptionBuilder>;
 }
 
 impl SlashCommandBuilderExt for SlashCommandBuilder {
@@ -11,9 +11,10 @@ impl SlashCommandBuilderExt for SlashCommandBuilder {
         self.executor.is_some()
     }
 
-    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder> {
+    fn sub_command(&self) -> Option<SlashCommandOptionBuilder> {
         self.options
             .iter()
+            .cloned()
             .find(|o| o.kind == ApplicationCommandOptionType::SubCommand)
     }
 }
@@ -23,9 +24,10 @@ impl SlashCommandBuilderExt for SlashCommandOptionBuilder {
         self.executor.is_some()
     }
 
-    fn sub_command(&self) -> Option<&SlashCommandOptionBuilder> {
+    fn sub_command(&self) -> Option<SlashCommandOptionBuilder> {
         self.options
             .iter()
+            .cloned()
             .find(|o| o.kind == ApplicationCommandOptionType::SubCommand)
     }
 }
