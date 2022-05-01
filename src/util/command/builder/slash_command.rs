@@ -13,6 +13,7 @@ pub struct SlashCommandBuilder {
 }
 
 // TODO: assertをやめて、build()時にErrorとして返す
+// TODO: to_owned()が混在するのを直す
 impl SlashCommandBuilder {
     pub fn new<T: ToString>(name: T, description: T, executor: OptExecutor) -> Self {
         Self {
