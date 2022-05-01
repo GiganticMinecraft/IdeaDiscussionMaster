@@ -15,8 +15,8 @@ pub struct RepositoryModule {
 impl RepositoryModule {
     pub fn new(redmine_client: Redmine, github_client: GitHub) -> Self {
         let agenda_repository = RedminePersistenceImpl::new(redmine_client.clone());
-        let record_repository = RedminePersistenceImpl::new(redmine_client.clone());
-        let github_issue_repository = GitHubPersistenceImpl::new(github_client.clone());
+        let record_repository = RedminePersistenceImpl::new(redmine_client);
+        let github_issue_repository = GitHubPersistenceImpl::new(github_client);
 
         Self {
             agenda_repository,

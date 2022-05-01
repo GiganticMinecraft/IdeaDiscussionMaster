@@ -54,14 +54,14 @@ pub fn builder() -> SlashCommandBuilder {
         .to_owned()
 }
 
-async fn add(map: CommandArg) -> CommandResult {
+async fn add(_map: CommandArg) -> CommandResult {
     Ok(InteractionResponse::Message("add".to_string()))
 }
 
-async fn list(map: CommandArg) -> CommandResult {
+async fn list(_map: CommandArg) -> CommandResult {
     Ok(InteractionResponse::Message("list".to_string()))
 }
 
-async fn set(map: CommandArg) -> CommandResult {
+async fn set(_map: CommandArg) -> CommandResult {
     Ok(InteractionResponse::Message("set".to_string()))
 }

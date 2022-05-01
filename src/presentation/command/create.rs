@@ -47,10 +47,10 @@ pub fn builder() -> SlashCommandBuilder {
     .to_owned()
 }
 
-async fn new_record(map: CommandArg) -> CommandResult {
+async fn new_record(_map: CommandArg) -> CommandResult {
     Ok(InteractionResponse::Message("new_record".to_string()))
 }
 
-async fn issue(map: CommandArg) -> CommandResult {
+async fn issue(_map: CommandArg) -> CommandResult {
     Ok(InteractionResponse::Message("issue".to_string()))
 }

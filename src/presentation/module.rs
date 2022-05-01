@@ -20,7 +20,7 @@ impl Module {
 
         let agenda_usecase = AgendaUseCase::new(module.clone());
         let record_usecase = RecordUseCase::new(module.clone());
-        let gh_issue_usecase = GitHubIssueUseCase::new(module.clone());
+        let gh_issue_usecase = GitHubIssueUseCase::new(module);
 
         Self {
             agenda_usecase,
