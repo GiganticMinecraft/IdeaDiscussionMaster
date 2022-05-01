@@ -1,6 +1,6 @@
 use crate::util::command::{
     builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    InteractionResponse,
+    force_boxed, CommandArg, CommandResult, InteractionResponse,
 };
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 
@@ -14,14 +14,14 @@ pub fn builder() -> SlashCommandBuilder {
         "new_record",
         "議事録のチケットを新規作成します。",
         ApplicationCommandOptionType::SubCommand,
-        Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
+        Some(force_boxed(new_record)),
     ))
     .add_option(
         SlashCommandOptionBuilder::new(
             "issue",
             "承認された議題をGitHubのIssueとして作成します。",
             ApplicationCommandOptionType::SubCommand,
-            Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
+            Some(force_boxed(issue)),
         )
         .add_option(
             SlashCommandOptionBuilder::new(
@@ -45,4 +45,12 @@ pub fn builder() -> SlashCommandBuilder {
         .to_owned(),
     )
     .to_owned()
+}
+
+async fn new_record(map: CommandArg) -> CommandResult {
+    Ok(InteractionResponse::Message("new_record".to_string()))
+}
+
+async fn issue(map: CommandArg) -> CommandResult {
+    Ok(InteractionResponse::Message("issue".to_string()))
 }

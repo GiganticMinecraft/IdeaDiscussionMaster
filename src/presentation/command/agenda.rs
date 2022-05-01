@@ -1,6 +1,6 @@
 use crate::util::command::{
     builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    InteractionResponse, SlashCommandChoice,
+    force_boxed, CommandArg, CommandResult, InteractionResponse, SlashCommandChoice,
 };
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 
@@ -11,7 +11,7 @@ pub fn builder() -> SlashCommandBuilder {
                 "add",
                 "議題を追加します。",
                 ApplicationCommandOptionType::SubCommand,
-                Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
+                Some(force_boxed(add)),
             )
             .add_option(
                 SlashCommandOptionBuilder::new(
@@ -25,32 +25,18 @@ pub fn builder() -> SlashCommandBuilder {
             )
             .to_owned(),
         )
-        .add_option(
-            SlashCommandOptionBuilder::new(
-                "list",
-                "議題の一覧を表示します。",
-                ApplicationCommandOptionType::SubCommand,
-                Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
-            )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "status",
-                    "変更後のステータス",
-                    ApplicationCommandOptionType::Integer,
-                    None,
-                )
-                .add_choice(("Approved", SlashCommandChoice::Int(1)))
-                .add_choice(("Declined", SlashCommandChoice::Int(2)))
-                .required(true),
-            )
-            .to_owned(),
-        )
+        .add_option(SlashCommandOptionBuilder::new(
+            "list",
+            "議題の一覧を表示します。",
+            ApplicationCommandOptionType::SubCommand,
+            Some(force_boxed(list)),
+        ))
         .add_option(
             SlashCommandOptionBuilder::new(
                 "set",
                 "議題のステータスを変更します。",
                 ApplicationCommandOptionType::SubCommand,
-                Some(|_map| Ok(InteractionResponse::Message("".to_string()))),
+                Some(force_boxed(set)),
             )
             .add_option(
                 SlashCommandOptionBuilder::new(
@@ -66,4 +52,16 @@ pub fn builder() -> SlashCommandBuilder {
             .to_owned(),
         )
         .to_owned()
+}
+
+async fn add(map: CommandArg) -> CommandResult {
+    Ok(InteractionResponse::Message("add".to_string()))
+}
+
+async fn list(map: CommandArg) -> CommandResult {
+    Ok(InteractionResponse::Message("list".to_string()))
+}
+
+async fn set(map: CommandArg) -> CommandResult {
+    Ok(InteractionResponse::Message("set".to_string()))
 }

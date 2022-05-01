@@ -23,7 +23,7 @@ fn all_builders() -> Vec<SlashCommandBuilder> {
 pub fn executor<T: ToString>(command_name: T) -> Executor {
     let builder = all_builders();
     let builder = builder
-        .iter()
+        .into_iter()
         .find(|b| b.name == command_name.to_string())
         .unwrap();
 
