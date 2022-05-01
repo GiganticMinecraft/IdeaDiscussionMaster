@@ -25,6 +25,9 @@ use serenity::{
 };
 use std::collections::HashMap;
 
+// TODO: move main.rs
+// TODO: devide Handler
+
 #[derive(Debug)]
 struct Handler;
 
