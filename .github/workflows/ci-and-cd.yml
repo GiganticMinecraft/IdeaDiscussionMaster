@@ -1,23 +1,52 @@
-name: Build and deploy docker image
+name: CI and CD
 on:
   push:
-    branches:
-      - main
     paths-ignore:
       - ".env.example"
       - "LICENSE"
       - "README.md"
       - "renovate.json"
       - ".github/workflows/**"
-      - "!.github/workflows/docker.yml"
+      - "!.github/workflows/ci-and-cd.yml"
+env:
+  IMAGE: ghcr.io/giganticminecraft/idea-discussion-master
 
 jobs:
-  build:
-    name: Build and push
+  lint-and-test:
+    name: Lint and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v1
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+      - name: Cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+      - name: Cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features
+
+  build-image:
+    name: Build Docker image, and Publish on main branch
+    runs-on: ubuntu-latest
+    needs:
+      - lint-and-test
+    steps:
+      - uses: actions/checkout@v3
       - name: Set up Docker Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v1
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -25,26 +54,30 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Output image name
-        id: image
-        env:
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          NAME="ghcr.io/${OWNER,,}/idea-discussion-master"
-          echo "::set-output name=name::$NAME"
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=sha,prefix=sha-,suffix=,format=short
+            type=schedule,pattern={{date 'YYYYMMDD'}}
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          push: true
-          tags: ${{ steps.image.outputs.name }}:latest
+          builder: ${{ steps.buildx.outputs.name }}
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
-    name: Deploy
+    name: Deploy image on main branch
     runs-on: ubuntu-latest
     needs:
-      - build
+      - build-image
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v3
       - name: Make GitHub App Secret Key
