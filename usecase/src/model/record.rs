@@ -1,5 +1,5 @@
-use crate::domain::{id::IssueId, redmine::Record, status::RecordStatus};
 use derive_new::new;
+use domain::{id::IssueId, redmine::Record, status::RecordStatus};
 
 #[derive(new)]
 pub struct RecordDto {

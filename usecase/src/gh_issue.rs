@@ -1,8 +1,6 @@
-use crate::{
-    domain::{github::Issue, repository::GitHubIssueRepository},
-    infrastructure::module::RepositoryModuleExt,
-};
+use crate::infrastructure::module::RepositoryModuleExt;
 use derive_new::new;
+use domain::{github::Issue, repository::GitHubIssueRepository};
 use std::sync::Arc;
 
 #[derive(new, Clone)]

@@ -1176,6 +1176,11 @@ dependencies = [
 [[package]]
 name = "usecase"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "derive-new",
+ "domain",
+]
 
 [[package]]
 name = "utf-8"

@@ -1,12 +1,10 @@
 use super::model::AgendaDto;
-use crate::{
-    domain::{
-        id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt, MyError,
-    },
-    infrastructure::module::RepositoryModuleExt,
-};
+use crate::infrastructure::module::RepositoryModuleExt;
 use anyhow::ensure;
 use derive_new::new;
+use domain::{
+    id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt, MyError,
+};
 use std::sync::Arc;
 
 #[derive(new, Clone)]
