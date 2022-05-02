@@ -1,8 +1,8 @@
-use crate::util::command::{
+use serenity::model::interactions::application_command::ApplicationCommandOptionType;
+use utils::command::{
     builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
     force_boxed, CommandArg, CommandResult, InteractionResponse,
 };
-use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new(

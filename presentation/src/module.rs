@@ -1,11 +1,9 @@
-use crate::{
-    infrastructure::{
-        module::{RepositoryModule, RepositoryModuleExt},
-        persistence::*,
-    },
-    usecase::*,
+use infrastructure::{
+    module::{RepositoryModule, RepositoryModuleExt},
+    persistence::*,
 };
 use std::sync::Arc;
+use usecase::*;
 
 #[derive(Clone)]
 pub struct Module {

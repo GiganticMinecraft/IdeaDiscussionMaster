@@ -1,4 +1,4 @@
-use crate::presentation::module::Module;
+use crate::module::Module;
 use once_cell::sync::Lazy;
 use std::sync::{Arc, Mutex};
 

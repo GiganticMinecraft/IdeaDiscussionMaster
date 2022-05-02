@@ -1,10 +1,7 @@
-use crate::{
-    domain::{
-        id::IssueId,
-        status::{AgendaStatus, StatusExt},
-        Agenda,
-    },
-    util::HashSetExt,
+use domain::{
+    id::IssueId,
+    status::{AgendaStatus, StatusExt},
+    Agenda,
 };
 use once_cell::sync::Lazy;
 use serenity::model::id::MessageId;
@@ -12,6 +9,7 @@ use std::{
     collections::HashSet,
     sync::{Arc, Mutex},
 };
+use utils::HashSetExt;
 
 type Agendas = HashSet<Agenda>;
 

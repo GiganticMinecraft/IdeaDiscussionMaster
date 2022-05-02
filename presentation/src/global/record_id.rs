@@ -1,4 +1,4 @@
-use crate::domain::id::IssueId;
+use domain::id::IssueId;
 use once_cell::sync::Lazy;
 use std::sync::{Arc, Mutex};
 
