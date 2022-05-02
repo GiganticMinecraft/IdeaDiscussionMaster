@@ -1,7 +1,6 @@
 use anyhow::Context;
 use idea_discussion_master::{
-    global::module,
-    presentation::command,
+    presentation::{command, global::module},
     util::{
         self,
         command::{
