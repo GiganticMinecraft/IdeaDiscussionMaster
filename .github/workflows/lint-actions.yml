@@ -1,4 +1,4 @@
-name: lint for GHActions
+name: Lint actions
 on:
   pull_request:
     paths:

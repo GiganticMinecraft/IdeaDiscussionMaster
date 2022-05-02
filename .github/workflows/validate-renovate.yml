@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'renovate.json'
-      - '.github/workflows/renovate.yml'
+      - '.github/workflows/validate-renovate.yml'
 
 jobs:
   validate-renovate-config:

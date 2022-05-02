@@ -1,9 +1,9 @@
-name: Run dockerfile linter
+name: Lint Dockerfile
 on:
   pull_request:
     paths:
       - "Dockerfile"
-      - ".github/workflows/dockerlint.yml"
+      - ".github/workflows/lint-dockerfile.yml"
 
 jobs:
   hadolint:
