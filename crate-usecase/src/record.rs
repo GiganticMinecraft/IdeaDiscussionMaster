@@ -1,8 +1,11 @@
 use super::model::RecordDto;
 use crate_domain::{
-    id::IssueId, redmine::Note, repository::RecordRepository, status::StatusExt, MyError,
+    id::IssueId,
+    redmine::Note,
+    repository::{RecordRepository, RepositoryModuleExt},
+    status::StatusExt,
+    MyError,
 };
-use crate_infrastructure::module::RepositoryModuleExt;
 
 use anyhow::ensure;
 use derive_new::new;

@@ -1,5 +1,5 @@
 use super::{persistence::*, repository::*};
-use crate_domain::{github::Issue, redmine::*, repository::*};
+use crate_domain::{github::Issue, redmine::*, repository::RepositoryModuleExt};
 
 type AgendaRepoImpl = RedminePersistenceImpl<Agenda>;
 type RecordRepoImpl = RedminePersistenceImpl<Record>;
@@ -24,16 +24,6 @@ impl RepositoryModule {
             github_issue_repository,
         }
     }
-}
-
-pub trait RepositoryModuleExt {
-    type AgendaRepo: AgendaRepository;
-    type RecordRepo: RecordRepository;
-    type GHIssueRepo: GitHubIssueRepository;
-
-    fn agenda_repository(&self) -> &Self::AgendaRepo;
-    fn record_repository(&self) -> &Self::RecordRepo;
-    fn github_issue_repository(&self) -> &Self::GHIssueRepo;
 }
 
 impl RepositoryModuleExt for RepositoryModule {

@@ -1,8 +1,8 @@
 use super::model::AgendaDto;
+use crate_domain::repository::RepositoryModuleExt;
 use crate_domain::{
     id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt, MyError,
 };
-use crate_infrastructure::module::RepositoryModuleExt;
 
 use anyhow::ensure;
 use derive_new::new;

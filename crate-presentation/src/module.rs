@@ -1,7 +1,5 @@
-use crate_infrastructure::{
-    module::{RepositoryModule, RepositoryModuleExt},
-    persistence::*,
-};
+use crate_domain::repository::RepositoryModuleExt;
+use crate_infrastructure::{module::RepositoryModule, persistence::*};
 use crate_usecase::*;
 
 use std::sync::Arc;

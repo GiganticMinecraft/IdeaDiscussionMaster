@@ -1,5 +1,7 @@
-use crate_domain::{github::Issue, repository::GitHubIssueRepository};
-use crate_infrastructure::module::RepositoryModuleExt;
+use crate_domain::{
+    github::Issue,
+    repository::{GitHubIssueRepository, RepositoryModuleExt},
+};
 
 use derive_new::new;
 use std::sync::Arc;

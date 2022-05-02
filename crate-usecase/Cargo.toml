@@ -7,8 +7,6 @@ edition = "2021"
 
 [dependencies]
 crate-domain = { path = "../crate-domain" }
-# TODO: see infra from usecase???
-crate-infrastructure = { path = "../crate-infrastructure" }
 
 anyhow = "1.0"
 derive-new = "0.5"

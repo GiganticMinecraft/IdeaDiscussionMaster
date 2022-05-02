@@ -449,7 +449,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "crate-domain",
- "crate-infrastructure",
  "derive-new",
 ]
 
