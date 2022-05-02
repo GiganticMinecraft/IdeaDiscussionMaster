@@ -35,7 +35,7 @@ pub fn executor<T: ToString>(command_name: T) -> Executor {
     }
 }
 
-pub fn all_commands() -> Vec<CreateApplicationCommand> {
+pub fn all_commands() -> anyhow::Result<Vec<CreateApplicationCommand>> {
     all_builders().iter().map(|b| b.build()).collect()
 }
 

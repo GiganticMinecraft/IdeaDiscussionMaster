@@ -69,8 +69,9 @@ impl EventHandler for Handler {
 
 async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
     let guild_id = serenity::model::id::GuildId(std::env::var("GUILD_ID")?.parse()?); // TODO: env
+    let commands = command::all_commands()?;
     let _ = serenity::model::id::GuildId::set_application_commands(&guild_id, &http, |command| {
-        command.set_application_commands(command::all_commands())
+        command.set_application_commands(commands)
     })
     .await?;
 

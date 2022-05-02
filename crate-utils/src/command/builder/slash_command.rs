@@ -1,4 +1,7 @@
 use super::{OptExecutor, SlashCommandBuilderExt, SlashCommandOptionBuilder};
+use crate_domain::MyError;
+
+use anyhow::ensure;
 use serenity::{
     builder::CreateApplicationCommand,
     model::interactions::application_command::ApplicationCommandOptionType,
@@ -12,7 +15,6 @@ pub struct SlashCommandBuilder {
     pub executor: OptExecutor,
 }
 
-// TODO: assertをやめて、build()時にErrorとして返す
 impl SlashCommandBuilder {
     pub fn new<T: ToString>(name: T, description: T, executor: OptExecutor) -> Self {
         Self {
@@ -29,14 +31,20 @@ impl SlashCommandBuilder {
         self
     }
 
-    pub fn build(&self) -> CreateApplicationCommand {
+    pub fn build(&self) -> anyhow::Result<CreateApplicationCommand> {
         // 自分のOptionsにSubCommandを持たない限り、SubCommandはExecutorを持たなくてはいけない
         if self
             .options
             .iter()
             .all(|o| o.kind != ApplicationCommandOptionType::SubCommand)
         {
-            assert!(self.has_executor());
+            ensure!(
+                self.has_executor(),
+                MyError::ExecutorIsNotDefined {
+                    name: self.name.clone(),
+                    description: self.description.clone()
+                }
+            );
         }
 
         let builder = &mut CreateApplicationCommand::default();
@@ -47,7 +55,7 @@ impl SlashCommandBuilder {
             builder.add_option(o);
         });
 
-        builder.to_owned()
+        Ok(builder.to_owned())
     }
 }
 
