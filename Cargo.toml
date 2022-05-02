@@ -1,29 +1,8 @@
-[package]
-name = "idea-discussion-master"
-version = "0.5.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-serde = {version = "1.0", features = ["derive"]}
-serde_json = "1.0"
-tokio = {version = "1.17", features = ["full"]}
-reqwest = {version = "0.11", features = ["json"]}
-chrono = "0.4"
-regex = "1.5"
-itertools = "0.10"
-strum = { version = "0.24", features = ["derive"] }
-create-github-app-token = "2.0"
-anyhow = "1.0"
-once_cell = "1.10"
-thiserror = "1.0"
-derive-new = "0.5"
-
-[dependencies.serenity]
-version = "0.10"
-default-features = false
-features = ["cache", "client", "gateway", "rustls_backend", "model", "unstable_discord_api"]
-
-[dev-dependencies]
-test-case = "2.0"
+[workspace]
+members = [
+  "domain",
+  "infrastructure",
+  "usecase",
+  "presentation",
+  "utils"
+]

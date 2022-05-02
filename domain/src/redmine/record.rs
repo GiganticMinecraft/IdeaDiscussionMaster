@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, status::record::RecordStatus};
+use crate::{id::IssueId, status::record::RecordStatus};
 use derive_new::new;
 
 #[derive(Clone, new)]

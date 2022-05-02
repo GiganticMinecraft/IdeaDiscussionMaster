@@ -1,4 +1,4 @@
-use crate::domain::{id::IssueId, status::agenda::AgendaStatus};
+use crate::{id::IssueId, status::agenda::AgendaStatus};
 use derive_new::new;
 
 #[derive(Debug, Clone, new)]

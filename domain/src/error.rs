@@ -20,6 +20,4 @@ pub enum MyError {
     IsNotJoinedInVC,
     #[error("予期しないステータスが指定されています。:({0} {1})")]
     TicketHasUnexpectedStatus(u16, String),
-    #[error(transparent)]
-    Http(#[from] reqwest::Error),
 }
