@@ -1,0 +1,11 @@
+.git
+.github
+target
+
+.env
+.env.example
+.gitignore
+debug.sh
+LICENSE
+README.md
+renovate.json
