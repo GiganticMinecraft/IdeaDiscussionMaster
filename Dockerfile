@@ -18,7 +18,7 @@ RUN cargo build --release
 ### Runner ###
 FROM gcr.io/distroless/cc
 
-COPY --from=build --link /app/target/release/idea-discussion-master /
+COPY --from=build --link /app/target/release/crate-presentation /idea-discussion-master
 USER nonroot
 
-CMD ["./idea-discussion-master"]
+CMD ["/idea-discussion-master"]
