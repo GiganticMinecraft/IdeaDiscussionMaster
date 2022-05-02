@@ -42,10 +42,9 @@ pub fn builder() -> SlashCommandBuilder {
                 None,
             )
             .required(true),
-        )
-        .to_owned(),
+        ),
     )
-    .to_owned()
+    .into()
 }
 
 async fn new_record(_map: CommandArg) -> CommandResult {

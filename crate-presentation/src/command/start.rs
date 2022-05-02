@@ -19,10 +19,9 @@ pub fn builder() -> SlashCommandBuilder {
             None,
         )
         .min_int(1)
-        .required(true)
-        .to_owned(),
+        .required(true),
     )
-    .to_owned()
+    .into()
 }
 
 async fn start(map: CommandArg) -> CommandResult {

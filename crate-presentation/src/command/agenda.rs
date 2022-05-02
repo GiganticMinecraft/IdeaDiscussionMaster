@@ -23,8 +23,7 @@ pub fn builder() -> SlashCommandBuilder {
                 )
                 .min_int(1)
                 .required(true),
-            )
-            .to_owned(),
+            ),
         )
         .add_option(SlashCommandOptionBuilder::new(
             "list",
@@ -49,10 +48,9 @@ pub fn builder() -> SlashCommandBuilder {
                 .add_choice(("Approved", SlashCommandChoice::Int(1)))
                 .add_choice(("Declined", SlashCommandChoice::Int(2)))
                 .required(true),
-            )
-            .to_owned(),
+            ),
         )
-        .to_owned()
+        .into()
 }
 
 async fn add(_map: CommandArg) -> CommandResult {

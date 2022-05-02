@@ -99,13 +99,13 @@ impl SlashCommandOptionBuilder {
         self
     }
 
-    pub fn add_option(&mut self, value: &mut Self) -> &mut Self {
+    pub fn add_option(&mut self, builder: impl Into<Self>) -> &mut Self {
+        let builder = builder.into();
         // SubCommandはSubCommandを自身のOptionsに含められない
         if self.kind == ApplicationCommandOptionType::SubCommand {
-            assert_ne!(value.kind, ApplicationCommandOptionType::SubCommand);
+            assert_ne!(builder.kind, ApplicationCommandOptionType::SubCommand);
         }
-
-        self.options.push(value.to_owned());
+        self.options.push(builder);
 
         self
     }
@@ -129,5 +129,11 @@ impl SlashCommandOptionBuilder {
         });
 
         builder.to_owned()
+    }
+}
+
+impl From<&mut SlashCommandOptionBuilder> for SlashCommandOptionBuilder {
+    fn from(b: &mut Self) -> Self {
+        b.to_owned()
     }
 }

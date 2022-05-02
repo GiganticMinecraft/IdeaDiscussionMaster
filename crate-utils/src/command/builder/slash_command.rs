@@ -13,7 +13,6 @@ pub struct SlashCommandBuilder {
 }
 
 // TODO: assertをやめて、build()時にErrorとして返す
-// TODO: to_owned()が混在するのを直す
 impl SlashCommandBuilder {
     pub fn new<T: ToString>(name: T, description: T, executor: OptExecutor) -> Self {
         Self {
@@ -24,8 +23,8 @@ impl SlashCommandBuilder {
         }
     }
 
-    pub fn add_option(&mut self, option: SlashCommandOptionBuilder) -> &mut Self {
-        self.options.push(option);
+    pub fn add_option(&mut self, builder: impl Into<SlashCommandOptionBuilder>) -> &mut Self {
+        self.options.push(builder.into());
 
         self
     }
@@ -49,5 +48,11 @@ impl SlashCommandBuilder {
         });
 
         builder.to_owned()
+    }
+}
+
+impl From<&mut SlashCommandBuilder> for SlashCommandBuilder {
+    fn from(b: &mut Self) -> Self {
+        b.to_owned()
     }
 }
