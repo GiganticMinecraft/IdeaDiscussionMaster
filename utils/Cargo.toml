@@ -6,3 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0"
+chrono = "0.4"
+domain = { path = "../domain" }
+regex = "1.5"
+
+[dependencies.serenity]
+version = "0.10"
+default-features = false
+features = ["cache", "client", "gateway", "rustls_backend", "model", "unstable_discord_api"]

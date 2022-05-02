@@ -1,6 +1,6 @@
 use super::REDMINE_URL;
-use crate::domain::{id::IssueId, redmine::Agenda, status::AgendaStatus};
 use chrono::Utc;
+use domain::{id::IssueId, redmine::Agenda, status::AgendaStatus};
 use regex::Regex;
 use serenity::{builder, utils::Color};
 
