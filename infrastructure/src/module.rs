@@ -1,5 +1,5 @@
 use super::{persistence::*, repository::*};
-use crate::domain::{github::Issue, redmine::*, repository::*};
+use domain::{github::Issue, redmine::*, repository::*};
 
 type AgendaRepoImpl = RedminePersistenceImpl<Agenda>;
 type RecordRepoImpl = RedminePersistenceImpl<Record>;

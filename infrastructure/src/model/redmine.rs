@@ -1,4 +1,4 @@
-use crate::domain::{
+use domain::{
     id::IssueId,
     redmine::{Agenda, Record},
     status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},

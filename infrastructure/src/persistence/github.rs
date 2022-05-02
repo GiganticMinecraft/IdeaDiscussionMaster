@@ -1,7 +1,7 @@
-use crate::util::Env;
 use create_github_app_token::publish_token;
 use reqwest::Client;
 use std::sync::Arc;
+use utils::Env;
 
 #[derive(Clone)]
 pub struct GitHub {

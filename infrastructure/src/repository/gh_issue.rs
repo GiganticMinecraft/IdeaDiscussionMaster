@@ -1,12 +1,10 @@
 use super::{super::model::github::CreateIssueResponse, GitHubPersistenceImpl};
-use crate::{
-    domain::{github::Issue, repository::GitHubIssueRepository},
-    util::GITHUB_URL,
-};
 use anyhow::{ensure, Context};
+use domain::{github::Issue, repository::GitHubIssueRepository};
 use reqwest::header;
 use serde_json::json;
 use serenity::async_trait;
+use utils::GITHUB_URL;
 
 #[async_trait]
 impl GitHubIssueRepository for GitHubPersistenceImpl<Issue> {
