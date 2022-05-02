@@ -1,10 +1,10 @@
 use super::model::RecordDto;
-use crate::infrastructure::module::RepositoryModuleExt;
 use anyhow::ensure;
 use derive_new::new;
 use domain::{
     id::IssueId, redmine::Note, repository::RecordRepository, status::StatusExt, MyError,
 };
+use infrastructure::module::RepositoryModuleExt;
 use std::sync::Arc;
 
 #[derive(new, Clone)]

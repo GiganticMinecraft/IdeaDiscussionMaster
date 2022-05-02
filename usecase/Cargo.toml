@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 domain = { path = "../domain" }
+# TODO: see infra from usecase???
+infrastructure = { path = "../infrastructure" }
 
 anyhow = "1.0"
 derive-new = "0.5"
