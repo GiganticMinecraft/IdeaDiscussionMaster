@@ -1,8 +1,9 @@
-use serenity::model::interactions::application_command::ApplicationCommandOptionType;
-use utils::command::{
+use crate_utils::command::{
     builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
     force_boxed, CommandArg, CommandResult, InteractionResponse, SlashCommandChoice,
 };
+
+use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("agenda", "議題の操作を行います。", None)

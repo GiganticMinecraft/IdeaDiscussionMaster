@@ -1,9 +1,10 @@
-use domain::{
+use crate_domain::{
     id::IssueId,
     redmine::{Agenda, Record},
     status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},
     MyError,
 };
+
 use itertools::Itertools;
 use serde::Deserialize;
 

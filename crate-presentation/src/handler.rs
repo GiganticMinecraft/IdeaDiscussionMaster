@@ -1,4 +1,9 @@
-use crate::command;
+use super::command;
+use crate_utils::command::{
+    application_interaction::{ApplicationInteractions, SlashCommand},
+    CommandExt, InteractionResponse, Parser,
+};
+
 use anyhow::Context;
 use serenity::{
     async_trait,
@@ -14,10 +19,6 @@ use serenity::{
     },
 };
 use std::collections::HashMap;
-use utils::command::{
-    application_interaction::{ApplicationInteractions, SlashCommand},
-    CommandExt, InteractionResponse, Parser,
-};
 
 #[derive(Debug)]
 pub struct Handler;

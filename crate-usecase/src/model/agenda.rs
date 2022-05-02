@@ -1,5 +1,6 @@
+use crate_domain::{id::IssueId, redmine::Agenda, status::agenda::AgendaStatus};
+
 use derive_new::new;
-use domain::{id::IssueId, redmine::Agenda, status::agenda::AgendaStatus};
 
 #[derive(new)]
 pub struct AgendaDto {

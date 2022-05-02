@@ -1,12 +1,13 @@
 use super::RedminePersistenceImpl;
-use anyhow::ensure;
-use domain::{
+use crate_domain::{
     id::IssueId,
     redmine::{Agenda, Note},
     repository::AgendaRepository,
     status::StatusExt,
     MyError,
 };
+
+use anyhow::ensure;
 use serde_json::json;
 use serenity::async_trait;
 

@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-domain = { path = "../domain" }
-utils = { path = "../utils" }
+crate-domain = { path = "../crate-domain" }
+crate-utils = { path = "../crate-utils" }
 
 derive-new = "0.5"
 itertools = "0.10"

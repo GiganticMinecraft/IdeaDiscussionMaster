@@ -1,4 +1,4 @@
-use utils::command::{
+use crate_utils::command::{
     builder::SlashCommandBuilder, force_boxed, CommandArg, CommandResult, InteractionResponse,
 };
 

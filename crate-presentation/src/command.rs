@@ -4,11 +4,12 @@ mod end;
 mod start;
 mod vote;
 
-use serenity::builder::CreateApplicationCommand;
-use utils::command::{
+use crate_utils::command::{
     builder::{SlashCommandBuilder, SlashCommandBuilderExt},
     Executor,
 };
+
+use serenity::builder::CreateApplicationCommand;
 
 fn all_builders() -> Vec<SlashCommandBuilder> {
     vec![
