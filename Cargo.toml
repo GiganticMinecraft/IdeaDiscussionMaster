@@ -1,8 +1,8 @@
 [workspace]
 members = [
   "crate-domain",
-  "crate-infrastructure",
   "crate-usecase",
+  "crate-infrastructure",
   "crate-presentation",
   "crate-utils"
 ]
