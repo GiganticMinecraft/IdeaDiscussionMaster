@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use serenity::{
     model::{
         id::{GuildId, UserId},
@@ -28,20 +29,12 @@ use std::collections::HashMap;
 pub async fn fetch_voice_states(
     ctx: &Context,
     guild_id: Option<GuildId>,
-) -> HashMap<UserId, VoiceState> {
-    let guild_id = if let Some(id) = guild_id {
-        id
-    } else {
-        println!("guild_idが見つかりませんでした。");
+) -> anyhow::Result<HashMap<UserId, VoiceState>> {
+    let guild_id = guild_id.ok_or_else(|| anyhow!("guild_idが見つかりませんでした。"))?;
 
-        return HashMap::default();
-    };
-    let guild = if let Some(guild) = ctx.cache.guild(guild_id).await {
-        guild
-    } else {
-        println!("guildが見つかりませんでした。（guild_id: {}）", guild_id);
-
-        return HashMap::default();
-    };
-    guild.voice_states
+    ctx.cache
+        .guild(guild_id)
+        .await
+        .ok_or_else(|| anyhow!("guildが見つかりませんでした。（guild_id: {}）", guild_id))
+        .map(|guild| guild.voice_states)
 }
