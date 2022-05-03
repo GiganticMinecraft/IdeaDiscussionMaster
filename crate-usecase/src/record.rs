@@ -1,10 +1,10 @@
 use super::model::RecordDto;
 use crate_domain::{
+    error::MyError,
     id::IssueId,
     redmine::Note,
     repository::{RecordRepository, RepositoryModuleExt},
     status::StatusExt,
-    MyError,
 };
 
 use anyhow::ensure;

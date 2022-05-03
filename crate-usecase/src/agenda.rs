@@ -1,7 +1,7 @@
 use super::model::AgendaDto;
 use crate_domain::repository::RepositoryModuleExt;
 use crate_domain::{
-    id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt, MyError,
+    error::MyError, id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt,
 };
 
 use anyhow::ensure;

@@ -1,3 +1,5 @@
+use derive_new::new;
+use serenity::model::interactions::application_command::ApplicationCommandOptionType;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -22,8 +24,21 @@ pub enum MyError {
     TicketHasUnexpectedStatus(u16, String),
 }
 
+#[allow(dead_code)]
+#[derive(new, Debug)]
+pub struct CommandInfo {
+    name: String,
+    description: String,
+}
+
 #[derive(Error, Debug)]
 pub enum CommandBuilderError {
     #[error("入力を処理する関数が指定されていません。: {name} {description}")]
     ExecutorIsNotDefined { name: String, description: String },
+    #[error("選択肢の型が一致していません。: {command:?} -> {choice_name} {choice:?}")]
+    ChoiceAndOptionTypeMisMatch {
+        command: CommandInfo,
+        choice_name: String,
+        choice: ApplicationCommandOptionType,
+    },
 }

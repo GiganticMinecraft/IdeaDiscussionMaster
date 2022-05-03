@@ -1,34 +1,33 @@
-use super::{super::SlashCommandChoice, OptExecutor};
+use super::{super::SlashCommandChoice, OptExecutor, SlashCommandBuilderExt};
+use crate_domain::error::{CommandBuilderError, CommandInfo};
+
+use anyhow::{bail, ensure};
 use serenity::{
     builder::CreateApplicationCommandOption,
     model::interactions::application_command::ApplicationCommandOptionType,
 };
+
+type OptionType = ApplicationCommandOptionType;
 
 #[derive(Clone)]
 pub struct SlashCommandOptionBuilder {
     builder: CreateApplicationCommandOption,
     pub name: String,
     pub description: String,
-    pub kind: ApplicationCommandOptionType,
+    pub kind: OptionType,
     pub choices: Vec<(String, SlashCommandChoice)>,
     pub options: Vec<Self>,
     pub executor: OptExecutor,
 }
 
-// TODO: assertをやめて、build()時にErrorとして返す
+// assertがいくつかあるが、build時には確認できないものばかりなのでそのまま
 impl SlashCommandOptionBuilder {
     pub fn new<T: ToString>(
         name: T,
         description: T,
-        kind: ApplicationCommandOptionType,
+        kind: OptionType,
         executor: OptExecutor,
     ) -> Self {
-        if kind == ApplicationCommandOptionType::SubCommand {
-            assert!(executor.is_some())
-        } else {
-            assert!(executor.is_none())
-        }
-
         Self {
             builder: CreateApplicationCommandOption::default(),
             name: name.to_string(),
@@ -44,18 +43,6 @@ impl SlashCommandOptionBuilder {
         &mut self,
         (name, choice): (T, SlashCommandChoice),
     ) -> &mut Self {
-        match choice {
-            SlashCommandChoice::Int(_) => {
-                assert_eq!(self.kind, ApplicationCommandOptionType::Integer)
-            }
-            SlashCommandChoice::Number(_) => {
-                assert_eq!(self.kind, ApplicationCommandOptionType::Number)
-            }
-            SlashCommandChoice::String(_) => {
-                assert_eq!(self.kind, ApplicationCommandOptionType::String)
-            }
-        }
-
         self.choices.push((name.to_string(), choice));
 
         self
@@ -68,7 +55,7 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn min_int(&mut self, value: i32) -> &mut Self {
-        assert_eq!(self.kind, ApplicationCommandOptionType::Integer);
+        assert_eq!(self.kind, OptionType::Integer);
 
         self.builder = self.builder.min_int_value(value).to_owned();
 
@@ -76,7 +63,7 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn max_int(&mut self, value: i32) -> &mut Self {
-        assert_eq!(self.kind, ApplicationCommandOptionType::Integer);
+        assert_eq!(self.kind, OptionType::Integer);
 
         self.builder = self.builder.max_int_value(value).to_owned();
 
@@ -84,7 +71,7 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn min_number(&mut self, value: f64) -> &mut Self {
-        assert_eq!(self.kind, ApplicationCommandOptionType::Number);
+        assert_eq!(self.kind, OptionType::Number);
 
         self.builder = self.builder.min_number_value(value).to_owned();
 
@@ -92,7 +79,7 @@ impl SlashCommandOptionBuilder {
     }
 
     pub fn max_number(&mut self, value: f64) -> &mut Self {
-        assert_eq!(self.kind, ApplicationCommandOptionType::Number);
+        assert_eq!(self.kind, OptionType::Number);
 
         self.builder = self.builder.max_number_value(value).to_owned();
 
@@ -110,7 +97,9 @@ impl SlashCommandOptionBuilder {
         self
     }
 
-    pub fn build(&self) -> CreateApplicationCommandOption {
+    pub fn build(&self) -> anyhow::Result<CreateApplicationCommandOption> {
+        self.assert()?;
+
         let builder = &mut self.builder.to_owned();
         builder.name(&self.name);
         builder.description(&self.description);
@@ -124,11 +113,69 @@ impl SlashCommandOptionBuilder {
             };
         });
 
-        self.options.iter().map(|o| o.build()).for_each(|o| {
-            builder.add_sub_option(o);
-        });
+        for option in self.options.iter().map(|o| o.build()) {
+            match option {
+                Ok(o) => {
+                    builder.add_sub_option(o.to_owned());
+                }
+                Err(e) => {
+                    bail!(e);
+                }
+            }
+        }
 
-        builder.to_owned()
+        Ok(builder.to_owned())
+    }
+
+    fn assert(&self) -> anyhow::Result<()> {
+        // SubCommandならば、実行関数を持っていなくてはいけない
+        if self.kind == OptionType::SubCommand {
+            ensure!(
+                self.has_executor(),
+                CommandBuilderError::ExecutorIsNotDefined {
+                    name: self.name.clone(),
+                    description: self.description.clone()
+                }
+            );
+        }
+
+        // OptionとChoiceの型チェック
+        for (choice_name, choice) in self.choices.iter() {
+            match choice {
+                SlashCommandChoice::Int(_) => {
+                    ensure!(
+                        self.kind == OptionType::Integer,
+                        CommandBuilderError::ChoiceAndOptionTypeMisMatch {
+                            command: CommandInfo::new(self.name.clone(), self.description.clone()),
+                            choice_name: choice_name.to_owned(),
+                            choice: OptionType::Integer
+                        }
+                    )
+                }
+                SlashCommandChoice::Number(_) => {
+                    ensure!(
+                        self.kind == OptionType::Number,
+                        CommandBuilderError::ChoiceAndOptionTypeMisMatch {
+                            command: CommandInfo::new(self.name.clone(), self.description.clone()),
+                            choice_name: choice_name.to_owned(),
+                            choice: OptionType::Number
+                        }
+                    )
+                }
+                SlashCommandChoice::String(_) => {
+                    ensure!(
+                        self.kind == OptionType::String,
+                        CommandBuilderError::ChoiceAndOptionTypeMisMatch {
+                            command: CommandInfo::new(self.name.clone(), self.description.clone()),
+                            choice_name: choice_name.to_owned(),
+                            choice: OptionType::String
+                        }
+                    )
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 

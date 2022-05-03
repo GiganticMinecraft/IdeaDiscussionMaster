@@ -1,7 +1,7 @@
 use super::{OptExecutor, SlashCommandBuilderExt, SlashCommandOptionBuilder};
 use crate_domain::error::CommandBuilderError;
 
-use anyhow::ensure;
+use anyhow::{bail, ensure};
 use serenity::{
     builder::CreateApplicationCommand,
     model::interactions::application_command::ApplicationCommandOptionType,
@@ -51,9 +51,16 @@ impl SlashCommandBuilder {
         builder.name(&self.name);
         builder.description(&self.description);
 
-        self.options.iter().map(|o| o.build()).for_each(|o| {
-            builder.add_option(o);
-        });
+        for option in self.options.iter().map(|o| o.build()) {
+            match option {
+                Ok(o) => {
+                    builder.add_option(o.to_owned());
+                }
+                Err(e) => {
+                    bail!(e);
+                }
+            }
+        }
 
         Ok(builder.to_owned())
     }
