@@ -2,7 +2,7 @@ use crate_domain::{id::IssueId, redmine::Record, status::RecordStatus};
 
 use derive_new::new;
 
-#[derive(new)]
+#[derive(new, Debug)]
 pub struct RecordDto {
     pub id: IssueId,
     pub title: String,

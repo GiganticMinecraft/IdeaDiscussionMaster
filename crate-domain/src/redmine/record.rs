@@ -1,7 +1,7 @@
 use crate::{id::IssueId, status::record::RecordStatus};
 use derive_new::new;
 
-#[derive(Clone, new)]
+#[derive(Clone, new, Debug)]
 pub struct Record {
     pub id: IssueId,
     pub title: String,
