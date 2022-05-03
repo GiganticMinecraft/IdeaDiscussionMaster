@@ -10,6 +10,6 @@ pub async fn init() {
     *MODULE.lock().unwrap() = Some(module);
 }
 
-pub fn get() -> Option<Module> {
-    MODULE.lock().unwrap().clone()
+pub fn get() -> Module {
+    MODULE.lock().unwrap().clone().unwrap()
 }
