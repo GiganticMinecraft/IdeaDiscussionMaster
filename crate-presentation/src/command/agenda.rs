@@ -1,6 +1,9 @@
-use crate_utils::command::{
-    builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    force_boxed, CommandArg, CommandResult, InteractionResponse, SlashCommandChoice,
+use crate_utils::{
+    command::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        force_boxed, ArgsMap, CommandResult, InteractionResponse, SlashCommandChoice,
+    },
+    SerenityContext,
 };
 
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
@@ -53,14 +56,14 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-async fn add(_map: CommandArg) -> CommandResult {
+async fn add(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
     Ok(InteractionResponse::Message("add".to_string()))
 }
 
-async fn list(_map: CommandArg) -> CommandResult {
+async fn list(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
     Ok(InteractionResponse::Message("list".to_string()))
 }
 
-async fn set(_map: CommandArg) -> CommandResult {
+async fn set(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
     Ok(InteractionResponse::Message("set".to_string()))
 }

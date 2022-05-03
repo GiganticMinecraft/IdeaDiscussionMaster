@@ -1,7 +1,10 @@
 use super::command;
-use crate_utils::command::{
-    application_interaction::{ApplicationInteractions, SlashCommand},
-    CommandExt, InteractionResponse, Parser,
+use crate_utils::{
+    command::{
+        application_interaction::{ApplicationInteractions, SlashCommand},
+        CommandExt, InteractionResponse, Parser,
+    },
+    SerenityContext,
 };
 
 use anyhow::Context;
@@ -25,7 +28,7 @@ pub struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
-    async fn ready(&self, ctx: serenity::client::Context, _data_about_bot: Ready) {
+    async fn ready(&self, ctx: SerenityContext, _data_about_bot: Ready) {
         if let Err(e) = create_slash_commands(&ctx.http)
             .await
             .context("Error while creating slash commands")
@@ -53,9 +56,9 @@ impl EventHandler for Handler {
         // );
     }
 
-    async fn interaction_create(&self, ctx: serenity::client::Context, interaction: Interaction) {
+    async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
         if let Some(command) = interaction.clone().application_command() {
-            let response = create_interaction(&command)
+            let response = create_interaction(&command, &ctx)
                 .await
                 .unwrap_or_else(|m| InteractionResponse::Message(m.to_string()));
 
@@ -80,6 +83,7 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
 
 async fn create_interaction(
     interaction: &ApplicationCommandInteraction,
+    context: &SerenityContext,
 ) -> anyhow::Result<InteractionResponse> {
     let data = interaction.data.parse()?;
     let (cmd, args) = data.split_first().unwrap();
@@ -93,7 +97,7 @@ async fn create_interaction(
     }?;
     let args = args.iter().cloned().collect::<HashMap<_, _>>();
 
-    let response = command::executor(cmd)(args)
+    let response = command::executor(cmd)(args, context.to_owned())
         .await
         .context("Error while creating a response")?;
 

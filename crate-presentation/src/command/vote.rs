@@ -1,11 +1,14 @@
-use crate_utils::command::{
-    builder::SlashCommandBuilder, force_boxed, CommandArg, CommandResult, InteractionResponse,
+use crate_utils::{
+    command::{
+        builder::SlashCommandBuilder, force_boxed, ArgsMap, CommandResult, InteractionResponse,
+    },
+    SerenityContext,
 };
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("vote", "投票を行います。", Some(force_boxed(vote)))
 }
 
-async fn vote(_map: CommandArg) -> CommandResult {
+async fn vote(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
     Ok(InteractionResponse::Message("vote".to_string()))
 }

@@ -18,19 +18,22 @@ pub use slash_command_choice::SlashCommandChoice;
 use application_interaction::ApplicationInteractions;
 use std::{collections::HashMap, future::Future, pin::Pin, sync::Arc};
 
-pub type CommandArg = HashMap<String, ApplicationInteractions>;
+pub type ArgsMap = HashMap<String, ApplicationInteractions>;
 pub type CommandResult = anyhow::Result<InteractionResponse>;
 pub type Executor = Arc<
     Box<
-        dyn Fn(CommandArg) -> Pin<Box<dyn Future<Output = CommandResult> + Send + Sync>>
+        dyn Fn(
+                ArgsMap,
+                super::SerenityContext,
+            ) -> Pin<Box<dyn Future<Output = CommandResult> + Send + Sync>>
             + Send
             + Sync,
     >,
 >;
 
-pub fn force_boxed<T>(f: fn(CommandArg) -> T) -> Executor
+pub fn force_boxed<T>(f: fn(ArgsMap, super::SerenityContext) -> T) -> Executor
 where
     T: Future<Output = CommandResult> + 'static + Send + Sync,
 {
-    Arc::new(Box::new(move |n| Box::pin(f(n))))
+    Arc::new(Box::new(move |map, context| Box::pin(f(map, context))))
 }

@@ -1,6 +1,9 @@
-use crate_utils::command::{
-    builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    force_boxed, CommandArg, CommandResult, InteractionResponse,
+use crate_utils::{
+    command::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        force_boxed, ArgsMap, CommandResult, InteractionResponse,
+    },
+    SerenityContext,
 };
 
 use serenity::model::interactions::application_command::ApplicationCommandOptionType;
@@ -25,7 +28,7 @@ pub fn builder() -> SlashCommandBuilder {
     .into()
 }
 
-async fn start(map: CommandArg) -> CommandResult {
+async fn start(map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
     let record_id: u16 = map
         .get("discussion_issue_number")
         .unwrap()
