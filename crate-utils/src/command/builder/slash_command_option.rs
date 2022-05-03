@@ -1,4 +1,4 @@
-use super::{super::SlashCommandChoice, OptExecutor, SlashCommandBuilderExt};
+use super::super::SlashCommandChoice;
 use crate_domain::error::{CommandBuilderError, CommandInfo};
 
 use anyhow::{bail, ensure};
@@ -17,17 +17,11 @@ pub struct SlashCommandOptionBuilder {
     pub kind: OptionType,
     pub choices: Vec<(String, SlashCommandChoice)>,
     pub options: Vec<Self>,
-    pub executor: OptExecutor,
 }
 
 // assertがいくつかあるが、build時には確認できないものばかりなのでそのまま
 impl SlashCommandOptionBuilder {
-    pub fn new<T: ToString>(
-        name: T,
-        description: T,
-        kind: OptionType,
-        executor: OptExecutor,
-    ) -> Self {
+    pub fn new<T: ToString>(name: T, description: T, kind: OptionType) -> Self {
         Self {
             builder: CreateApplicationCommandOption::default(),
             name: name.to_string(),
@@ -35,7 +29,6 @@ impl SlashCommandOptionBuilder {
             kind,
             choices: vec![],
             options: vec![],
-            executor,
         }
     }
 
@@ -128,17 +121,6 @@ impl SlashCommandOptionBuilder {
     }
 
     fn assert(&self) -> anyhow::Result<()> {
-        // SubCommandならば、実行関数を持っていなくてはいけない
-        if self.kind == OptionType::SubCommand {
-            ensure!(
-                self.has_executor(),
-                CommandBuilderError::ExecutorIsNotDefined {
-                    name: self.name.clone(),
-                    description: self.description.clone()
-                }
-            );
-        }
-
         // OptionとChoiceの型チェック
         for (choice_name, choice) in self.choices.iter() {
             match choice {

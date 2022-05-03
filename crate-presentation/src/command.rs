@@ -1,13 +1,10 @@
-mod agenda;
-mod create;
-mod end;
-mod start;
-mod vote;
+pub mod agenda;
+pub mod create;
+pub mod end;
+pub mod start;
+pub mod vote;
 
-use crate_utils::command::{
-    builder::{SlashCommandBuilder, SlashCommandBuilderExt},
-    Executor,
-};
+use crate_utils::command::builder::SlashCommandBuilder;
 
 use serenity::builder::CreateApplicationCommand;
 
@@ -19,20 +16,6 @@ fn all_builders() -> Vec<SlashCommandBuilder> {
         start::builder(),
         vote::builder(),
     ]
-}
-
-pub fn executor<T: ToString>(command_name: T) -> Executor {
-    let builder = all_builders();
-    let builder = builder
-        .into_iter()
-        .find(|b| b.name == command_name.to_string())
-        .unwrap();
-
-    if builder.has_executor() {
-        builder.executor.unwrap()
-    } else {
-        builder.sub_command().and_then(|b| b.executor).unwrap()
-    }
 }
 
 pub fn all_commands() -> anyhow::Result<Vec<CreateApplicationCommand>> {

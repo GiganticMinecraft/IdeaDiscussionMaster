@@ -33,8 +33,6 @@ pub struct CommandInfo {
 
 #[derive(Error, Debug)]
 pub enum CommandBuilderError {
-    #[error("入力を処理する関数が指定されていません。: {name} {description}")]
-    ExecutorIsNotDefined { name: String, description: String },
     #[error("選択肢の型が一致していません。: {command:?} -> {choice_name} {choice:?}")]
     ChoiceAndOptionTypeMisMatch {
         command: CommandInfo,

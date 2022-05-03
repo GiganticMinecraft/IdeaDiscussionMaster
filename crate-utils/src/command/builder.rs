@@ -6,5 +6,3 @@ pub use slash_command_option::SlashCommandOptionBuilder;
 
 mod ext;
 pub use ext::SlashCommandBuilderExt;
-
-type OptExecutor = Option<super::Executor>;
