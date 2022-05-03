@@ -3,7 +3,9 @@ use secret_key::SecretKey;
 
 pub mod command;
 pub mod discord_embed;
-pub mod discussion;
+
+mod discussion;
+pub use discussion::*;
 
 mod hashset_ext;
 pub use hashset_ext::HashSetExt;
