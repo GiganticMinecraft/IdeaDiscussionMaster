@@ -1,11 +1,8 @@
+use super::CommandInteraction;
+
 use anyhow::{anyhow, Context};
 use serenity::{
-    async_trait,
-    builder::CreateEmbed,
-    http::Http,
-    model::interactions::{
-        application_command::ApplicationCommandInteraction, InteractionResponseType,
-    },
+    async_trait, builder::CreateEmbed, http::Http, model::interactions::InteractionResponseType,
 };
 
 #[async_trait]
@@ -23,7 +20,7 @@ pub trait CommandExt {
 }
 
 #[async_trait]
-impl CommandExt for ApplicationCommandInteraction {
+impl CommandExt for CommandInteraction {
     async fn message<T: ToString + Send + Sync>(
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,

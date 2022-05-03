@@ -1,7 +1,8 @@
 use crate_utils::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        force_boxed, ArgsMap, CommandResult, InteractionResponse, SlashCommandChoice,
+        force_boxed, ArgsMap, CommandInteraction, CommandResult, InteractionResponse,
+        SlashCommandChoice,
     },
     SerenityContext,
 };
@@ -56,14 +57,26 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-async fn add(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
+async fn add(
+    _map: ArgsMap,
+    _ctx: SerenityContext,
+    _interaction: CommandInteraction,
+) -> CommandResult {
     Ok(InteractionResponse::Message("add".to_string()))
 }
 
-async fn list(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
+async fn list(
+    _map: ArgsMap,
+    _ctx: SerenityContext,
+    _interaction: CommandInteraction,
+) -> CommandResult {
     Ok(InteractionResponse::Message("list".to_string()))
 }
 
-async fn set(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
+async fn set(
+    _map: ArgsMap,
+    _ctx: SerenityContext,
+    _interaction: CommandInteraction,
+) -> CommandResult {
     Ok(InteractionResponse::Message("set".to_string()))
 }

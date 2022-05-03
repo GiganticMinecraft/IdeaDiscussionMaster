@@ -19,21 +19,26 @@ use application_interaction::ApplicationInteractions;
 use std::{collections::HashMap, future::Future, pin::Pin, sync::Arc};
 
 pub type ArgsMap = HashMap<String, ApplicationInteractions>;
+pub type CommandInteraction =
+    serenity::model::interactions::application_command::ApplicationCommandInteraction;
 pub type CommandResult = anyhow::Result<InteractionResponse>;
 pub type Executor = Arc<
     Box<
         dyn Fn(
                 ArgsMap,
                 super::SerenityContext,
+                CommandInteraction,
             ) -> Pin<Box<dyn Future<Output = CommandResult> + Send + Sync>>
             + Send
             + Sync,
     >,
 >;
 
-pub fn force_boxed<T>(f: fn(ArgsMap, super::SerenityContext) -> T) -> Executor
+pub fn force_boxed<T>(f: fn(ArgsMap, super::SerenityContext, CommandInteraction) -> T) -> Executor
 where
     T: Future<Output = CommandResult> + 'static + Send + Sync,
 {
-    Arc::new(Box::new(move |map, context| Box::pin(f(map, context))))
+    Arc::new(Box::new(move |map, context, interaction| {
+        Box::pin(f(map, context, interaction))
+    }))
 }

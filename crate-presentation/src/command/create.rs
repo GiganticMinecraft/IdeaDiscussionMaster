@@ -1,7 +1,7 @@
 use crate_utils::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        force_boxed, ArgsMap, CommandResult, InteractionResponse,
+        force_boxed, ArgsMap, CommandInteraction, CommandResult, InteractionResponse,
     },
     SerenityContext,
 };
@@ -50,10 +50,18 @@ pub fn builder() -> SlashCommandBuilder {
     .into()
 }
 
-async fn new_record(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
+async fn new_record(
+    _map: ArgsMap,
+    _ctx: SerenityContext,
+    _interaction: CommandInteraction,
+) -> CommandResult {
     Ok(InteractionResponse::Message("new_record".to_string()))
 }
 
-async fn issue(_map: ArgsMap, _ctx: SerenityContext) -> CommandResult {
+async fn issue(
+    _map: ArgsMap,
+    _ctx: SerenityContext,
+    _interaction: CommandInteraction,
+) -> CommandResult {
     Ok(InteractionResponse::Message("issue".to_string()))
 }

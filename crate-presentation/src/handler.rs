@@ -2,7 +2,7 @@ use super::command;
 use crate_utils::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
-        CommandExt, InteractionResponse, Parser,
+        CommandExt, CommandInteraction, InteractionResponse, Parser,
     },
     SerenityContext,
 };
@@ -15,10 +15,7 @@ use serenity::{
     http::client::Http,
     model::{
         gateway::Ready,
-        interactions::{
-            application_command::{ApplicationCommand, ApplicationCommandInteraction},
-            Interaction,
-        },
+        interactions::{application_command::ApplicationCommand, Interaction},
     },
 };
 use std::collections::HashMap;
@@ -82,7 +79,7 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
 }
 
 async fn create_interaction(
-    interaction: &ApplicationCommandInteraction,
+    interaction: &CommandInteraction,
     context: &SerenityContext,
 ) -> anyhow::Result<InteractionResponse> {
     let data = interaction.data.parse()?;
@@ -97,7 +94,7 @@ async fn create_interaction(
     }?;
     let args = args.iter().cloned().collect::<HashMap<_, _>>();
 
-    let response = command::executor(cmd)(args, context.to_owned())
+    let response = command::executor(cmd)(args, context.to_owned(), interaction.to_owned())
         .await
         .context("Error while creating a response")?;
 
