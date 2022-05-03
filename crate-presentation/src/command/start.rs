@@ -19,6 +19,7 @@ pub fn builder() -> SlashCommandBuilder {
             None,
         )
         .min_int(1)
+        .max_int(u16::MAX.into())
         .required(true),
     )
     .into()
