@@ -54,6 +54,7 @@ impl EventHandler for Handler {
     }
 
     async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
+        // TODO: is guild? check
         if let Some(command) = interaction.clone().application_command() {
             let response = create_interaction(&command, &ctx)
                 .await
