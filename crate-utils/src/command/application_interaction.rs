@@ -1,3 +1,4 @@
+use anyhow::ensure;
 use serenity::model::interactions::application_command::ApplicationCommandInteractionDataOptionValue as OptionValue;
 
 #[derive(Debug, Clone)]
@@ -31,6 +32,22 @@ impl TryInto<i64> for ApplicationInteractions {
         if let ApplicationInteractions::SlashCommand(SlashCommand::Option(b)) = self {
             if let OptionValue::Integer(v) = *b {
                 return Ok(v);
+            }
+        }
+
+        anyhow::bail!("Can't convert this interaction to Integer")
+    }
+}
+
+impl TryInto<u16> for ApplicationInteractions {
+    type Error = anyhow::Error;
+    fn try_into(self) -> anyhow::Result<u16> {
+        if let ApplicationInteractions::SlashCommand(SlashCommand::Option(b)) = self {
+            if let OptionValue::Integer(v) = *b {
+                ensure!(v >= u16::MIN.into(), "Too low value");
+                ensure!(v <= u16::MAX.into(), "Too high value");
+
+                return Ok(v as u16);
             }
         }
 

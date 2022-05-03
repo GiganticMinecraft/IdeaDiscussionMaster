@@ -26,15 +26,14 @@ pub fn builder() -> SlashCommandBuilder {
 }
 
 async fn start(map: CommandArg) -> CommandResult {
-    let n: i64 = map
+    let record_id: u16 = map
         .get("discussion_issue_number")
         .unwrap()
         .to_owned()
-        .try_into()
-        .unwrap();
+        .try_into()?;
 
     Ok(InteractionResponse::Message(format!(
         "会議が始まりました: 指定された議事録チケット: {}",
-        n
+        record_id
     )))
 }
