@@ -20,6 +20,10 @@ pub enum MyError {
     IsNotJoinedInVC,
     #[error("予期しないステータスが指定されています。:({0} {1})")]
     TicketHasUnexpectedStatus(u16, String),
+}
+
+#[derive(Error, Debug)]
+pub enum CommandBuilderError {
     #[error("入力を処理する関数が指定されていません。: {name} {description}")]
     ExecutorIsNotDefined { name: String, description: String },
 }

@@ -1,5 +1,5 @@
 use super::super::model::redmine::RedmineIssueResult;
-use crate_domain::{id::IssueId, MyError};
+use crate_domain::{error::MyError, id::IssueId};
 use crate_utils::{Env, REDMINE_URL};
 
 use anyhow::{anyhow, Context};

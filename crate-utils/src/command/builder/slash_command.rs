@@ -1,5 +1,5 @@
 use super::{OptExecutor, SlashCommandBuilderExt, SlashCommandOptionBuilder};
-use crate_domain::MyError;
+use crate_domain::error::CommandBuilderError;
 
 use anyhow::ensure;
 use serenity::{
@@ -40,7 +40,7 @@ impl SlashCommandBuilder {
         {
             ensure!(
                 self.has_executor(),
-                MyError::ExecutorIsNotDefined {
+                CommandBuilderError::ExecutorIsNotDefined {
                     name: self.name.clone(),
                     description: self.description.clone()
                 }

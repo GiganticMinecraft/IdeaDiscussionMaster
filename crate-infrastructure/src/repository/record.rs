@@ -1,10 +1,10 @@
 use super::RedminePersistenceImpl;
 use crate_domain::{
+    error::MyError,
     id::IssueId,
     redmine::{Note, Record},
     repository::RecordRepository,
     status::StatusExt,
-    MyError,
 };
 
 use anyhow::ensure;
