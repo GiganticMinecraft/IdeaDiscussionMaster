@@ -2,7 +2,9 @@ mod secret_key;
 use secret_key::SecretKey;
 
 pub mod command;
-pub mod discord_embed;
+
+mod create_embed_ext;
+pub use create_embed_ext::CreateEmbedExt;
 
 mod discussion;
 pub use discussion::*;
