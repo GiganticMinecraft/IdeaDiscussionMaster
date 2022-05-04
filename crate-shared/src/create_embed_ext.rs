@@ -4,6 +4,7 @@ use chrono::Utc;
 use serenity::{builder, utils::Color};
 
 pub trait CreateEmbedExt {
+    fn custom_default(&mut self, record_id: &IssueId) -> &mut Self;
     fn current_timestamp(&mut self) -> &mut Self;
     fn with_record_id(&mut self, record_id: &IssueId) -> &mut Self;
     fn simple_color(&mut self) -> &mut Self;
@@ -12,6 +13,10 @@ pub trait CreateEmbedExt {
 }
 
 impl CreateEmbedExt for builder::CreateEmbed {
+    fn custom_default(&mut self, record_id: &IssueId) -> &mut Self {
+        self.current_timestamp().with_record_id(record_id)
+    }
+
     fn current_timestamp(&mut self) -> &mut Self {
         self.timestamp(Utc::now().to_rfc3339())
     }
