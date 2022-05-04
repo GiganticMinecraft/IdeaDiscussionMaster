@@ -1,8 +1,8 @@
+use crate_domain::id::VoiceChatChannelId;
+
 use once_cell::sync::Lazy;
-use serenity::model::id::ChannelId;
 use std::sync::{Arc, Mutex};
 
-pub type VoiceChatChannelId = ChannelId;
 type VCChIdOpt = Option<VoiceChatChannelId>;
 
 static VOICE_CHAT_CH_ID: Lazy<Arc<Mutex<VCChIdOpt>>> = Lazy::new(|| Arc::new(Mutex::new(None)));
