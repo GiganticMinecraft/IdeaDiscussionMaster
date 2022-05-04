@@ -45,7 +45,8 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // global::voice_chat_channel_id::update(vc_id);
 
     // 議事録を取得
-    // 存在しなければ終了
+    // 存在すれば、グローバル変数に格納
+    // 存在しなければ、終了
     let record_id: u16 = map
         .get("discussion_issue_number")
         .unwrap()
@@ -53,6 +54,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .try_into()?;
     let record_id = IssueId::new(record_id);
     let record = module.record_usecase().find_new(record_id).await?;
+    global::record_id::update(record_id);
 
     // 議題を取得
     let agendas: Vec<_> = stream::iter(&record.relations)
@@ -70,7 +72,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             global::agendas::add(agenda);
         });
 
-    println!("Discussion started: #{}", record.id.0);
+    println!("Discussion started: #{}", record_id.0);
     println!(
         "Agendas({}): {:?}",
         agendas.len(),
@@ -102,9 +104,9 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
-            discord_embeds::next_agenda_embed(&mut agenda_embed, &record.id, &next_agenda)
+            discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }
-        None => discord_embeds::no_next_agenda(&mut agenda_embed, &record.id),
+        None => discord_embeds::no_next_agenda(&mut agenda_embed, &record_id),
     }
     .to_owned();
 
