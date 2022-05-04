@@ -1,4 +1,5 @@
 use crate_domain::{id::IssueId, status::AgendaStatus};
+use crate_usecase::model::AgendaDto;
 
 use serenity::model::id::MessageId;
 
@@ -16,5 +17,11 @@ impl Agenda {
             status: AgendaStatus::New,
             votes_message_id: None,
         }
+    }
+}
+
+impl From<AgendaDto> for Agenda {
+    fn from(dto: AgendaDto) -> Self {
+        Self::new(dto.id.0)
     }
 }
