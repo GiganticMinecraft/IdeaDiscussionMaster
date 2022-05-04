@@ -2,9 +2,7 @@ use super::CommandInteraction;
 
 use anyhow::{anyhow, Context};
 use itertools::Itertools;
-use serenity::{
-    async_trait, builder::CreateEmbed, http::Http, model::interactions::InteractionResponseType,
-};
+use serenity::{async_trait, builder::CreateEmbed, http::Http};
 
 #[async_trait]
 pub trait CommandExt {
@@ -45,14 +43,14 @@ impl CommandExt for CommandInteraction {
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         messages: Vec<T>,
     ) -> anyhow::Result<()> {
-        self.create_interaction_response(http, |resp| {
-            resp.kind(InteractionResponseType::ChannelMessageWithSource)
-                .interaction_response_data(|m| {
-                    m.content(messages.iter().map(|msg| msg.to_string()).join("\n"))
-                })
-        })
-        .await
-        .context(anyhow!("Cannot to create interaction response!"))
+        let _ = self
+            .edit_original_interaction_response(http, |resp| {
+                resp.content(messages.iter().map(|msg| msg.to_string()).join("\n"))
+            })
+            .await
+            .context(anyhow!("Cannot to edit interaction response!"))?;
+
+        Ok(())
     }
 
     async fn embed(
@@ -68,16 +66,11 @@ impl CommandExt for CommandInteraction {
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embeds: Vec<CreateEmbed>,
     ) -> anyhow::Result<()> {
-        self.create_interaction_response(http, |resp| {
-            resp.kind(InteractionResponseType::ChannelMessageWithSource)
-                .interaction_response_data(|m| {
-                    embeds.into_iter().for_each(|embed| {
-                        m.add_embed(embed);
-                    });
-                    m
-                })
-        })
-        .await
-        .with_context(|| anyhow!("Cannot to create interaction response!"))
+        let _ = self
+            .edit_original_interaction_response(http, |resp| resp.set_embeds(embeds))
+            .await
+            .with_context(|| anyhow!("Cannot to edit interaction response!"))?;
+
+        Ok(())
     }
 }

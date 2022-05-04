@@ -56,6 +56,7 @@ impl EventHandler for Handler {
     async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
         // TODO: is guild? check
         if let Some(command) = interaction.clone().application_command() {
+            let _ = command.defer(&ctx.http).await;
             let response = create_interaction(&command, &ctx)
                 .await
                 .unwrap_or_else(|m| InteractionResponse::Message(format!("{:?}", m)));
