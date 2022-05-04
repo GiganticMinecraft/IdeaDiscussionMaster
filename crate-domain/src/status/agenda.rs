@@ -1,7 +1,21 @@
 use super::StatusExt;
+
 use strum::{Display, EnumIter, EnumProperty, EnumString};
 
-#[derive(Clone, Copy, Debug, Display, EnumIter, EnumProperty, EnumString, PartialEq, Eq, Hash)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    Display,
+    EnumIter,
+    EnumProperty,
+    EnumString,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+)]
 pub enum AgendaStatus {
     #[strum(props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
