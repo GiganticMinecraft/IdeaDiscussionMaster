@@ -1,7 +1,7 @@
+use super::model::Agenda;
 use crate_domain::{
     id::IssueId,
     status::{AgendaStatus, StatusExt},
-    Agenda,
 };
 use crate_utils::HashSetExt;
 
