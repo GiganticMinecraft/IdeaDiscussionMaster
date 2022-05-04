@@ -1,8 +1,10 @@
 pub mod discord_embeds {
-    use crate_domain::id::IssueId;
+    use super::super::global::model::Agenda;
+    use crate_domain::{id::IssueId, status::AgendaStatus};
     use crate_shared::{CreateEmbedExt, REDMINE_URL};
     use crate_usecase::model::AgendaDto;
 
+    use itertools::Itertools;
     use regex::Regex;
     use serenity::builder;
 
@@ -36,6 +38,35 @@ pub mod discord_embeds {
             .failure_color()
             .title("次の議題はありません")
             .description("Redmine上で提起されていた議題は全て処理されました。")
+    }
+
+    pub fn agendas_result<'a>(
+        embed: &'a mut builder::CreateEmbed,
+        record_id: &'a IssueId,
+        agenda_list: &'a [(AgendaStatus, Vec<Agenda>)],
+    ) -> &'a mut builder::CreateEmbed {
+        let agenda_fields = agenda_list
+            .iter()
+            .map(|(status, agendas)| {
+                // tupleにしておくことで、そのままCreateEmbed#fieldsに渡せる
+                (
+                    // フィールド名
+                    status.ja(),
+                    // フィールドの内容
+                    agendas
+                        .iter()
+                        .map(|agenda| format!("#{}", agenda.id.0))
+                        .join(", "),
+                    // フィールドをインラインにするかどうか
+                    false,
+                )
+            })
+            .collect_vec();
+
+        embed
+            .custom_default(record_id)
+            .record_url_field(record_id)
+            .fields(agenda_fields)
     }
 
     // pub fn votes_result_embed(
