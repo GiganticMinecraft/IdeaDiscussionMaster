@@ -1,7 +1,6 @@
-use super::REDMINE_URL;
+use crate_domain::id::IssueId;
+
 use chrono::Utc;
-use crate_domain::{id::IssueId, status::AgendaStatus};
-use regex::Regex;
 use serenity::{builder, utils::Color};
 
 pub trait CreateEmbedExt {
