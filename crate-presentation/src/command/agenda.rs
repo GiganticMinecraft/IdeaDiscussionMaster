@@ -34,6 +34,11 @@ pub fn builder() -> SlashCommandBuilder {
                 "議題のステータスを変更します。",
                 ApplicationCommandOptionType::SubCommand,
             )
+            .add_option(SlashCommandOptionBuilder::new(
+                "idea_issue_number",
+                "ステータスを変更する議題のチケット番号",
+                ApplicationCommandOptionType::Integer,
+            ))
             .add_option(
                 SlashCommandOptionBuilder::new(
                     "status",
