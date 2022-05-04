@@ -1,11 +1,7 @@
-use super::super::{
-    global::{self, model::Agenda},
-    module::ModuleExt,
-};
-use crate_domain::{id::IssueId, redmine::Note, status::AgendaStatus};
-use crate_shared::{
-    command::{builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse},
-    CreateEmbedExt,
+use super::super::{global, module::ModuleExt, utils::discord_embeds};
+use crate_domain::{id::IssueId, redmine::Note};
+use crate_shared::command::{
+    builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse,
 };
 
 use itertools::Itertools;
@@ -17,44 +13,12 @@ pub fn builder() -> SlashCommandBuilder {
 
 pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let record_id = global::record_id::get().unwrap_or_else(|| IssueId::new(1));
-    // 議題をすべて取得し、ステータスでソート
-    // ここでソートしないと、そのままの順番でグルーピングされるので、同じステータスの別グループができる
-    let agendas = global::agendas::list()
-        .into_iter()
-        .sorted_by_cached_key(|agenda| agenda.status)
-        .collect_vec();
-    // 議題をステータスでグルーピング
-    // https://stackoverflow.com/questions/47885478/how-to-use-itertools-group-by-iterator-method-without-a-for-loop
-    let result: Vec<(AgendaStatus, Vec<Agenda>)> = agendas
-        .iter()
-        .group_by(|agenda| agenda.status)
-        .into_iter()
-        .map(|(status, group)| (status, group.cloned().collect()))
-        .collect();
+    let result = global::agendas::grouped_list();
 
     // Embedを作る
-    let result_fields = result
-        .iter()
-        .map(|(status, agendas)| {
-            // tupleにしておくことで、そのままCreateEmbed#fieldsに渡せる
-            (
-                // フィールド名
-                status.ja(),
-                // フィールドの内容
-                agendas
-                    .iter()
-                    .map(|agenda| format!("#{}", agenda.id.0))
-                    .join(", "),
-                // フィールドをインラインにするかどうか
-                false,
-            )
-        })
-        .collect_vec();
-    let result_embed = CreateEmbed::default()
-        .custom_default(&record_id)
+    let mut result_embed = CreateEmbed::default();
+    let result_embed = discord_embeds::agendas_result(&mut result_embed, &record_id, &result)
         .title("会議を終了しました")
-        .record_url_field(&record_id)
-        .fields(result_fields)
         .to_owned();
 
     // 議事録に議論の結果を記載し、チケットを終了する
