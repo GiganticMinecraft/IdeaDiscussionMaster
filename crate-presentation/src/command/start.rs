@@ -85,11 +85,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let beginning_embed = CreateEmbed::default()
         .custom_default(&record_id)
         .title("会議を開始しました")
-        .field(
-            "議事録チケット",
-            format!("{}/issues/{}", REDMINE_URL, record_id.0),
-            false,
-        )
+        .record_url_field(&record_id)
         .to_owned();
 
     // 次の議題を選択
