@@ -28,28 +28,6 @@ pub fn builder() -> SlashCommandBuilder {
             "議題の一覧を表示します。",
             ApplicationCommandOptionType::SubCommand,
         ))
-        .add_option(
-            SlashCommandOptionBuilder::new(
-                "set",
-                "議題のステータスを変更します。",
-                ApplicationCommandOptionType::SubCommand,
-            )
-            .add_option(SlashCommandOptionBuilder::new(
-                "idea_issue_number",
-                "ステータスを変更する議題のチケット番号",
-                ApplicationCommandOptionType::Integer,
-            ))
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "status",
-                    "変更後のステータス",
-                    ApplicationCommandOptionType::Integer,
-                )
-                .add_choice(("Approved", SlashCommandChoice::Int(1)))
-                .add_choice(("Declined", SlashCommandChoice::Int(2)))
-                .required(true),
-            ),
-        )
         .into()
 }
 
