@@ -1,9 +1,12 @@
+use super::super::{global, utils::discord_embeds};
 use crate_shared::command::{
     builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
     CommandResult, ExecutorArgs, InteractionResponse,
 };
 
-use serenity::model::interactions::application_command::ApplicationCommandOptionType;
+use serenity::{
+    builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
+};
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("agenda", "議題の操作を行います。")
@@ -36,5 +39,13 @@ pub async fn add((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
 }
 
 pub async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
-    Ok(InteractionResponse::Message("list".to_string()))
+    let agendas = global::agendas::grouped_list();
+    let record_id = global::record_id::get().unwrap();
+
+    let mut result_embed = CreateEmbed::default();
+    let result_embed = discord_embeds::agendas_result(&mut result_embed, &record_id, &agendas)
+        .title("現在の議題状況")
+        .to_owned();
+
+    Ok(InteractionResponse::Embed(result_embed))
 }
