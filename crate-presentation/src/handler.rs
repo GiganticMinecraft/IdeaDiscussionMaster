@@ -55,6 +55,7 @@ impl EventHandler for Handler {
 
     async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
         // TODO: is guild? check
+        // TODO: 会議が開始しているかどうかなどを確認
         if let Some(command) = interaction.clone().application_command() {
             let _ = command.defer(&ctx.http).await;
             let response = create_interaction(&command, &ctx)
