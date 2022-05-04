@@ -62,7 +62,9 @@ impl EventHandler for Handler {
 
             let _ = match response {
                 InteractionResponse::Message(m) => command.message(&ctx.http, m).await,
+                InteractionResponse::Messages(m) => command.messages(&ctx.http, m).await,
                 InteractionResponse::Embed(e) => command.embed(&ctx.http, e).await,
+                InteractionResponse::Embeds(e) => command.embeds(&ctx.http, e).await,
             };
         }
     }

@@ -11,6 +11,7 @@ crate-domain = { path = "../crate-domain" }
 anyhow = "1.0"
 chrono = "0.4"
 regex = "1.5"
+itertools = "0.10"
 
 [dependencies.serenity]
 version = "0.10"
