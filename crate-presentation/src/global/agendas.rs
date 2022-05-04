@@ -5,6 +5,7 @@ use crate_domain::{
 };
 use crate_shared::HashSetExt;
 
+use itertools::Itertools;
 use once_cell::sync::Lazy;
 use serenity::model::id::MessageId;
 use std::{
@@ -25,6 +26,24 @@ pub fn add(agenda: Agenda) -> Agendas {
 
 pub fn list() -> Agendas {
     AGENDAS.lock().unwrap().clone()
+}
+
+pub fn grouped_list() -> Vec<(AgendaStatus, Vec<Agenda>)> {
+    // 議題をすべて取得し、ステータスでソート
+    // ここでソートしないと、そのままの順番でグルーピングされるので、同じステータスの別グループができる
+    let agendas = list()
+        .into_iter()
+        .sorted_by_cached_key(|agenda| agenda.status)
+        .collect_vec();
+
+    // 議題をステータスでグルーピング
+    // https://stackoverflow.com/questions/47885478/how-to-use-itertools-group-by-iterator-method-without-a-for-loop
+    agendas
+        .iter()
+        .group_by(|agenda| agenda.status)
+        .into_iter()
+        .map(|(status, group)| (status, group.cloned().collect()))
+        .collect()
 }
 
 pub fn find_by_id(id: IssueId) -> Option<Agenda> {
