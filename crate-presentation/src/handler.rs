@@ -98,7 +98,11 @@ async fn create_interaction(
     let result = match cmd.as_str() {
         "start" => command::start::executor(fn_args).await,
         "end" => command::end::executor(fn_args).await,
-        "vote" => command::vote::executor(fn_args).await,
+        "vote" => match sub_command.unwrap().as_str() {
+            "start" => command::vote::start(fn_args).await,
+            "end" => command::vote::end(fn_args).await,
+            _ => Err(error),
+        },
         "agenda" => match sub_command.unwrap().as_str() {
             "add" => command::agenda::add(fn_args).await,
             "list" => command::agenda::list(fn_args).await,
