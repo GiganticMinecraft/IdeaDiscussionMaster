@@ -48,14 +48,14 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-async fn add((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn add((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("add".to_string()))
 }
 
-async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("list".to_string()))
 }
 
-async fn set((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn set((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("set".to_string()))
 }

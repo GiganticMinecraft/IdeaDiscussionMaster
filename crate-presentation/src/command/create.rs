@@ -39,10 +39,10 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-async fn new_record((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn new_record((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("new_record".to_string()))
 }
 
-async fn issue((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn issue((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("issue".to_string()))
 }

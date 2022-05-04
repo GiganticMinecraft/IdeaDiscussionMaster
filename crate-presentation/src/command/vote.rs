@@ -6,6 +6,6 @@ pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("vote", "投票を行います。")
 }
 
-async fn vote((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("vote".to_string()))
 }
