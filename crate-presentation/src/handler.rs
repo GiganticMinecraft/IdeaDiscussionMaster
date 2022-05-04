@@ -102,7 +102,6 @@ async fn create_interaction(
         "agenda" => match sub_command.unwrap().as_str() {
             "add" => command::agenda::add(fn_args).await,
             "list" => command::agenda::list(fn_args).await,
-            "set" => command::agenda::set(fn_args).await,
             _ => Err(error),
         },
         "create" => match sub_command.unwrap().as_str() {

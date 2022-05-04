@@ -38,7 +38,3 @@ pub async fn add((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
 pub async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     Ok(InteractionResponse::Message("list".to_string()))
 }
-
-pub async fn set((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
-    Ok(InteractionResponse::Message("set".to_string()))
-}
