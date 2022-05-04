@@ -1,4 +1,4 @@
-use crate_utils::Env;
+use crate_shared::Env;
 
 use create_github_app_token::publish_token;
 use reqwest::Client;

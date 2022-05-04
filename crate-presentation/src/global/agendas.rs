@@ -3,7 +3,7 @@ use crate_domain::{
     id::IssueId,
     status::{AgendaStatus, StatusExt},
 };
-use crate_utils::HashSetExt;
+use crate_shared::HashSetExt;
 
 use once_cell::sync::Lazy;
 use serenity::model::id::MessageId;
@@ -56,6 +56,13 @@ pub fn update_votes_message_id(id: IssueId, votes_message_id: Option<MessageId>)
 
 pub fn find_current() -> Option<Agenda> {
     list().iter().find(|agenda| agenda.status.is_new()).copied()
+}
+
+pub fn find_next() -> Option<IssueId> {
+    list()
+        .iter()
+        .find(|agenda| agenda.status.is_new())
+        .map(|agenda| agenda.id)
 }
 
 pub fn clear() -> Agendas {

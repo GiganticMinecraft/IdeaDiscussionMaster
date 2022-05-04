@@ -1,6 +1,6 @@
 use super::super::model::redmine::RedmineIssueResult;
 use crate_domain::{error::MyError, id::IssueId};
-use crate_utils::{Env, REDMINE_URL};
+use crate_shared::{Env, REDMINE_URL};
 
 use anyhow::{anyhow, Context};
 use reqwest::{header, Client, Response, StatusCode};

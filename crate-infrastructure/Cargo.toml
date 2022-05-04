@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 crate-domain = { path = "../crate-domain" }
-crate-utils = { path = "../crate-utils" }
+crate-shared = { path = "../crate-shared" }
 
 derive-new = "0.5"
 itertools = "0.10"

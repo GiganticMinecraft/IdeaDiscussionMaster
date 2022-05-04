@@ -4,5 +4,5 @@ members = [
   "crate-usecase",
   "crate-infrastructure",
   "crate-presentation",
-  "crate-utils"
+  "crate-shared"
 ]

@@ -1,5 +1,5 @@
 use super::command;
-use crate_utils::{
+use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
         ArgsMap, CommandExt, CommandInteraction, InteractionResponse, Parser,

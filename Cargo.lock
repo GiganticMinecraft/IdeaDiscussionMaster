@@ -419,7 +419,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "crate-domain",
- "crate-utils",
+ "crate-shared",
  "create-github-app-token",
  "derive-new",
  "itertools",
@@ -436,13 +436,25 @@ dependencies = [
  "anyhow",
  "crate-domain",
  "crate-infrastructure",
+ "crate-shared",
  "crate-usecase",
- "crate-utils",
  "futures",
  "itertools",
  "once_cell",
  "serenity",
  "tokio",
+]
+
+[[package]]
+name = "crate-shared"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "crate-domain",
+ "itertools",
+ "regex",
+ "serenity",
 ]
 
 [[package]]
@@ -452,18 +464,6 @@ dependencies = [
  "anyhow",
  "crate-domain",
  "derive-new",
-]
-
-[[package]]
-name = "crate-utils"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "crate-domain",
- "itertools",
- "regex",
- "serenity",
 ]
 
 [[package]]

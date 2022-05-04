@@ -4,11 +4,11 @@ use anyhow::Context;
 use serenity::client::Client;
 
 async fn build_bot_client() -> anyhow::Result<Client> {
-    let crate_utils::Env {
+    let crate_shared::Env {
         discord_token,
         discord_application_id,
         ..
-    } = crate_utils::Env::new();
+    } = crate_shared::Env::new();
 
     Client::builder(discord_token)
         .application_id(discord_application_id)

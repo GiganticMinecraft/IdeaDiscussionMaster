@@ -9,7 +9,7 @@ edition = "2021"
 crate-domain = { path = "../crate-domain" }
 crate-usecase = { path = "../crate-usecase" }
 crate-infrastructure = { path = "../crate-infrastructure" }
-crate-utils = { path = "../crate-utils" }
+crate-shared = { path = "../crate-shared" }
 
 once_cell = "1.10"
 anyhow = "1.0"

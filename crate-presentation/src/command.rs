@@ -4,7 +4,7 @@ pub mod end;
 pub mod start;
 pub mod vote;
 
-use crate_utils::command::builder::SlashCommandBuilder;
+use crate_shared::command::builder::SlashCommandBuilder;
 
 use serenity::builder::CreateApplicationCommand;
 

@@ -1,4 +1,4 @@
-use crate_utils::command::{
+use crate_shared::command::{
     builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse,
 };
 

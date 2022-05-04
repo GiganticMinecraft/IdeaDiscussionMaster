@@ -1,6 +1,6 @@
 use super::{super::model::github::CreateIssueResponse, GitHubPersistenceImpl};
 use crate_domain::{github::Issue, repository::GitHubIssueRepository};
-use crate_utils::GITHUB_URL;
+use crate_shared::GITHUB_URL;
 
 use anyhow::{ensure, Context};
 use reqwest::header;
