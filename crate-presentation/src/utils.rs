@@ -15,8 +15,8 @@ pub mod discord_embeds {
         let subject = reg.replace(&next_agenda.title, "");
 
         embed
+            .custom_default(record_id)
             .simple_color()
-            .with_record_id(record_id)
             .title(format!("次の議題は#{}です", next_agenda.id.0))
             .field(
                 "議題チケット",
@@ -32,8 +32,8 @@ pub mod discord_embeds {
         record_id: &IssueId,
     ) -> &'a mut builder::CreateEmbed {
         embed
+            .custom_default(record_id)
             .failure_color()
-            .with_record_id(record_id)
             .title("次の議題はありません")
             .description("Redmine上で提起されていた議題は全て処理されました。")
     }
@@ -43,8 +43,8 @@ pub mod discord_embeds {
         record_id: &IssueId,
     ) -> &'a mut builder::CreateEmbed {
         embed
+            .custom_default(record_id)
             .failure_color()
-            .with_record_id(record_id)
             .title("現在進行中の議題はありません")
     }
 
