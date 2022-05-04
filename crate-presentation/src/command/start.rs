@@ -78,7 +78,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         agendas.len(),
         agendas
             .iter()
-            .map(|agenda| format!("{:?}", agenda.id))
+            .map(|agenda| format!("#{}", agenda.id.0))
             .join(", ")
     );
 
@@ -107,7 +107,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     .to_owned();
 
     println!(
-        "Next Agenda: {}",
+        "Next Agenda: #{}",
         next_agenda_id
             .map(|id| id.0.to_string())
             .unwrap_or_else(|| "-".to_string())
