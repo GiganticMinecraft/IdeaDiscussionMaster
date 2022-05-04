@@ -31,7 +31,16 @@ pub fn find_by_id(id: IssueId) -> Option<Agenda> {
     list().iter().find(|agenda| agenda.id == id).copied()
 }
 
-pub fn update_status(id: IssueId, status: AgendaStatus) -> Agendas {
+pub fn in_progress(id: IssueId) -> Agendas {
+    // すでに進行中の議題があれば、ステータスを新規に変更
+    if let Some(current) = find_current() {
+        update_status(current.id, AgendaStatus::New);
+    }
+
+    update_status(id, AgendaStatus::InProgress)
+}
+
+fn update_status(id: IssueId, status: AgendaStatus) -> Agendas {
     let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
     let new_agenda = Agenda { status, ..agenda };
 
