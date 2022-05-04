@@ -38,16 +38,6 @@ pub mod discord_embeds {
             .description("Redmine上で提起されていた議題は全て処理されました。")
     }
 
-    pub fn no_current_agenda_embed<'a>(
-        embed: &'a mut builder::CreateEmbed,
-        record_id: &IssueId,
-    ) -> &'a mut builder::CreateEmbed {
-        embed
-            .custom_default(record_id)
-            .failure_color()
-            .title("現在進行中の議題はありません")
-    }
-
     // pub fn votes_result_embed(
     //     embed: &mut builder::CreateEmbed,
     //     record_id: IssueId,
