@@ -72,6 +72,12 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             global::agendas::add(agenda);
         });
 
+    let beginning_embed = CreateEmbed::default()
+        .custom_default(&record_id)
+        .title("会議を開始しました")
+        .record_url_field(&record_id)
+        .to_owned();
+
     println!("Discussion started: #{}", record_id.0);
     println!(
         "Agendas({}): {:?}",
@@ -81,12 +87,6 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             .map(|agenda| format!("#{}", agenda.id.0))
             .join(", ")
     );
-
-    let beginning_embed = CreateEmbed::default()
-        .custom_default(&record_id)
-        .title("会議を開始しました")
-        .record_url_field(&record_id)
-        .to_owned();
 
     // 次の議題を選択
     let next_agenda_id = global::agendas::find_next();
