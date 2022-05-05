@@ -83,7 +83,10 @@ pub fn update_votes_message_id(id: IssueId, votes_message_id: Option<MessageId>)
 }
 
 pub fn find_current() -> Option<Agenda> {
-    list().iter().find(|agenda| agenda.status.is_new()).copied()
+    list()
+        .iter()
+        .find(|agenda| agenda.status.is_in_progress())
+        .copied()
 }
 
 pub fn find_next() -> Option<IssueId> {
