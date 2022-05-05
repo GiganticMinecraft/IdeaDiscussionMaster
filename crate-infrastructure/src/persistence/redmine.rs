@@ -63,6 +63,31 @@ impl Redmine {
         Self::map_by_http_status(res).await
     }
 
+    pub async fn post(
+        &self,
+        id: IssueId,
+        json_value: serde_json::Value,
+    ) -> anyhow::Result<Response> {
+        self.put_with_url(self.issue_url(id), json_value).await
+    }
+
+    pub async fn post_with_url(
+        &self,
+        url: String,
+        json_value: serde_json::Value,
+    ) -> anyhow::Result<Response> {
+        let res = self
+            .client
+            .post(url)
+            .header(header::CONTENT_TYPE, "application/json")
+            .json(&json_value)
+            .send()
+            .await
+            .context(REQWEST_ERROR_CONTEXT)?;
+
+        Self::map_by_http_status(res).await
+    }
+
     fn issue_url(&self, id: IssueId) -> String {
         format!("{}/issues/{}.json?{}", REDMINE_URL, id.0, self.token)
     }

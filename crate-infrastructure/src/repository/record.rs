@@ -55,7 +55,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
         });
         let _ = self
             .client
-            .put_with_url(self.client.issue_relations_url(id), json_value)
+            .post_with_url(self.client.issue_relations_url(id), json_value)
             .await?;
 
         Ok(())
