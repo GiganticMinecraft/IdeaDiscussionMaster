@@ -118,6 +118,7 @@ async fn create_interaction(
     .context("コマンドの処理中にエラーが発生しました。")?;
 
     Ok(match result {
+        // TODO: MessagesやEmbedsにも対応する
         InteractionResponse::Message(m) if m == *"" => {
             InteractionResponse::Message("Success: There is no message".to_string())
         }
