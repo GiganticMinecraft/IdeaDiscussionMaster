@@ -6,7 +6,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    CreateEmbedExt,
+    CreateEmbedExt, REDMINE_URL,
 };
 
 use futures::stream::{self, StreamExt};
@@ -75,6 +75,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let beginning_embed = CreateEmbed::default()
         .custom_default(&record_id)
         .title("会議を開始しました")
+        .description(format!("{}/issues/{}", REDMINE_URL, record_id.0))
         .to_owned();
 
     println!("Discussion started: #{}", record_id.0);
