@@ -26,7 +26,7 @@ impl AgendaRepository for RedminePersistenceImpl<Agenda> {
             "status_id": new_agenda.status.id()
           }
         });
-        let _ = self.client.post(new_agenda.id, json_value).await?;
+        let _ = self.client.put(new_agenda.id, json_value).await?;
 
         Ok(())
     }
@@ -38,7 +38,7 @@ impl AgendaRepository for RedminePersistenceImpl<Agenda> {
             "notes": notes
           }
         });
-        let _ = self.client.post(id, json_value).await?;
+        let _ = self.client.put(id, json_value).await?;
 
         Ok(())
     }

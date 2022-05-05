@@ -38,15 +38,15 @@ impl Redmine {
             .context("Error while deserializing json")
     }
 
-    pub async fn post(
+    pub async fn put(
         &self,
         id: IssueId,
         json_value: serde_json::Value,
     ) -> anyhow::Result<Response> {
-        self.post_with_url(self.issue_url(id), json_value).await
+        self.put_with_url(self.issue_url(id), json_value).await
     }
 
-    pub async fn post_with_url(
+    pub async fn put_with_url(
         &self,
         url: String,
         json_value: serde_json::Value,

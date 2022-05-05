@@ -29,7 +29,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             "status_id": new_record.status.id()
           }
         });
-        let _ = self.client.post(new_record.id, json_value).await?;
+        let _ = self.client.put(new_record.id, json_value).await?;
 
         Ok(())
     }
@@ -41,7 +41,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             "notes": notes
           }
         });
-        let _ = self.client.post(id, json_value).await?;
+        let _ = self.client.put(id, json_value).await?;
 
         Ok(())
     }
@@ -55,7 +55,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
         });
         let _ = self
             .client
-            .post_with_url(self.client.issue_relations_url(id), json_value)
+            .put_with_url(self.client.issue_relations_url(id), json_value)
             .await?;
 
         Ok(())
