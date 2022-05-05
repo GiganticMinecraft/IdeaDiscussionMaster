@@ -75,7 +75,6 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let beginning_embed = CreateEmbed::default()
         .custom_default(&record_id)
         .title("会議を開始しました")
-        .record_url_field(&record_id)
         .to_owned();
 
     println!("Discussion started: #{}", record_id.0);
