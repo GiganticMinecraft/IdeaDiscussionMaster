@@ -99,18 +99,13 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
+            println!("Next Agenda: #{}", next_agenda_id.unwrap().0);
+
             discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }
         None => discord_embeds::no_next_agenda(&mut agenda_embed, &record_id),
     }
     .to_owned();
-
-    println!(
-        "Next Agenda: #{}",
-        next_agenda_id
-            .map(|id| id.0.to_string())
-            .unwrap_or_else(|| "-".to_string())
-    );
 
     Ok(InteractionResponse::Embeds(vec![
         beginning_embed,
