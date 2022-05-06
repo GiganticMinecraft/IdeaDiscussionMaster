@@ -10,6 +10,7 @@ anyhow = "1.0"
 derive-new = "0.5"
 thiserror = "1.0"
 strum = { version = "0.24", features = ["derive"] }
+itertools = "0.10"
 
 [dependencies.serenity]
 version = "0.10"

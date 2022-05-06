@@ -408,6 +408,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "derive-new",
+ "itertools",
  "serenity",
  "strum",
  "thiserror",
