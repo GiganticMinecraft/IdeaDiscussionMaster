@@ -35,14 +35,19 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
         Ok(record)
     }
 
-    pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
+    pub async fn list(&self, limit: Option<u16>) -> anyhow::Result<Vec<RecordDto>> {
         self.repositories
             .record_repository()
-            .list(Some(1))
+            .list(limit)
+            .await
+            .map(|vec| vec.into_iter().map(|r| r.into()).collect())
+    }
+
+    pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
+        self.list(Some(1))
             .await?
             .first()
             .cloned()
-            .map(|r| r.into())
             .ok_or_else(|| MyError::TicketIsNotFound.into())
     }
 
