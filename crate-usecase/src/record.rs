@@ -35,6 +35,17 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
         Ok(record)
     }
 
+    pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
+        self.repositories
+            .record_repository()
+            .list(Some(1))
+            .await?
+            .first()
+            .cloned()
+            .map(|r| r.into())
+            .ok_or_else(|| MyError::TicketIsNotFound.into())
+    }
+
     pub async fn add_note(&self, id: IssueId, note: Note) -> anyhow::Result<()> {
         self.repositories
             .record_repository()
