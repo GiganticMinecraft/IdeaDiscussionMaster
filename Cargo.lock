@@ -407,6 +407,7 @@ name = "crate-domain"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "derive-new",
  "itertools",
  "serenity",
@@ -419,6 +420,7 @@ name = "crate-infrastructure"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "crate-domain",
  "crate-shared",
  "create-github-app-token",
@@ -464,6 +466,7 @@ name = "crate-usecase"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "crate-domain",
  "derive-new",
 ]
