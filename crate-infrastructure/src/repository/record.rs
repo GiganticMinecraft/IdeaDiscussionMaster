@@ -4,10 +4,11 @@ use crate_domain::{
     id::IssueId,
     redmine::{Note, Record},
     repository::RecordRepository,
-    status::StatusExt,
+    status::{RecordStatus, StatusExt},
 };
 
 use anyhow::ensure;
+use itertools::Itertools;
 use serde_json::json;
 use serenity::async_trait;
 
@@ -17,10 +18,38 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
         let res = self.client.get(id).await?;
         ensure!(
             res.issue.is_idea_discussion_record(),
-            MyError::TicketIsNotIdea
+            MyError::TicketIsNotIdeaDiscussionRecord
         );
 
         res.issue.try_into()
+    }
+
+    async fn list(&self, limit: Option<u16>) -> anyhow::Result<Vec<Record>> {
+        let status = RecordStatus::all()
+            .iter()
+            .map(|status| status.id().to_string())
+            .join(",");
+        let limit = limit.unwrap_or(20).to_string();
+        let queries = vec![
+            ("project_id", "1"),
+            ("tracker_id", "34"),
+            ("status_id", &status),
+            ("sort", "category:created_on"),
+            ("limit", &limit),
+        ];
+        let res = self.client.get_as_list(queries).await?;
+        ensure!(
+            res.issues
+                .iter()
+                .all(|issue| issue.is_idea_discussion_record()),
+            MyError::TicketIsNotIdeaDiscussionRecord
+        );
+
+        Ok(res
+            .issues
+            .into_iter()
+            .filter_map(|issue| issue.try_into().ok())
+            .collect_vec())
     }
 
     async fn change_status(&self, new_record: Record) -> anyhow::Result<()> {

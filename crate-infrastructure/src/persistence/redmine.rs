@@ -1,8 +1,9 @@
-use super::super::model::redmine::RedmineIssueResult;
+use super::super::model::redmine::{RedmineIssueResult, RedmineIssuesResult};
 use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{Env, REDMINE_URL};
 
 use anyhow::{anyhow, Context};
+use itertools::Itertools;
 use reqwest::{header, Client, Response, StatusCode};
 use std::sync::Arc;
 
@@ -34,6 +35,29 @@ impl Redmine {
         let res = Self::map_by_http_status(res).await?;
 
         res.json::<RedmineIssueResult>()
+            .await
+            .context("Error while deserializing json")
+    }
+
+    pub async fn get_as_list<T: ToString, U: ToString>(
+        &self,
+        queries: Vec<(T, U)>,
+    ) -> anyhow::Result<RedmineIssuesResult> {
+        let url = self.issues_url();
+        let queries = queries
+            .into_iter()
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .collect_vec();
+        let res = self
+            .client
+            .get(url)
+            .query(&queries)
+            .send()
+            .await
+            .context(REQWEST_ERROR_CONTEXT)?;
+        let res = Self::map_by_http_status(res).await?;
+
+        res.json::<RedmineIssuesResult>()
             .await
             .context("Error while deserializing json")
     }
@@ -90,6 +114,10 @@ impl Redmine {
 
     fn issue_url(&self, id: IssueId) -> String {
         format!("{}/issues/{}.json?{}", REDMINE_URL, id.0, self.token)
+    }
+
+    fn issues_url(&self) -> String {
+        format!("{}/issues.json?{}", REDMINE_URL, self.token)
     }
 
     pub fn issue_relations_url(&self, id: IssueId) -> String {

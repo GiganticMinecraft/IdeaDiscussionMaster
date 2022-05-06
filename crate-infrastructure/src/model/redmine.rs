@@ -117,3 +117,11 @@ impl TryFrom<RedmineIssue> for Record {
 pub struct RedmineIssueResult {
     pub issue: RedmineIssue,
 }
+
+/// `GET /issues`で返ってくる形
+///
+/// `/issues/[id]`で返ってくるのは[RedmineIssueResult](RedmineIssueResult)
+#[derive(Debug, Deserialize, Default, PartialEq)]
+pub struct RedmineIssuesResult {
+    pub issues: Vec<RedmineIssue>,
+}
