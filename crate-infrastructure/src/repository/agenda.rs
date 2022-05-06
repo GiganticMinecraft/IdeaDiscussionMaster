@@ -17,7 +17,7 @@ impl AgendaRepository for RedminePersistenceImpl<Agenda> {
         let res = self.client.get(id).await?;
         ensure!(res.issue.is_idea_ticket(), MyError::TicketIsNotIdea);
 
-        res.try_into()
+        res.issue.try_into()
     }
 
     async fn change_status(&self, new_agenda: Agenda) -> anyhow::Result<()> {

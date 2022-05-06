@@ -20,7 +20,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             MyError::TicketIsNotIdea
         );
 
-        res.try_into()
+        res.issue.try_into()
     }
 
     async fn change_status(&self, new_record: Record) -> anyhow::Result<()> {

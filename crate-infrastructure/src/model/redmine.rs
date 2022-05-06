@@ -77,15 +77,9 @@ impl RedmineIssue {
     }
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
-pub struct RedmineIssueResult {
-    pub issue: RedmineIssue,
-}
-
-impl TryFrom<RedmineIssueResult> for Agenda {
+impl TryFrom<RedmineIssue> for Agenda {
     type Error = anyhow::Error;
-    fn try_from(res: RedmineIssueResult) -> anyhow::Result<Self> {
-        let issue = res.issue;
+    fn try_from(issue: RedmineIssue) -> anyhow::Result<Self> {
         let status = issue.status.try_into()?;
 
         Ok(Self::new(
@@ -97,10 +91,9 @@ impl TryFrom<RedmineIssueResult> for Agenda {
     }
 }
 
-impl TryFrom<RedmineIssueResult> for Record {
+impl TryFrom<RedmineIssue> for Record {
     type Error = anyhow::Error;
-    fn try_from(res: RedmineIssueResult) -> anyhow::Result<Self> {
-        let issue = res.issue;
+    fn try_from(issue: RedmineIssue) -> anyhow::Result<Self> {
         let relations = issue
             .relations()
             .iter()
@@ -115,4 +108,12 @@ impl TryFrom<RedmineIssueResult> for Record {
             relations,
         ))
     }
+}
+
+/// `GET /issues/[id]`で返ってくる形
+///
+/// `/issues`で返ってくるのは[RedmineIssuesResult](RedmineIssuesResult)
+#[derive(Debug, Deserialize, Default, PartialEq)]
+pub struct RedmineIssueResult {
+    pub issue: RedmineIssue,
 }
