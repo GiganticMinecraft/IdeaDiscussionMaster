@@ -15,6 +15,9 @@ pub use hashset_ext::HashSetExt;
 mod env;
 pub use env::Env;
 
+mod chrono_ext;
+pub use chrono_ext::ChronoExt;
+
 pub use serenity::client::Context as SerenityContext;
 
 pub const REDMINE_URL: &str = "https://redmine.seichi.click";
