@@ -4,6 +4,7 @@ pub use agenda::AgendaStatus;
 pub mod record;
 pub use record::RecordStatus;
 
+use itertools::Itertools;
 use strum::{EnumProperty, IntoEnumIterator};
 
 pub trait StatusExt {
@@ -21,6 +22,13 @@ pub trait StatusExt {
         Self: IntoEnumIterator + EnumProperty,
     {
         Self::iter().find(|s| s.id() == id)
+    }
+
+    fn all() -> Vec<Self>
+    where
+        Self: IntoEnumIterator + EnumProperty,
+    {
+        Self::iter().collect_vec()
     }
 
     fn is_new(&self) -> bool;
