@@ -7,11 +7,26 @@ use serenity::model::interactions::application_command::ApplicationCommandOption
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("create", "アイデア会議に関する様々なものを作成します。")
-        .add_option(SlashCommandOptionBuilder::new(
-            "new_record",
-            "議事録のチケットを新規作成します。",
-            ApplicationCommandOptionType::SubCommand,
-        ))
+        .add_option(
+            SlashCommandOptionBuilder::new(
+                "new_record",
+                "議事録のチケットを新規作成します。",
+                ApplicationCommandOptionType::SubCommand,
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_date",
+                    "次回の会議の日付",
+                    ApplicationCommandOptionType::String,
+                )
+                .required(true),
+            )
+            .add_option(SlashCommandOptionBuilder::new(
+                "next_start_time",
+                "次回の会議の開始時刻",
+                ApplicationCommandOptionType::String,
+            )),
+        )
         .add_option(
             SlashCommandOptionBuilder::new(
                 "issue",
