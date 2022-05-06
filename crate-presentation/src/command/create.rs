@@ -21,11 +21,14 @@ pub fn builder() -> SlashCommandBuilder {
                 )
                 .required(true),
             )
-            .add_option(SlashCommandOptionBuilder::new(
-                "next_start_time",
-                "次回の会議の開始時刻",
-                ApplicationCommandOptionType::String,
-            )),
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_start_time",
+                    "次回の会議の開始時刻",
+                    ApplicationCommandOptionType::String,
+                )
+                .required(true),
+            ),
         )
         .add_option(
             SlashCommandOptionBuilder::new(
