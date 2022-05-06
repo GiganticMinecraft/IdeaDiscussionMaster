@@ -1,3 +1,4 @@
+use super::super::serde_opt_naive_date;
 use crate_domain::{
     error::MyError,
     id::IssueId,
@@ -5,6 +6,7 @@ use crate_domain::{
     status::{agenda::AgendaStatus, record::RecordStatus, StatusExt},
 };
 
+use chrono::NaiveDate;
 use itertools::Itertools;
 use serde::Deserialize;
 
@@ -55,6 +57,10 @@ pub struct RedmineIssue {
     pub status: RedmineIssueStatus,
     pub subject: String,
     pub description: String,
+    #[serde(with = "serde_opt_naive_date")]
+    pub start_date: Option<NaiveDate>,
+    #[serde(with = "serde_opt_naive_date")]
+    pub due_date: Option<NaiveDate>,
     #[serde(default)]
     pub relations: Vec<RedmineIssueRelations>,
 }
@@ -106,6 +112,8 @@ impl TryFrom<RedmineIssue> for Record {
             issue.subject,
             status,
             relations,
+            issue.start_date,
+            issue.due_date,
         ))
     }
 }
