@@ -114,6 +114,7 @@ impl TryFrom<RedmineIssue> for Record {
         Ok(Self::new(
             IssueId::new(issue.id),
             issue.subject,
+            issue.description,
             status,
             relations,
             issue.start_date,

@@ -7,6 +7,7 @@ use derive_new::new;
 pub struct Record {
     pub id: IssueId,
     pub title: String,
+    pub description: String,
     pub status: RecordStatus,
     pub relations: Vec<IssueId>,
     pub start_date: Option<NaiveDate>,
