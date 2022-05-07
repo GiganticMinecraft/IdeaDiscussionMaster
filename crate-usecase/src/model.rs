@@ -1,5 +1,5 @@
-mod agenda;
-pub use agenda::AgendaDto;
+mod agenda_dto;
+pub use agenda_dto::AgendaDto;
 
-mod record;
-pub use record::RecordDto;
+mod record_dto;
+pub use record_dto::RecordDto;
