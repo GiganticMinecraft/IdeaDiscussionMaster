@@ -57,9 +57,13 @@ pub struct RedmineIssue {
     pub status: RedmineIssueStatus,
     pub subject: String,
     pub description: String,
+    #[serde(default)]
     #[serde(with = "serde_opt_naive_date")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub start_date: Option<NaiveDate>,
+    #[serde(default)]
     #[serde(with = "serde_opt_naive_date")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub due_date: Option<NaiveDate>,
     #[serde(default)]
     pub relations: Vec<RedmineIssueRelations>,
