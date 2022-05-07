@@ -468,6 +468,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "crate-domain",
+ "crate-shared",
  "derive-new",
 ]
 

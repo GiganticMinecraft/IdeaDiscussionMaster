@@ -20,11 +20,7 @@ pub mod discord_embeds {
             .custom_default(record_id)
             .simple_color()
             .title(format!("次の議題は#{}です", next_agenda.id.0))
-            .field(
-                "議題チケット",
-                format!("{}/next_agendas/{}", REDMINE_URL, next_agenda.id.0),
-                false,
-            )
+            .field("議題チケット", next_agenda.url(), false)
             .field("タイトル", subject, false)
             .field("説明", next_agenda.description.clone(), false)
     }
