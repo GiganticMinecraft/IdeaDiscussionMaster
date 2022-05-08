@@ -4,12 +4,15 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    ChronoExt,
+    ChronoExt, CreateEmbedExt,
 };
+use crate_usecase::model::RecordParam;
 
-use chrono::{Datelike, Duration, NaiveDate, NaiveDateTime, NaiveTime};
+use chrono::{Duration, NaiveDate, NaiveTime};
 use regex::Regex;
-use serenity::model::interactions::application_command::ApplicationCommandOptionType;
+use serenity::{
+    builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
+};
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("create", "アイデア会議に関する様々なものを作成します。")
@@ -89,7 +92,18 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     let record_description_date_time = format!("{}\n{}〜{}\n", date, start_time_str, end_time_str);
     let record_description = format!("{}{}", record_description_date_time, RECORD_DESCRIPTIONS);
 
-    Ok(InteractionResponse::Message("new_record".to_string()))
+    // 議事録をRedmine上に作成
+    let new_record_param = RecordParam::new(record_title, record_description, None, Some(date));
+    let new_record = module.record_usecase().add(new_record_param).await?;
+
+    let embed = CreateEmbed::default()
+        .title("議事録を新規作成しました")
+        .field("議事録チケット", new_record.url(), false)
+        .current_timestamp()
+        .success_color()
+        .to_owned();
+
+    Ok(InteractionResponse::Embed(embed))
 }
 
 fn get_latest_discussion_number(title: String) -> u16 {
