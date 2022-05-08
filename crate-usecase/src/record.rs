@@ -1,10 +1,10 @@
-use super::model::RecordDto;
+use super::model::{RecordDto, RecordParam};
 use crate_domain::{
     error::MyError,
     id::IssueId,
-    redmine::Note,
+    redmine::{Note, Record},
     repository::{RecordRepository, RepositoryModuleExt},
-    status::StatusExt,
+    status::{RecordStatus, StatusExt},
 };
 
 use anyhow::ensure;
@@ -17,6 +17,24 @@ pub struct RecordUseCase<R: RepositoryModuleExt> {
 }
 
 impl<R: RepositoryModuleExt> RecordUseCase<R> {
+    pub async fn add(&self, param: RecordParam) -> anyhow::Result<RecordDto> {
+        let new_record = Record::new(
+            IssueId::default(),
+            param.title,
+            param.description,
+            RecordStatus::default(),
+            vec![],
+            param.start_date,
+            param.due_date,
+        );
+
+        self.repositories
+            .record_repository()
+            .add(new_record)
+            .await
+            .map(|record| record.into())
+    }
+
     pub async fn find(&self, id: IssueId) -> anyhow::Result<RecordDto> {
         self.repositories
             .record_repository()

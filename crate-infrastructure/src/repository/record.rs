@@ -1,4 +1,7 @@
-use super::RedminePersistenceImpl;
+use super::{
+    super::model::{CreateRecord, CreateRecordParam},
+    RedminePersistenceImpl,
+};
 use crate_domain::{
     error::MyError,
     id::IssueId,
@@ -14,6 +17,22 @@ use serenity::async_trait;
 
 #[async_trait]
 impl RecordRepository for RedminePersistenceImpl<Record> {
+    async fn add(&self, record: Record) -> anyhow::Result<Record> {
+        let new_record: CreateRecordParam = record.clone().into();
+        let new_record = CreateRecord::new(new_record);
+        let new_record = serde_json::to_value(new_record)?;
+        self.client
+            .post_with_url(self.client.issues_url(), new_record)
+            .await?;
+
+        Ok(self
+            .list(None)
+            .await?
+            .into_iter()
+            .find(|r| r.title == record.title)
+            .unwrap())
+    }
+
     async fn find(&self, id: IssueId) -> anyhow::Result<Record> {
         let res = self.client.get(id).await?;
         ensure!(
