@@ -116,7 +116,7 @@ impl Redmine {
         format!("{}/issues/{}.json?{}", REDMINE_URL, id.0, self.token)
     }
 
-    fn issues_url(&self) -> String {
+    pub fn issues_url(&self) -> String {
         format!("{}/issues.json?{}", REDMINE_URL, self.token)
     }
 
