@@ -114,8 +114,7 @@ async fn create_interaction(
             _ => Err(error),
         },
         _ => Err(error),
-    }
-    .context("コマンドの処理中にエラーが発生しました。")?;
+    }?;
 
     Ok(match result {
         // TODO: MessagesやEmbedsにも対応する
