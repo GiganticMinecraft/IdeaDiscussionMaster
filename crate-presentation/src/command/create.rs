@@ -31,14 +31,11 @@ pub fn builder() -> SlashCommandBuilder {
                 )
                 .required(true),
             )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "next_start_time",
-                    "次回の会議の開始時刻",
-                    ApplicationCommandOptionType::String,
-                )
-                .required(true),
-            ),
+            .add_option(SlashCommandOptionBuilder::new(
+                "next_start_time",
+                "次回の会議の開始時刻",
+                ApplicationCommandOptionType::String,
+            )),
         )
         .add_option(
             SlashCommandOptionBuilder::new(
@@ -70,12 +67,17 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
+    // TODO: 過去の日付で作成させない
+
     // 次回の会議の日付・時刻を取得
     let date: String = map.get("next_date").unwrap().to_owned().try_into()?;
     let date = NaiveDate::parse_from_str(&date, "%Y%m%d")
         .with_context(|| format!("Error while parsing `next_date`: {}", date))?;
 
-    let start_time: String = map.get("next_start_time").unwrap().to_owned().try_into()?;
+    let start_time = map
+        .get("next_start_time")
+        .map(|arg| arg.to_owned().try_into().unwrap())
+        .unwrap_or_else(|| "2100".to_string());
     let start_time = NaiveTime::parse_from_str(&start_time, "%H%M")
         .with_context(|| format!("Error while parsing `next_start_time`: {}", start_time))?;
     let end_time = start_time + Duration::hours(2);
