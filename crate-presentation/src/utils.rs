@@ -2,7 +2,7 @@ pub mod discord_embeds {
     use super::super::global::model::Agenda;
     use crate_domain::{id::IssueId, status::AgendaStatus};
     use crate_shared::CreateEmbedExt;
-    use crate_usecase::model::AgendaDto;
+    use crate_usecase::model::{AgendaDto, DtoExt};
 
     use itertools::Itertools;
     use regex::Regex;
