@@ -104,7 +104,8 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
 
     let embed = CreateEmbed::default()
         .title("議事録を新規作成しました")
-        .field("議事録チケット", new_record.url(), false)
+        .field("タイトル", &new_record.title, false)
+        .field("URL", new_record.url(), false)
         .current_timestamp()
         .success_color()
         .to_owned();
