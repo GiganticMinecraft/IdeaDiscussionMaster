@@ -1,8 +1,11 @@
+use super::DtoExt;
 use crate_domain::{id::IssueId, redmine::Record, status::RecordStatus};
 use crate_shared::REDMINE_URL;
 
+use anyhow::anyhow;
 use chrono::NaiveDate;
 use derive_new::new;
+use regex::Regex;
 
 #[derive(new, Debug, Clone)]
 pub struct RecordDto {
@@ -15,8 +18,36 @@ pub struct RecordDto {
 }
 
 impl RecordDto {
-    pub fn url(&self) -> String {
+    pub fn discussion_title(&self) -> anyhow::Result<String> {
+        Self::title_regex()
+            .find(&self.title)
+            .ok_or_else(|| anyhow!("No matches in record title"))
+            .map(|m| m.as_str().to_string())
+    }
+
+    pub fn discussion_number(&self) -> anyhow::Result<u16> {
+        let cap = Self::title_regex()
+            .captures(&self.title)
+            .ok_or_else(|| anyhow!("No matches in record title"))?;
+
+        cap[1]
+            .parse::<u16>()
+            .map_err(|_| anyhow!("Error while parsing record num to u16"))
+    }
+
+    fn title_regex() -> Regex {
+        Regex::new(r"第([1-9][0-9]*)回アイデア会議").unwrap()
+    }
+}
+
+impl DtoExt for RecordDto {
+    fn url(&self) -> String {
         format!("{}/issues/{}", REDMINE_URL, self.id.0)
+    }
+
+    // TODO: これに統一
+    fn formatted_id(&self) -> String {
+        format!("#{}", self.id.0)
     }
 }
 

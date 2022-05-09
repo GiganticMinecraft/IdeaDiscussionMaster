@@ -1,3 +1,4 @@
+use super::DtoExt;
 use crate_domain::{id::IssueId, redmine::Agenda, status::agenda::AgendaStatus};
 use crate_shared::REDMINE_URL;
 
@@ -11,9 +12,13 @@ pub struct AgendaDto {
     pub status: AgendaStatus,
 }
 
-impl AgendaDto {
-    pub fn url(&self) -> String {
+impl DtoExt for AgendaDto {
+    fn url(&self) -> String {
         format!("{}/issues/{}", REDMINE_URL, self.id.0)
+    }
+
+    fn formatted_id(&self) -> String {
+        format!("#{}", self.id.0)
     }
 }
 

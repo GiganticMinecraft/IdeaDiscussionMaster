@@ -6,3 +6,8 @@ pub use record_dto::RecordDto;
 
 mod record_param;
 pub use record_param::RecordParam;
+
+pub trait DtoExt {
+    fn url(&self) -> String;
+    fn formatted_id(&self) -> String;
+}
