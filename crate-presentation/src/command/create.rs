@@ -11,7 +11,6 @@ use crate_usecase::model::RecordParam;
 use anyhow::{anyhow, ensure, Context};
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
 use itertools::Itertools;
-use regex::Regex;
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
 };
