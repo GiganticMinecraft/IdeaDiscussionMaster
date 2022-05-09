@@ -6,7 +6,7 @@ use crate_shared::{
     },
     ChronoExt, CreateEmbedExt,
 };
-use crate_usecase::model::RecordParam;
+use crate_usecase::model::{DtoExt, RecordParam};
 
 use anyhow::{anyhow, ensure, Context};
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
