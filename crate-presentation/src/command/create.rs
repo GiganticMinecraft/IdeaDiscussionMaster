@@ -57,7 +57,7 @@ pub fn builder() -> SlashCommandBuilder {
             .add_option(
                 SlashCommandOptionBuilder::new(
                     "next_time_hour",
-                    "次回会議開始時刻（時）",
+                    "次回会議開始時刻（時）, デフォルト: 21",
                     ApplicationCommandOptionType::Integer,
                 )
                 .min_int(0)
@@ -66,7 +66,7 @@ pub fn builder() -> SlashCommandBuilder {
             .add_option(
                 SlashCommandOptionBuilder::new(
                     "next_time_minute",
-                    "次回会議開始時刻（分）",
+                    "次回会議開始時刻（分）, デフォルト: 0",
                     ApplicationCommandOptionType::Integer,
                 )
                 .min_int(0)
