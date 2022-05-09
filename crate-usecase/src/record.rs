@@ -53,16 +53,20 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
         Ok(record)
     }
 
-    pub async fn list(&self, limit: Option<u16>) -> anyhow::Result<Vec<RecordDto>> {
+    pub async fn list(
+        &self,
+        limit: Option<u16>,
+        status: Vec<RecordStatus>,
+    ) -> anyhow::Result<Vec<RecordDto>> {
         self.repositories
             .record_repository()
-            .list(limit)
+            .list(limit, status)
             .await
             .map(|vec| vec.into_iter().map(|r| r.into()).collect())
     }
 
     pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
-        self.list(Some(1))
+        self.list(Some(1), vec![RecordStatus::Closed])
             .await?
             .first()
             .cloned()

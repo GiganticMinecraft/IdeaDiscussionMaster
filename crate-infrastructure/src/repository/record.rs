@@ -26,7 +26,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             .await?;
 
         Ok(self
-            .list(None)
+            .list(None, vec![RecordStatus::New])
             .await?
             .into_iter()
             .find(|r| r.title == record.title)
@@ -43,17 +43,20 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
         res.issue.try_into()
     }
 
-    async fn list(&self, limit: Option<u16>) -> anyhow::Result<Vec<Record>> {
-        let status = RecordStatus::all()
+    async fn list(
+        &self,
+        limit: Option<u16>,
+        status: Vec<RecordStatus>,
+    ) -> anyhow::Result<Vec<Record>> {
+        let status = status
             .iter()
             .map(|status| status.id().to_string())
             .join(",");
         let limit = limit.unwrap_or(20).to_string();
         let queries = vec![
-            ("project_id", "1"),
+            ("project_id", "18"),
             ("tracker_id", "34"),
             ("status_id", &status),
-            ("sort", "category:created_on"),
             ("limit", &limit),
         ];
         let res = self.client.get_as_list(queries).await?;
