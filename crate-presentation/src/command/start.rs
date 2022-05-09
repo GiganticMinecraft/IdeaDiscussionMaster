@@ -8,6 +8,7 @@ use crate_shared::{
     },
     CreateEmbedExt,
 };
+use crate_usecase::model::DtoExt;
 
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
