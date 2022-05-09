@@ -94,7 +94,8 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
 
     // 議事録のタイトルと説明文を生成
     let record_title = format!("{}　第{}回アイデア会議", date_str, next_discussion_number);
-    let record_description_date_time = format!("{}\n{}〜{}\n", date, start_time_str, end_time_str);
+    let record_description_date_time =
+        format!("{}\n{}〜{}\n", date_str, start_time_str, end_time_str);
     let record_description = format!("{}{}", record_description_date_time, RECORD_DESCRIPTIONS);
 
     // 議事録をRedmine上に作成
