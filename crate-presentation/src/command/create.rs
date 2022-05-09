@@ -8,8 +8,9 @@ use crate_shared::{
 };
 use crate_usecase::model::RecordParam;
 
-use anyhow::{anyhow, Context};
-use chrono::{Duration, NaiveDate, NaiveTime};
+use anyhow::{anyhow, ensure, Context};
+use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
+use itertools::Itertools;
 use regex::Regex;
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
@@ -67,7 +68,7 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
-    // TODO: 過去の日付で作成させない
+    // TODO: 日付・時刻を1つずつ入力させる？
 
     // 次回の会議の日付・時刻を取得
     let date: String = map.get("next_date").unwrap().to_owned().try_into()?;
@@ -81,6 +82,10 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     let start_time = NaiveTime::parse_from_str(&start_time, "%H%M")
         .with_context(|| format!("Error while parsing `next_start_time`: {}", start_time))?;
     let end_time = start_time + Duration::hours(2);
+    ensure!(
+        Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
+        "現在または現在より未来の日時を指定してください。"
+    );
 
     // 次回の会議の日付・時刻を文字列にフォーマット
     let date_str = format!("{}({})", date.format("%Y/%m/%d"), date.weekday_ja());
