@@ -71,10 +71,12 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
 
     // 次回の会議の日付・時刻を取得
     let date: String = map.get("next_date").unwrap().to_owned().try_into()?;
-    let date = NaiveDate::parse_from_str(&date, "%Y%m%d")?;
+    let date = NaiveDate::parse_from_str(&date, "%Y%m%d")
+        .with_context(|| format!("Error while parsing `next_date`: {}", date))?;
 
     let start_time: String = map.get("next_start_time").unwrap().to_owned().try_into()?;
-    let start_time = NaiveTime::parse_from_str(&start_time, "%H%M")?;
+    let start_time = NaiveTime::parse_from_str(&start_time, "%H%M")
+        .with_context(|| format!("Error while parsing `next_start_time`: {}", start_time))?;
     let end_time = start_time + Duration::hours(2);
 
     // 次回の会議の日付・時刻を文字列にフォーマット
@@ -84,8 +86,11 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     let end_time_str = end_time.format(time_formatter);
 
     // 次回の会議の回数を取得
-    let latest_closed_record_title = module.record_usecase().find_latest_closed().await?.title;
-    let next_discussion_number = get_latest_discussion_number(latest_closed_record_title) + 1;
+    // let latest_closed_record_title = module.record_usecase().find_latest_closed().await?.title;
+    let latest_closed_record_title = String::from("テスト用");
+    let next_discussion_number = get_latest_record_number(latest_closed_record_title)
+        .context("Error while getting latest record number")?
+        + 1;
 
     // 議事録のタイトルと説明文を生成
     let record_title = format!("{}　第{}回アイデア会議", date_str, next_discussion_number);
@@ -106,11 +111,15 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     Ok(InteractionResponse::Embed(embed))
 }
 
-fn get_latest_discussion_number(title: String) -> u16 {
+fn get_latest_record_number(title: String) -> anyhow::Result<u16> {
     let regex = Regex::new(r"第([1-9][0-9]*)回").unwrap();
-    let capture = regex.captures(&title).unwrap();
+    let capture = regex
+        .captures(&title)
+        .ok_or_else(|| anyhow!("Failed to capture"))?;
 
-    capture[1].parse::<u16>().unwrap()
+    capture[1]
+        .parse::<u16>()
+        .map_err(|_| anyhow!("Failed to parse"))
 }
 
 pub async fn issue((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
