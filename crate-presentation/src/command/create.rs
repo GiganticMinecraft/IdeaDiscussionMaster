@@ -26,17 +26,52 @@ pub fn builder() -> SlashCommandBuilder {
             )
             .add_option(
                 SlashCommandOptionBuilder::new(
-                    "next_date",
-                    "次回の会議の日付",
-                    ApplicationCommandOptionType::String,
+                    "next_date_year",
+                    "次回会議日付（年）",
+                    ApplicationCommandOptionType::Integer,
                 )
+                .min_int(2000)
+                .max_int(3000)
                 .required(true),
             )
-            .add_option(SlashCommandOptionBuilder::new(
-                "next_start_time",
-                "次回の会議の開始時刻",
-                ApplicationCommandOptionType::String,
-            )),
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_date_month",
+                    "次回会議日付（月）",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(1)
+                .max_int(12)
+                .required(true),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_date_day",
+                    "次回会議日付（日）",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(1)
+                .max_int(31)
+                .required(true),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_time_hour",
+                    "次回会議開始時刻（時）",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(0)
+                .max_int(23),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "next_time_minute",
+                    "次回会議開始時刻（分）",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(0)
+                .max_int(59),
+            ),
         )
         .add_option(
             SlashCommandOptionBuilder::new(
@@ -68,20 +103,30 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
-    // TODO: 日付・時刻を1つずつ入力させる？
-
     // 次回の会議の日付・時刻を取得
-    let date: String = map.get("next_date").unwrap().to_owned().try_into()?;
-    let date = NaiveDate::parse_from_str(&date, "%Y%m%d")
-        .with_context(|| format!("Error while parsing `next_date`: {}", date))?;
+    let date = {
+        let args: Vec<u16> = vec!["next_date_year", "next_date_month", "next_date_day"]
+            .into_iter()
+            .map(|str| map.get(str).cloned().unwrap().try_into().unwrap())
+            .collect_vec();
 
-    let start_time = map
-        .get("next_start_time")
-        .map(|arg| arg.to_owned().try_into().unwrap())
-        .unwrap_or_else(|| "2100".to_string());
-    let start_time = NaiveTime::parse_from_str(&start_time, "%H%M")
-        .with_context(|| format!("Error while parsing `next_start_time`: {}", start_time))?;
+        NaiveDate::from_ymd(args[0].into(), args[1].into(), args[2].into())
+    };
+    let start_time = {
+        let args: Vec<u16> = vec![("next_time_hour", 21), ("next_time_minute", 0)]
+            .into_iter()
+            .map(|(str, default)| {
+                map.get(str)
+                    .cloned()
+                    .map(|arg| arg.to_owned().try_into().unwrap())
+                    .unwrap_or(default)
+            })
+            .collect_vec();
+
+        NaiveTime::from_hms(args[0].into(), args[1].into(), 0)
+    };
     let end_time = start_time + Duration::hours(2);
+
     ensure!(
         Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
         "現在または現在より未来の日時を指定してください。"
