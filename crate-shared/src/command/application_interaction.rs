@@ -44,8 +44,8 @@ impl TryInto<u16> for ApplicationInteractions {
     fn try_into(self) -> anyhow::Result<u16> {
         if let ApplicationInteractions::SlashCommand(SlashCommand::Option(b)) = self {
             if let OptionValue::Integer(v) = *b {
-                ensure!(v >= u16::MIN.into(), "Too low value");
-                ensure!(v <= u16::MAX.into(), "Too high value");
+                ensure!(v >= u16::MIN.into(), "The arg is too low value: {}", v);
+                ensure!(v <= u16::MAX.into(), "The arg is too high value: {}", v);
 
                 return Ok(v as u16);
             }
