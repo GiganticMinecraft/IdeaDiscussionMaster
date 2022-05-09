@@ -127,16 +127,19 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     };
     let end_time = start_time + Duration::hours(2);
 
-    ensure!(
-        Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
-        "現在または現在より未来の日時を指定してください。"
-    );
-
     // 次回の会議の日付・時刻を文字列にフォーマット
     let date_str = format!("{}({})", date.format("%Y/%m/%d"), date.weekday_ja());
     let time_formatter = "%H:%M";
     let start_time_str = start_time.format(time_formatter);
     let end_time_str = end_time.format(time_formatter);
+
+    ensure!(
+        Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
+        format!(
+            "現在または現在より未来の日時を指定してください。: {} {}",
+            date_str, start_time_str
+        )
+    );
 
     // 次回の会議の回数を取得
     // let latest_closed_record_title = module.record_usecase().find_latest_closed().await?.title;
