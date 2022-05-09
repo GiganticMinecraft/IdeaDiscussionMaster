@@ -4,8 +4,6 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum MyError {
-    #[error("引数が指定されていません。")]
-    ArgIsNotSpecified,
     #[error("チケットが存在しません。")]
     TicketIsNotFound,
     #[error("チケットはアイデア提案用プロジェクトのアイデアではありません。")]
