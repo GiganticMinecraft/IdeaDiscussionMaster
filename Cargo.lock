@@ -470,6 +470,7 @@ dependencies = [
  "crate-domain",
  "crate-shared",
  "derive-new",
+ "regex",
 ]
 
 [[package]]

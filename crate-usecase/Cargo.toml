@@ -12,3 +12,4 @@ anyhow = "1.0"
 derive-new = "0.5"
 chrono = "0.4"
 crate-shared = { version = "0.1.0", path = "../crate-shared" }
+regex = "1.5"
