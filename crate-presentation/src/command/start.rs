@@ -6,7 +6,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    CreateEmbedExt, REDMINE_URL,
+    CreateEmbedExt,
 };
 
 use futures::stream::{self, StreamExt};
