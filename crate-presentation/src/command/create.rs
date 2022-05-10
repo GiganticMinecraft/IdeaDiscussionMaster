@@ -218,7 +218,7 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
 
     ensure!(
         !ideas.is_empty(),
-        anyhow!("指定されたアイデアは、いずれも存在しないか条件を満たしていません。")
+        anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
     );
 
     let announce_embed = CreateEmbed::default()
@@ -291,14 +291,15 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     }
 
     let result_embed = CreateEmbed::default()
+        .custom_default(&record.id)
         .title("GitHubへの起票を完了しました")
         .description("以下に番号の記載がないものは失敗しています。")
-        .field(
+        .custom_field(
             "処理を開始した議題",
-            ideas.iter().map(|idea| idea.id.formatted()).join(", "),
+            ideas.into_iter().map(|idea| idea.id.formatted()).join(", "),
             false,
         )
-        .field(
+        .custom_field(
             "GitHubにIssueを作成した議題",
             gh_issued
                 .into_iter()
@@ -306,7 +307,7 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
                 .join(", "),
             false,
         )
-        .field(
+        .custom_field(
             "Redmineに注記をした議題",
             redmine_issued
                 .into_iter()
@@ -314,12 +315,10 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
                 .join(", "),
             false,
         )
+        .success_color()
         .to_owned();
 
-    Ok(InteractionResponse::Embeds(vec![
-        announce_embed,
-        result_embed,
-    ]))
+    Ok(InteractionResponse::Embed(result_embed))
 }
 
 const RECORD_DESCRIPTIONS: &str = r"にアイデア会議を行います。
