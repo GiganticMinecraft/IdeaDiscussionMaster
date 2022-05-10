@@ -3,6 +3,8 @@ use secret_key::SecretKey;
 
 pub mod command;
 
+// TODO: extをmodにまとめる
+
 mod create_embed_ext;
 pub use create_embed_ext::CreateEmbedExt;
 
