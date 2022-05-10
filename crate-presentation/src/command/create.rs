@@ -141,8 +141,13 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     );
 
     // 次回の会議の回数を取得
-    let latest_closed_record_title = module.record_usecase().find_latest_closed().await?.title;
-    let next_discussion_number = get_latest_record_number(latest_closed_record_title)
+    let latest_closed_record = module
+        .record_usecase()
+        .find_latest_closed()
+        .await
+        .context("No closed record")?;
+    let next_discussion_number = latest_closed_record
+        .discussion_number()
         .context("Error while getting latest record number")?
         + 1;
 
