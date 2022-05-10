@@ -44,11 +44,6 @@ impl DtoExt for RecordDto {
     fn url(&self) -> String {
         format!("{}/issues/{}", REDMINE_URL, self.id.0)
     }
-
-    // TODO: これに統一
-    fn formatted_id(&self) -> String {
-        format!("#{}", self.id.0)
-    }
 }
 
 impl From<Record> for RecordDto {

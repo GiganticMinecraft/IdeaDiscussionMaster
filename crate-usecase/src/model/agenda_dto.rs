@@ -16,10 +16,6 @@ impl DtoExt for AgendaDto {
     fn url(&self) -> String {
         format!("{}/issues/{}", REDMINE_URL, self.id.0)
     }
-
-    fn formatted_id(&self) -> String {
-        format!("#{}", self.id.0)
-    }
 }
 
 impl From<Agenda> for AgendaDto {
