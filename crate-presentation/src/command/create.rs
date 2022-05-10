@@ -1,15 +1,17 @@
 use super::super::{global, module::ModuleExt};
+use crate_domain::{github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus};
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    ChronoExt, CreateEmbedExt,
+    ChronoExt, CreateEmbedExt, IdExt,
 };
 use crate_usecase::model::{DtoExt, RecordParam};
 
 use anyhow::{anyhow, ensure, Context};
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
+use futures::stream::{self, StreamExt};
 use itertools::Itertools;
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
@@ -172,19 +174,152 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
     Ok(InteractionResponse::Embed(embed))
 }
 
-fn get_latest_record_number(title: String) -> anyhow::Result<u16> {
-    let regex = Regex::new(r"第([1-9][0-9]*)回").unwrap();
-    let capture = regex
-        .captures(&title)
-        .ok_or_else(|| anyhow!("Failed to capture"))?;
+#[allow(clippy::type_complexity)]
+pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+    let module = global::module::get();
 
-    capture[1]
-        .parse::<u16>()
-        .map_err(|_| anyhow!("Failed to parse"))
-}
+    // 議事録のIDを取得
+    let record_id: u16 = map
+        .get("record_issue_number")
+        .unwrap()
+        .to_owned()
+        .try_into()?;
+    let record = module
+        .record_usecase()
+        .find(IssueId::new(record_id))
+        .await
+        .with_context(|| format!("議事録の取得中にエラーが発声しました: #{:?}", record_id))?;
 
-pub async fn issue((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
-    Ok(InteractionResponse::Message("issue".to_string()))
+    // Issueを作成するアイデアを取得
+    // ただし、以下をすべて満たす必要がある
+    // * u16にパースできる
+    // * 議事録に関連付けられている
+    // * ステータスが承認である
+    let ideas: String = map
+        .get("idea_issue_numbers")
+        .unwrap()
+        .to_owned()
+        .try_into()?;
+    let ideas = ideas
+        .split(',')
+        .filter_map(|str| str.parse::<u16>().ok())
+        .map(IssueId::new)
+        .filter(|id| record.relations.contains(id))
+        .collect_vec();
+    let ideas: Vec<_> = stream::iter(ideas)
+        .then(|id| module.agenda_usecase().find(id))
+        .collect()
+        .await;
+    let ideas = ideas
+        .into_iter()
+        .filter_map(|res| res.ok())
+        .filter(|idea| idea.status == AgendaStatus::Approved)
+        .collect_vec();
+
+    ensure!(
+        !ideas.is_empty(),
+        anyhow!("指定されたアイデアは、いずれも存在しないか条件を満たしていません。")
+    );
+
+    let announce_embed = CreateEmbed::default()
+        .title("以下のアイデアが見つかりました")
+        .description(
+            ideas
+                .iter()
+                .map(|idea| idea.id.formatted())
+                .sorted()
+                .join(", "),
+        )
+        .to_owned();
+
+    // GitHubにIssueを作成
+    let gh_issues = ideas
+        .iter()
+        .map(|idea| {
+            let title = format!("Redmine Idea {}", idea.id.formatted());
+            let content = format!(
+                "{}\n[{}]({})にて承認されたアイデア。",
+                idea.url(),
+                record.discussion_title().unwrap(),
+                record.url()
+            );
+
+            // TODO: to_string_vecのtrait？
+            (
+                idea.id,
+                GHIssue::new(
+                    title,
+                    content,
+                    vec!["Tracked: Redmine", "Status/Idea: Accepted✅"]
+                        .into_iter()
+                        .map(|str| str.to_string())
+                        .collect_vec(),
+                ),
+            )
+        })
+        .collect_vec();
+    let mut gh_issued: Vec<(IssueId, String)> = Vec::new();
+    for (id, issue) in gh_issues.into_iter() {
+        let res = module.gh_issue_usecase().add(issue).await;
+        if res.is_ok() {
+            gh_issued.push((id, res.unwrap()))
+        }
+    }
+
+    // RedmineにGitHubのIssueのURLを注記
+    let mut redmine_issued: Vec<IssueId> = Vec::new();
+    for (id, gh_issue_url) in gh_issued.iter() {
+        let id = id.to_owned();
+        let res = module
+            .agenda_usecase()
+            .add_note(
+                id,
+                Note::new(
+                    vec![
+                        "GitHubにIssueを作成しました。以下URLより確認できます。",
+                        gh_issue_url,
+                    ]
+                    .into_iter()
+                    .map(|s| s.to_string())
+                    .collect_vec(),
+                ),
+            )
+            .await;
+        if res.is_ok() {
+            redmine_issued.push(id)
+        }
+    }
+
+    let result_embed = CreateEmbed::default()
+        .title("GitHubへの起票を完了しました")
+        .description("以下に番号の記載がないものは失敗しています。")
+        .field(
+            "処理を開始した議題",
+            ideas.iter().map(|idea| idea.id.formatted()).join(", "),
+            false,
+        )
+        .field(
+            "GitHubにIssueを作成した議題",
+            gh_issued
+                .into_iter()
+                .map(|(id, _)| id.formatted())
+                .join(", "),
+            false,
+        )
+        .field(
+            "Redmineに注記をした議題",
+            redmine_issued
+                .into_iter()
+                .map(|id| id.formatted())
+                .join(", "),
+            false,
+        )
+        .to_owned();
+
+    Ok(InteractionResponse::Embeds(vec![
+        announce_embed,
+        result_embed,
+    ]))
 }
 
 const RECORD_DESCRIPTIONS: &str = r"にアイデア会議を行います。
