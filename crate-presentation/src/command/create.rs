@@ -190,6 +190,8 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         .await
         .with_context(|| format!("議事録の取得中にエラーが発声しました: #{:?}", record_id))?;
 
+    // TODO: なぜだめなのかをちゃんと表示する
+
     // Issueを作成するアイデアを取得
     // ただし、以下をすべて満たす必要がある
     // * u16にパースできる
@@ -220,17 +222,6 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         !ideas.is_empty(),
         anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
     );
-
-    let announce_embed = CreateEmbed::default()
-        .title("以下のアイデアが見つかりました")
-        .description(
-            ideas
-                .iter()
-                .map(|idea| idea.id.formatted())
-                .sorted()
-                .join(", "),
-        )
-        .to_owned();
 
     // GitHubにIssueを作成
     let gh_issues = ideas
