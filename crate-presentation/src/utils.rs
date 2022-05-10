@@ -20,9 +20,9 @@ pub mod discord_embeds {
             .custom_default(record_id)
             .simple_color()
             .title(format!("次の議題は#{}です", next_agenda.id.0))
-            .field("議題チケット", next_agenda.url(), false)
-            .field("タイトル", subject, false)
-            .field("説明", next_agenda.description.clone(), false)
+            .custom_field("議題チケット", next_agenda.url(), false)
+            .custom_field("タイトル", subject, false)
+            .custom_field("説明", next_agenda.description.clone(), false)
     }
 
     pub fn no_next_agenda<'a>(
@@ -62,7 +62,7 @@ pub mod discord_embeds {
         embed
             .custom_default(record_id)
             .record_url_field(record_id)
-            .fields(agenda_fields)
+            .custom_fields(agenda_fields)
     }
 
     // pub fn votes_result_embed(

@@ -12,6 +12,15 @@ pub trait CreateEmbedExt {
     fn success_color(&mut self) -> &mut Self;
     fn failure_color(&mut self) -> &mut Self;
     fn record_url_field(&mut self, record_id: &IssueId) -> &mut Self;
+    fn custom_field<T, U>(&mut self, name: T, value: U, inline: bool) -> &mut Self
+    where
+        T: ToString,
+        U: ToString;
+    fn custom_fields<T, U, It>(&mut self, fields: It) -> &mut Self
+    where
+        T: ToString,
+        U: ToString,
+        It: IntoIterator<Item = (T, U, bool)>;
 }
 
 impl CreateEmbedExt for builder::CreateEmbed {
@@ -40,10 +49,45 @@ impl CreateEmbedExt for builder::CreateEmbed {
     }
 
     fn record_url_field(&mut self, record_id: &IssueId) -> &mut Self {
-        self.field(
+        self.custom_field(
             "議事録チケット",
             format!("{}/issues/{}", REDMINE_URL, record_id.0),
             false,
         )
+    }
+
+    fn custom_field<T, U>(&mut self, name: T, value: U, inline: bool) -> &mut Self
+    where
+        T: ToString,
+        U: ToString,
+    {
+        let name = name.to_string();
+        let name = if name.is_empty() {
+            "-".to_string()
+        } else {
+            name
+        };
+
+        let value = value.to_string();
+        let value = if value.is_empty() {
+            "-".to_string()
+        } else {
+            value
+        };
+
+        self.field(name, value, inline)
+    }
+
+    fn custom_fields<T, U, It>(&mut self, fields: It) -> &mut Self
+    where
+        T: ToString,
+        U: ToString,
+        It: IntoIterator<Item = (T, U, bool)>,
+    {
+        fields.into_iter().for_each(|(name, value, inline)| {
+            self.custom_field(name, value, inline);
+        });
+
+        self
     }
 }
