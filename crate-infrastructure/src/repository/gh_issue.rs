@@ -20,7 +20,7 @@ impl GitHubIssueRepository for GitHubPersistenceImpl<Issue> {
             .client
             .client
             .post(GITHUB_URL)
-            .header(header::USER_AGENT, "curl/7.38.0")
+            .header(header::USER_AGENT, "curl/7.83.0")
             .header(header::CONTENT_TYPE, "application/json")
             .header(header::ACCEPT, "application/vnd.github.v3+json")
             .header(
