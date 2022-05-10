@@ -23,10 +23,7 @@ impl GitHubIssueRepository for GitHubPersistenceImpl<Issue> {
             .header(header::USER_AGENT, "curl/7.83.0")
             .header(header::CONTENT_TYPE, "application/json")
             .header(header::ACCEPT, "application/vnd.github.v3+json")
-            .header(
-                header::AUTHORIZATION,
-                format!("token {}", self.client.token),
-            )
+            .header(header::AUTHORIZATION, self.client.token.clone())
             .json(&content)
             .send()
             .await
