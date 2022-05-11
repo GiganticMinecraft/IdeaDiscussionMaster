@@ -1,9 +1,16 @@
-use crate_shared::command::{
-    builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
+use super::super::global;
+use crate_shared::{
+    command::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
+    },
+    CreateEmbedExt, IdExt,
 };
 
-use serenity::model::interactions::application_command::ApplicationCommandOptionType;
+use anyhow::ensure;
+use serenity::{
+    builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
+};
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("vote", "投票を行います。")
@@ -33,7 +40,34 @@ pub fn builder() -> SlashCommandBuilder {
 }
 
 pub async fn start((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
-    Ok(InteractionResponse::Message("vote start".to_string()))
+    let record_id = global::record_id::get().unwrap();
+
+    let current_agenda = global::agendas::find_current();
+    ensure!(current_agenda.is_some(), "現在進行中の議題はありません。");
+    let current_agenda = current_agenda.unwrap();
+    ensure!(
+        current_agenda.votes_message_id.is_none(),
+        "すでに採決を開始しています。"
+    );
+
+    let embed_description = vec![
+        "提起されている議題についての採決を行います。",
+        "以下のリアクションで投票を行ってください。過半数を超え次第、次の議題へと移ります。",
+        ":o:: 承認",
+        ":x:: 却下",
+        "",
+        "※リアクションがすべて表示されてからリアクションを行わないと、投票が無効になる場合があります。",
+    ]
+    .join("\n");
+    let embed = CreateEmbed::default()
+        .custom_default(&record_id)
+        .title(format!("採決: {}", record_id.formatted()))
+        .description(embed_description)
+        .to_owned();
+    // TODO: react for embed
+    // TODO: update vote message id
+
+    Ok(InteractionResponse::Embed(embed))
 }
 
 pub async fn end((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
