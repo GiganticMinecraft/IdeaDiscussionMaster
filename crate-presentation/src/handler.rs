@@ -2,7 +2,7 @@ use super::command;
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
-        ArgsMap, CommandExt, CommandInteraction, InteractionResponse, Parser,
+        CommandExt, CommandInteraction, InteractionResponse,
     },
     SerenityContext,
 };
@@ -55,16 +55,10 @@ impl EventHandler for Handler {
         // TODO: 会議が開始しているかどうかなどを確認
         if let Some(command) = interaction.clone().application_command() {
             let _ = command.defer(&ctx.http).await;
-            let response = create_interaction(&command, &ctx)
-                .await
-                .unwrap_or_else(|m| InteractionResponse::Message(format!("{:?}", m)));
 
-            let _ = match response {
-                InteractionResponse::Message(m) => command.message(&ctx.http, m).await,
-                InteractionResponse::Messages(m) => command.messages(&ctx.http, m).await,
-                InteractionResponse::Embed(e) => command.embed(&ctx.http, e).await,
-                InteractionResponse::Embeds(e) => command.embeds(&ctx.http, e).await,
-            };
+            if let Err(e) = create_interaction(&command, &ctx).await {
+                let _ = command.message(&ctx.http, format!("{:?}", e)).await;
+            }
         }
     }
 }
@@ -85,10 +79,14 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
 async fn create_interaction(
     interaction: &CommandInteraction,
     context: &SerenityContext,
-) -> anyhow::Result<InteractionResponse> {
-    let (cmd, args) = split_of(interaction)?;
+) -> anyhow::Result<()> {
+    let (cmd, args) = interaction.split_of().await?;
     let sub_command = args.get("sub_command").and_then(|i| match i {
-        ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(name)) => Some(name.clone()),
+        ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(name))
+            if command::all_command_names().contains(&cmd) =>
+        {
+            Some(name.clone())
+        }
         _ => None,
     });
     let fn_args = (args, context.to_owned(), interaction.to_owned());
@@ -115,7 +113,7 @@ async fn create_interaction(
         _ => Err(error),
     }?;
 
-    Ok(match result {
+    let response = match result {
         // TODO: MessagesやEmbedsにも対応する
         InteractionResponse::Message(m) if m == *"" => {
             InteractionResponse::Message("Success: There is no message".to_string())
@@ -128,21 +126,17 @@ async fn create_interaction(
             InteractionResponse::Embed(embed)
         }
         res => res,
-    })
-}
+    };
 
-fn split_of(interaction: &CommandInteraction) -> anyhow::Result<(String, ArgsMap)> {
-    let data = interaction.data.parse()?;
-    let (cmd, args) = data.split_first().unwrap();
-    let cmd = match &cmd.1 {
-        ApplicationInteractions::SlashCommand(SlashCommand::Command(cmd))
-            if command::all_command_names().contains(cmd) =>
-        {
-            Ok(cmd)
-        }
-        _ => Err(anyhow::anyhow!("Unexpected interaction")),
-    }?;
-    let args = args.iter().cloned().collect::<HashMap<_, _>>();
+    let id = match response {
+        InteractionResponse::Message(m) => interaction.message(&context.http, m).await,
+        InteractionResponse::Messages(m) => interaction.messages(&context.http, m).await,
+        InteractionResponse::Embed(e) => interaction.embed(&context.http, e).await,
+        InteractionResponse::Embeds(e) => interaction.embeds(&context.http, e).await,
+    }
+    .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
 
-    Ok((cmd.to_owned(), args))
+    // TODO: vote startならvote_message_idを格納
+
+    Ok(())
 }
