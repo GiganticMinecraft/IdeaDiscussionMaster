@@ -21,6 +21,7 @@ pub trait CreateEmbedExt {
         T: ToString,
         U: ToString,
         It: IntoIterator<Item = (T, U, bool)>;
+    fn is_empty(&self) -> bool;
 }
 
 impl CreateEmbedExt for builder::CreateEmbed {
@@ -47,7 +48,6 @@ impl CreateEmbedExt for builder::CreateEmbed {
     fn failure_color(&mut self) -> &mut Self {
         self.color(Color::from_rgb(245, 93, 93))
     }
-
     fn record_url_field(&mut self, record_id: &IssueId) -> &mut Self {
         self.custom_field(
             "議事録チケット",
@@ -77,7 +77,6 @@ impl CreateEmbedExt for builder::CreateEmbed {
 
         self.field(name, value, inline)
     }
-
     fn custom_fields<T, U, It>(&mut self, fields: It) -> &mut Self
     where
         T: ToString,
@@ -89,5 +88,9 @@ impl CreateEmbedExt for builder::CreateEmbed {
         });
 
         self
+    }
+
+    fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 }
