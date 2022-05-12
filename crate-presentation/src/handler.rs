@@ -1,4 +1,4 @@
-use super::command;
+use super::{command, global};
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
@@ -81,31 +81,34 @@ async fn create_interaction(
     ctx: &SerenityContext,
 ) -> anyhow::Result<()> {
     let (command, args) = interaction.split_of().await?;
-    let sub_command = args.get("sub_command").and_then(|i| match i {
-        ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(name))
-            if command::all_command_names().contains(&command) =>
-        {
-            Some(name.clone())
-        }
-        _ => None,
-    });
+    let sub_command = args
+        .get("sub_command")
+        .and_then(|i| match i {
+            ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(name))
+                if command::all_command_names().contains(&command) =>
+            {
+                Some(name.clone())
+            }
+            _ => None,
+        })
+        .unwrap_or_default();
     let fn_args = (args, ctx.to_owned(), interaction.to_owned());
 
     let error = anyhow!("予期していないコマンドです。");
     let result = match command.as_str() {
         "start" => command::start::executor(fn_args).await,
         "end" => command::end::executor(fn_args).await,
-        "vote" => match sub_command.unwrap().as_str() {
+        "vote" => match sub_command.as_str() {
             "start" => command::vote::start(fn_args).await,
             "end" => command::vote::end(fn_args).await,
             _ => Err(error),
         },
-        "agenda" => match sub_command.unwrap().as_str() {
+        "agenda" => match sub_command.as_str() {
             "add" => command::agenda::add(fn_args).await,
             "list" => command::agenda::list(fn_args).await,
             _ => Err(error),
         },
-        "create" => match sub_command.unwrap().as_str() {
+        "create" => match sub_command.as_str() {
             "new_record" => command::create::new_record(fn_args).await,
             "issue" => command::create::issue(fn_args).await,
             _ => Err(error),
@@ -128,7 +131,7 @@ async fn create_interaction(
         res => res,
     };
 
-    let id = match response {
+    let message_id = match response {
         InteractionResponse::Message(m) => interaction.message(&ctx.http, m).await,
         InteractionResponse::Messages(m) => interaction.messages(&ctx.http, m).await,
         InteractionResponse::Embed(e) => interaction.embed(&ctx.http, e).await,
@@ -136,7 +139,11 @@ async fn create_interaction(
     }
     .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
 
-    // TODO: vote startならvote_message_idを格納
+    // `vote start`ならvote_message_idを格納
+    if command.as_str() == "vote" && sub_command.as_str() == "start" {
+        let current_agenda = global::agendas::find_current().unwrap();
+        global::agendas::update_votes_message_id(current_agenda.id, Some(message_id));
+    }
 
     Ok(())
 }
