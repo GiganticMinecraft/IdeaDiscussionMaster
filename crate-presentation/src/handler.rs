@@ -26,10 +26,7 @@ pub struct Handler;
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: SerenityContext, _data_about_bot: Ready) {
-        if let Err(e) = create_slash_commands(&ctx.http)
-            .await
-            .context("Error while creating slash commands")
-        {
+        if let Err(e) = create_slash_commands(&ctx.http).await {
             println!("{:?}", e);
         };
 
@@ -74,11 +71,13 @@ impl EventHandler for Handler {
 
 async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
     let guild_id = serenity::model::id::GuildId(std::env::var("GUILD_ID")?.parse()?); // TODO: env
-    let commands = command::all_commands()?;
+    let commands =
+        command::all_commands().context("SlashCommandの生成中にエラーが発生しました。")?;
     let _ = serenity::model::id::GuildId::set_application_commands(&guild_id, &http, |command| {
         command.set_application_commands(commands)
     })
-    .await?;
+    .await
+    .context("SlashCommandをDiscordに登録している間にエラーが発生しました。")?;
 
     Ok(())
 }
