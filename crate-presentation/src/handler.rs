@@ -1,4 +1,4 @@
-use super::{command, global};
+use crate::{command, global};
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
@@ -10,7 +10,6 @@ use crate_shared::{
 use anyhow::{anyhow, Context};
 use serenity::{
     async_trait,
-    builder::CreateEmbed,
     client::EventHandler,
     http::client::Http,
     model::{
@@ -18,7 +17,6 @@ use serenity::{
         interactions::{application_command::ApplicationCommand, Interaction},
     },
 };
-use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct Handler;
