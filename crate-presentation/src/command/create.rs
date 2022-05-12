@@ -119,7 +119,7 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
             .map(|(str, default)| {
                 map.get(str)
                     .cloned()
-                    .map(|arg| arg.to_owned().try_into().unwrap())
+                    .map(|arg| arg.try_into().unwrap())
                     .unwrap_or(default)
             })
             .collect_vec();
