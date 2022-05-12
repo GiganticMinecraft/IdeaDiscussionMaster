@@ -116,19 +116,10 @@ async fn create_interaction(
         _ => Err(error),
     }?;
 
-    let response = match result {
-        // TODO: MessagesやEmbedsにも対応する
-        InteractionResponse::Message(m) if m == *"" => {
-            InteractionResponse::Message("Success: There is no message".to_string())
-        }
-        InteractionResponse::Embed(e) if e.0 == HashMap::default() => {
-            let embed = CreateEmbed::default()
-                .title("Success")
-                .description("There is no message")
-                .to_owned();
-            InteractionResponse::Embed(embed)
-        }
-        res => res,
+    let response = if result.is_empty() {
+        InteractionResponse::default()
+    } else {
+        result
     };
 
     let message_id = match response {
