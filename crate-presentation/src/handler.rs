@@ -78,21 +78,21 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
 
 async fn create_interaction(
     interaction: &CommandInteraction,
-    context: &SerenityContext,
+    ctx: &SerenityContext,
 ) -> anyhow::Result<()> {
-    let (cmd, args) = interaction.split_of().await?;
+    let (command, args) = interaction.split_of().await?;
     let sub_command = args.get("sub_command").and_then(|i| match i {
         ApplicationInteractions::SlashCommand(SlashCommand::SubCommand(name))
-            if command::all_command_names().contains(&cmd) =>
+            if command::all_command_names().contains(&command) =>
         {
             Some(name.clone())
         }
         _ => None,
     });
-    let fn_args = (args, context.to_owned(), interaction.to_owned());
+    let fn_args = (args, ctx.to_owned(), interaction.to_owned());
 
     let error = anyhow!("予期していないコマンドです。");
-    let result = match cmd.as_str() {
+    let result = match command.as_str() {
         "start" => command::start::executor(fn_args).await,
         "end" => command::end::executor(fn_args).await,
         "vote" => match sub_command.unwrap().as_str() {
@@ -129,10 +129,10 @@ async fn create_interaction(
     };
 
     let id = match response {
-        InteractionResponse::Message(m) => interaction.message(&context.http, m).await,
-        InteractionResponse::Messages(m) => interaction.messages(&context.http, m).await,
-        InteractionResponse::Embed(e) => interaction.embed(&context.http, e).await,
-        InteractionResponse::Embeds(e) => interaction.embeds(&context.http, e).await,
+        InteractionResponse::Message(m) => interaction.message(&ctx.http, m).await,
+        InteractionResponse::Messages(m) => interaction.messages(&ctx.http, m).await,
+        InteractionResponse::Embed(e) => interaction.embed(&ctx.http, e).await,
+        InteractionResponse::Embeds(e) => interaction.embeds(&ctx.http, e).await,
     }
     .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
 
