@@ -7,7 +7,7 @@ use crate_shared::{
     CreateEmbedExt, IdExt,
 };
 
-use anyhow::ensure;
+use anyhow::{bail, ensure};
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
 };
@@ -42,9 +42,12 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn start((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let record_id = global::record_id::get().unwrap();
 
-    let current_agenda = global::agendas::find_current();
-    ensure!(current_agenda.is_some(), "現在進行中の議題はありません。");
-    let current_agenda = current_agenda.unwrap();
+    let current_agenda = match global::agendas::find_current() {
+        Some(agenda) => agenda,
+        None => {
+            bail!("現在進行中の議題はありません。")
+        }
+    };
     ensure!(
         current_agenda.votes_message_id.is_none(),
         "すでに採決を開始しています。"
