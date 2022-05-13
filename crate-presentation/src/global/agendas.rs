@@ -59,6 +59,14 @@ pub fn in_progress(id: IssueId) -> Agendas {
     update_status(id, AgendaStatus::InProgress)
 }
 
+pub fn approve(id: IssueId) -> Agendas {
+    update_status(id, AgendaStatus::Approved)
+}
+
+pub fn decline(id: IssueId) -> Agendas {
+    update_status(id, AgendaStatus::Declined)
+}
+
 fn update_status(id: IssueId, status: AgendaStatus) -> Agendas {
     let agenda = find_by_id(id).unwrap_or_else(|| Agenda::new(id.0));
     let new_agenda = Agenda { status, ..agenda };
