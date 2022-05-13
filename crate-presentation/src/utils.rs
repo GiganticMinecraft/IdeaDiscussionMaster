@@ -64,22 +64,4 @@ pub mod discord_embeds {
             .record_url_field(record_id)
             .custom_fields(agenda_fields)
     }
-
-    // pub fn votes_result_embed(
-    //     embed: &mut builder::CreateEmbed,
-    //     record_id: IssueId,
-    //     current_agenda_id: IssueId,
-    //     status: AgendaStatus,
-    // ) -> &mut builder::CreateEmbed {
-    //     match status {
-    //         AgendaStatus::Approved => embed.success_color().with_record_id(record_id),
-    //         AgendaStatus::Declined => embed.failure_color().with_record_id(record_id),
-    //         _ => embed,
-    //     }
-    //     .title(format!(
-    //         "採決終了: #{}は{}されました",
-    //         current_agenda_id.0,
-    //         status.ja()
-    //     ))
-    // }
 }
