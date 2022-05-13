@@ -88,9 +88,9 @@ pub async fn end((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     };
 
     // 投票メッセージの記録をリセット
-    if let Some(id) = current_agenda.votes_message_id {
+    if current_agenda.votes_message_id.is_some() {
         global::agendas::update_votes_message_id(current_agenda.id, None);
-    };
+    }
 
     // 投票結果のEmbedを作成
     let mut vote_result_embed = CreateEmbed::default();
