@@ -29,6 +29,7 @@ impl<R: RepositoryModuleExt> AgendaUseCase<R> {
         Ok(issue)
     }
 
+    // FIXME: change to approve
     pub async fn accept(&self, id: IssueId) -> anyhow::Result<()> {
         let repo = self.repositories.agenda_repository();
         let agenda = repo.find(id).await;
