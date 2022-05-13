@@ -19,10 +19,9 @@ async fn build_bot_client() -> anyhow::Result<Client> {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let mut client = build_bot_client().await.unwrap();
-
     module::init().await;
 
+    let mut client = build_bot_client().await.unwrap();
     if let Err(reason) = client.start().await {
         eprintln!("クライアントの起動に失敗しました: {:?}", reason);
     }
