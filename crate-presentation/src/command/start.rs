@@ -37,13 +37,13 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // VCへの参加状況を取得
     // 参加していればグローバル変数にそのVCのChannelIdを格納
     // 参加していなければ終了
-    // let vc_id = crate_shared::find_vc_by_user_id(
-    //     &ctx.cache,
-    //     &interaction.guild_id.unwrap(),
-    //     &interaction.user.id,
-    // )
-    // .await?;
-    // global::voice_chat_channel_id::update(vc_id);
+    let vc_id = crate_shared::find_vc_by_user_id(
+        &ctx.cache,
+        &interaction.guild_id.unwrap(),
+        &interaction.user.id,
+    )
+    .await?;
+    global::voice_chat_channel_id::update(vc_id);
 
     // 議事録を取得
     // 存在すれば、グローバル変数に格納
