@@ -21,10 +21,12 @@ async fn build_bot_client() -> anyhow::Result<Client> {
 async fn main() -> anyhow::Result<()> {
     module::init().await;
 
-    let mut client = build_bot_client().await.unwrap();
-    if let Err(reason) = client.start().await {
-        eprintln!("クライアントの起動に失敗しました: {:?}", reason);
-    }
+    tokio::spawn(async move {
+        let mut client = build_bot_client().await.unwrap();
+        if let Err(reason) = client.start().await {
+            eprintln!("クライアントの起動に失敗しました: {:?}", reason);
+        }
+    });
 
     Ok(())
 }
