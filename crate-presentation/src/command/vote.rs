@@ -67,8 +67,6 @@ pub async fn start((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         .title(format!("採決: {}", record_id.formatted()))
         .description(embed_description)
         .to_owned();
-    // TODO: react for embed
-    // TODO: update vote message id
 
     Ok(InteractionResponse::Embed(embed))
 }

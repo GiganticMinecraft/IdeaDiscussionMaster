@@ -128,6 +128,7 @@ async fn create_interaction(
     }
     .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
 
+    // TODO: react for embed
     // `vote start`ならvote_message_idを格納
     if command.as_str() == "vote" && sub_command.as_str() == "start" {
         let current_agenda = global::agendas::find_current().unwrap();
