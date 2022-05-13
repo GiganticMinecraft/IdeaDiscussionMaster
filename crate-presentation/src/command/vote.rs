@@ -135,7 +135,7 @@ pub async fn end((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
-            println!("Next Agenda: #{}", next_agenda_id.unwrap().0);
+            println!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
 
             discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }

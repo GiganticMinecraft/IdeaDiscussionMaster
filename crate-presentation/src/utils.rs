@@ -1,7 +1,7 @@
 pub mod discord_embeds {
     use super::super::global::model::Agenda;
     use crate_domain::{id::IssueId, status::AgendaStatus};
-    use crate_shared::CreateEmbedExt;
+    use crate_shared::{CreateEmbedExt, IdExt};
     use crate_usecase::model::{AgendaDto, DtoExt};
 
     use itertools::Itertools;
@@ -19,7 +19,7 @@ pub mod discord_embeds {
         embed
             .custom_default(record_id)
             .simple_color()
-            .title(format!("次の議題は#{}です", next_agenda.id.0))
+            .title(format!("次の議題は{}です", next_agenda.id.formatted()))
             .custom_field("議題チケット", next_agenda.url(), false)
             .custom_field("タイトル", subject, false)
             .custom_field("説明", next_agenda.description.clone(), false)
@@ -51,7 +51,7 @@ pub mod discord_embeds {
                     // フィールドの内容
                     agendas
                         .iter()
-                        .map(|agenda| format!("#{}", agenda.id.0))
+                        .map(|agenda| agenda.id.formatted())
                         .join(", "),
                     // フィールドをインラインにするかどうか
                     false,

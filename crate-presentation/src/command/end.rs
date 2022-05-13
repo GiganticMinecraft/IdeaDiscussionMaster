@@ -1,7 +1,8 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
 use crate_domain::{id::IssueId, redmine::Note};
-use crate_shared::command::{
-    builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse,
+use crate_shared::{
+    command::{builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse},
+    IdExt,
 };
 
 use itertools::Itertools;
@@ -29,10 +30,7 @@ pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult
             format!(
                 "[{}]\n{}\n",
                 status.ja(),
-                agendas
-                    .iter()
-                    .map(|agenda| format!("#{}", agenda.id.0))
-                    .join(" ")
+                agendas.iter().map(|agenda| agenda.id.formatted()).join(" ")
             )
         })
         .join("\n");
@@ -44,7 +42,7 @@ pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult
         .await?;
     let _ = module.record_usecase().close(record_id).await?;
 
-    println!("Discussion finished: #{}", record_id.0);
+    println!("Discussion finished: {}", record_id.formatted());
     println!("Result:\n {}", result_strings);
 
     // グローバル変数をすべてリセット

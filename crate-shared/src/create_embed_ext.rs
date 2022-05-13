@@ -1,4 +1,4 @@
-use super::REDMINE_URL;
+use super::{IdExt, REDMINE_URL};
 use crate_domain::id::IssueId;
 
 use chrono::Utc;
@@ -34,7 +34,7 @@ impl CreateEmbedExt for builder::CreateEmbed {
     }
 
     fn with_record_id(&mut self, record_id: &IssueId) -> &mut Self {
-        self.footer(|footer| footer.text(format!("アイデア会議: #{}", record_id.0)))
+        self.footer(|footer| footer.text(format!("アイデア会議: {}", record_id.formatted())))
     }
 
     fn simple_color(&mut self) -> &mut Self {

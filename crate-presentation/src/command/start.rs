@@ -6,7 +6,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    CreateEmbedExt,
+    CreateEmbedExt, IdExt,
 };
 use crate_usecase::model::DtoExt;
 
@@ -79,13 +79,13 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .custom_field("議事録チケット", record.url(), false)
         .to_owned();
 
-    println!("Discussion started: #{}", record_id.0);
+    println!("Discussion started: {}", record_id.formatted());
     println!(
         "Agendas({}): {:?}",
         agendas.len(),
         agendas
             .iter()
-            .map(|agenda| format!("#{}", agenda.id.0))
+            .map(|agenda| agenda.id.formatted())
             .join(", ")
     );
 
@@ -102,7 +102,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
-            println!("Next Agenda: #{}", next_agenda_id.unwrap().0);
+            println!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
 
             discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }

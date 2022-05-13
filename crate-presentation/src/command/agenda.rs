@@ -5,7 +5,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandResult, ExecutorArgs, InteractionResponse,
     },
-    CreateEmbedExt,
+    CreateEmbedExt, IdExt,
 };
 
 use serenity::{
@@ -63,11 +63,11 @@ pub async fn add((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     let add_agenda_embed = CreateEmbed::default()
         .custom_default(&record_id)
         .title("議題を追加しました")
-        .description(format!("追加した議題: #{}", new_agenda_id.0))
+        .description(format!("追加した議題: {}", new_agenda_id.formatted()))
         .success_color()
         .to_owned();
 
-    println!("Agenda added: #{}", new_agenda_id.0);
+    println!("Agenda added: {}", new_agenda_id.formatted());
 
     // 現在進行中の議題があれば何もせず、なければ議題として提示
     Ok(match global::agendas::find_current() {
@@ -82,7 +82,7 @@ pub async fn add((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
                 discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &new_agenda)
                     .to_owned();
 
-            println!("Next Agenda: #{}", new_agenda_id.0);
+            println!("Next Agenda: {}", new_agenda_id.formatted());
 
             InteractionResponse::Embeds(vec![add_agenda_embed, agenda_embed])
         }
