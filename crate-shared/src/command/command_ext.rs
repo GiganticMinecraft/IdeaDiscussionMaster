@@ -5,7 +5,7 @@ use super::{
 
 use anyhow::Context;
 use itertools::Itertools;
-use serenity::{async_trait, builder::CreateEmbed, http::Http, model::id::MessageId};
+use serenity::{async_trait, builder::CreateEmbed, http::Http, model::channel::Message};
 use std::collections::HashMap;
 
 #[async_trait]
@@ -14,22 +14,22 @@ pub trait CommandExt {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         message: T,
-    ) -> anyhow::Result<MessageId>;
+    ) -> anyhow::Result<Message>;
     async fn messages<T: ToString + Send + Sync>(
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         messages: Vec<T>,
-    ) -> anyhow::Result<MessageId>;
+    ) -> anyhow::Result<Message>;
     async fn embed(
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embed: CreateEmbed,
-    ) -> anyhow::Result<MessageId>;
+    ) -> anyhow::Result<Message>;
     async fn embeds(
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embeds: Vec<CreateEmbed>,
-    ) -> anyhow::Result<MessageId>;
+    ) -> anyhow::Result<Message>;
 
     async fn split_of(&self) -> anyhow::Result<(String, ArgsMap)>;
 }
@@ -40,7 +40,7 @@ impl CommandExt for CommandInteraction {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         message: T,
-    ) -> anyhow::Result<MessageId> {
+    ) -> anyhow::Result<Message> {
         self.messages(http, vec![message]).await
     }
 
@@ -48,12 +48,11 @@ impl CommandExt for CommandInteraction {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         messages: Vec<T>,
-    ) -> anyhow::Result<MessageId> {
+    ) -> anyhow::Result<Message> {
         self.edit_original_interaction_response(http, |resp| {
             resp.content(messages.iter().map(|msg| msg.to_string()).join("\n"))
         })
         .await
-        .map(|msg| msg.id)
         .context("Cannot to edit interaction response!")
     }
 
@@ -61,7 +60,7 @@ impl CommandExt for CommandInteraction {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embed: CreateEmbed,
-    ) -> anyhow::Result<MessageId> {
+    ) -> anyhow::Result<Message> {
         self.embeds(http, vec![embed]).await
     }
 
@@ -69,10 +68,9 @@ impl CommandExt for CommandInteraction {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embeds: Vec<CreateEmbed>,
-    ) -> anyhow::Result<MessageId> {
+    ) -> anyhow::Result<Message> {
         self.edit_original_interaction_response(http, |resp| resp.set_embeds(embeds))
             .await
-            .map(|msg| msg.id)
             .context("Cannot to edit interaction response!")
     }
 

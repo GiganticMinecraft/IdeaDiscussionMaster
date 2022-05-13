@@ -120,7 +120,7 @@ async fn create_interaction(
         result
     };
 
-    let message_id = match response {
+    let message = match response {
         InteractionResponse::Message(m) => interaction.message(&ctx.http, m).await,
         InteractionResponse::Messages(m) => interaction.messages(&ctx.http, m).await,
         InteractionResponse::Embed(e) => interaction.embed(&ctx.http, e).await,
@@ -128,11 +128,15 @@ async fn create_interaction(
     }
     .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
 
-    // TODO: react for embed
-    // `vote start`ならvote_message_idを格納
+    // `vote start`なら
     if command.as_str() == "vote" && sub_command.as_str() == "start" {
+        // vote_message_idを格納
         let current_agenda = global::agendas::find_current().unwrap();
-        global::agendas::update_votes_message_id(current_agenda.id, Some(message_id));
+        global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
+
+        // リアクション
+        let _ = message.react(&ctx.http, '⭕').await;
+        let _ = message.react(&ctx.http, '❌').await;
     }
 
     Ok(())
