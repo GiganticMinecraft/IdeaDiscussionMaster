@@ -113,7 +113,7 @@ pub async fn end((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     // ステータスに応じてRedmineとグローバル変数を更新
     match status {
         AgendaStatus::Approved => {
-            let _ = module.agenda_usecase().accept(current_agenda.id).await;
+            let _ = module.agenda_usecase().approve(current_agenda.id).await;
             global::agendas::approve(current_agenda.id);
         }
         AgendaStatus::Declined => {

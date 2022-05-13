@@ -24,8 +24,7 @@ impl Agenda {
         }
     }
 
-    // FIXME: change to approve
-    pub fn accept(self) -> Self {
+    pub fn approve(self) -> Self {
         Self {
             status: AgendaStatus::Approved,
             ..self
