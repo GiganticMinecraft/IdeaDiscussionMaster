@@ -70,12 +70,18 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .description(embed_description)
         .to_owned();
 
-    // TODO: react for message
-
-    interaction
+    let message = interaction
         .send(&ctx.http, InteractionResponse::Embed(embed))
-        .await
-        .map(|_| ())
+        .await?;
+
+    // vote_message_idを格納
+    global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
+
+    // リアクション
+    let _ = message.react(&ctx.http, '⭕').await;
+    let _ = message.react(&ctx.http, '❌').await;
+
+    Ok(())
 }
 
 pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
