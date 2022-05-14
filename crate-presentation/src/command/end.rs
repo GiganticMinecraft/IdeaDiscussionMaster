@@ -1,7 +1,9 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
 use crate_domain::{id::IssueId, redmine::Note};
 use crate_shared::{
-    command::{builder::SlashCommandBuilder, CommandResult, ExecutorArgs, InteractionResponse},
+    command::{
+        builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
+    },
     IdExt,
 };
 
@@ -12,7 +14,7 @@ pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("end", "アイデア会議を終了します。")
 }
 
-pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn executor((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let record_id = global::record_id::get().unwrap_or_else(|| IssueId::new(1));
     let result = global::agendas::grouped_list();
 
@@ -50,5 +52,8 @@ pub async fn executor((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult
     global::agendas::clear();
     global::record_id::clear();
 
-    Ok(InteractionResponse::Embed(result_embed))
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(result_embed))
+        .await
+        .map(|_| ())
 }

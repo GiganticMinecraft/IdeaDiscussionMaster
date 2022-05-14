@@ -3,7 +3,7 @@ use crate_domain::id::IssueId;
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandResult, ExecutorArgs, InteractionResponse,
+        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
     CreateEmbedExt, IdExt,
 };
@@ -38,7 +38,7 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-pub async fn add((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
     // 新規議題を取得し、グローバル変数に格納
@@ -70,7 +70,7 @@ pub async fn add((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     println!("Agenda added: {}", new_agenda_id.formatted());
 
     // 現在進行中の議題があれば何もせず、なければ議題として提示
-    Ok(match global::agendas::find_current() {
+    let response = match global::agendas::find_current() {
         Some(_) => InteractionResponse::Embed(add_agenda_embed),
         None => {
             assert!(global::agendas::find_next().is_some());
@@ -86,10 +86,12 @@ pub async fn add((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
 
             InteractionResponse::Embeds(vec![add_agenda_embed, agenda_embed])
         }
-    })
+    };
+
+    interaction.send(&ctx.http, response).await.map(|_| ())
 }
 
-pub async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn list((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let agendas = global::agendas::grouped_list();
     let record_id = global::record_id::get().unwrap();
 
@@ -98,5 +100,8 @@ pub async fn list((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         .title("現在の議題状況")
         .to_owned();
 
-    Ok(InteractionResponse::Embed(result_embed))
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(result_embed))
+        .await
+        .map(|_| ())
 }

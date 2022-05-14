@@ -3,7 +3,7 @@ use crate_domain::status::AgendaStatus;
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
+        CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
     },
     CreateEmbedExt, IdExt,
 };
@@ -41,7 +41,7 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-pub async fn start((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let record_id = global::record_id::get().unwrap();
 
     let current_agenda = match global::agendas::find_current() {
@@ -70,10 +70,15 @@ pub async fn start((_map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         .description(embed_description)
         .to_owned();
 
-    Ok(InteractionResponse::Embed(embed))
+    // TODO: react for message
+
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(embed))
+        .await
+        .map(|_| ())
 }
 
-pub async fn end((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
     // ステータスなど各種必要な変数を取得
@@ -143,8 +148,11 @@ pub async fn end((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
     }
     .to_owned();
 
-    Ok(InteractionResponse::Embeds(vec![
-        vote_result_embed,
-        agenda_embed,
-    ]))
+    interaction
+        .send(
+            &ctx.http,
+            InteractionResponse::Embeds(vec![vote_result_embed, agenda_embed]),
+        )
+        .await
+        .map(|_| ())
 }

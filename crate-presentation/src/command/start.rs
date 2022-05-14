@@ -4,7 +4,7 @@ use crate_shared::{
     self,
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandResult, ExecutorArgs, InteractionResponse,
+        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
     CreateEmbedExt, IdExt,
 };
@@ -110,8 +110,11 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     }
     .to_owned();
 
-    Ok(InteractionResponse::Embeds(vec![
-        beginning_embed,
-        agenda_embed,
-    ]))
+    interaction
+        .send(
+            &ctx.http,
+            InteractionResponse::Embeds(vec![beginning_embed, agenda_embed]),
+        )
+        .await
+        .map(|_| ())
 }

@@ -1,8 +1,8 @@
-use crate::{command, global};
+use crate::command;
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
-        CommandExt, CommandInteraction, InteractionResponse,
+        CommandExt, CommandInteraction,
     },
     SerenityContext,
 };
@@ -93,7 +93,8 @@ async fn create_interaction(
     let fn_args = (args, ctx.to_owned(), interaction.to_owned());
 
     let error = anyhow!("予期していないコマンドです。");
-    let result = match command.as_str() {
+
+    match command.as_str() {
         "start" => command::start::executor(fn_args).await,
         "end" => command::end::executor(fn_args).await,
         "vote" => match sub_command.as_str() {
@@ -112,32 +113,6 @@ async fn create_interaction(
             _ => Err(error),
         },
         _ => Err(error),
-    }?;
-
-    let response = if result.is_empty() {
-        InteractionResponse::default()
-    } else {
-        result
-    };
-
-    let message = match response {
-        InteractionResponse::Message(m) => interaction.message(&ctx.http, m).await,
-        InteractionResponse::Messages(m) => interaction.messages(&ctx.http, m).await,
-        InteractionResponse::Embed(e) => interaction.embed(&ctx.http, e).await,
-        InteractionResponse::Embeds(e) => interaction.embeds(&ctx.http, e).await,
     }
-    .context("ApplicationInteractionの送信中にエラーが発生しました。")?;
-
-    // `vote start`なら
-    if command.as_str() == "vote" && sub_command.as_str() == "start" {
-        // vote_message_idを格納
-        let current_agenda = global::agendas::find_current().unwrap();
-        global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
-
-        // リアクション
-        let _ = message.react(&ctx.http, '⭕').await;
-        let _ = message.react(&ctx.http, '❌').await;
-    }
-
-    Ok(())
+    .context("ApplicationInteractionの送信中にエラーが発生しました。")
 }

@@ -23,4 +23,4 @@ pub type CommandInteraction =
     serenity::model::interactions::application_command::ApplicationCommandInteraction;
 
 pub type ExecutorArgs = (ArgsMap, super::SerenityContext, CommandInteraction);
-pub type CommandResult = anyhow::Result<InteractionResponse>;
+pub type CommandResult = anyhow::Result<()>;

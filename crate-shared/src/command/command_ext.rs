@@ -1,6 +1,6 @@
 use super::{
     application_interaction::{ApplicationInteractions, SlashCommand},
-    ArgsMap, CommandInteraction, Parser,
+    ArgsMap, CommandInteraction, InteractionResponse, Parser,
 };
 
 use anyhow::Context;
@@ -29,6 +29,11 @@ pub trait CommandExt {
         &self,
         http: impl AsRef<Http> + Send + Sync + 'async_trait,
         embeds: Vec<CreateEmbed>,
+    ) -> anyhow::Result<Message>;
+    async fn send(
+        &self,
+        http: impl AsRef<Http> + Send + Sync + 'async_trait,
+        response: InteractionResponse,
     ) -> anyhow::Result<Message>;
 
     async fn split_of(&self) -> anyhow::Result<(String, ArgsMap)>;
@@ -72,6 +77,23 @@ impl CommandExt for CommandInteraction {
         self.edit_original_interaction_response(http, |resp| resp.set_embeds(embeds))
             .await
             .context("Cannot to edit interaction response!")
+    }
+
+    async fn send(
+        &self,
+        http: impl AsRef<Http> + Send + Sync + 'async_trait,
+        response: InteractionResponse,
+    ) -> anyhow::Result<Message> {
+        if response.is_empty() {
+            return self.send(http, InteractionResponse::default()).await;
+        }
+
+        match response {
+            InteractionResponse::Message(msg) => self.message(http, msg).await,
+            InteractionResponse::Messages(msgs) => self.messages(http, msgs).await,
+            InteractionResponse::Embed(embed) => self.embed(http, embed).await,
+            InteractionResponse::Embeds(embeds) => self.embeds(http, embeds).await,
+        }
     }
 
     async fn split_of(&self) -> anyhow::Result<(String, ArgsMap)> {

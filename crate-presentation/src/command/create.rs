@@ -3,7 +3,7 @@ use crate_domain::{github::Issue as GHIssue, id::IssueId, redmine::Note, status:
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandResult, ExecutorArgs, InteractionResponse,
+        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
     ChronoExt, CreateEmbedExt, IdExt,
 };
@@ -101,7 +101,7 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
-pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
     // 次回の会議の日付・時刻を取得
@@ -171,11 +171,14 @@ pub async fn new_record((map, _ctx, _interaction): ExecutorArgs) -> CommandResul
         .success_color()
         .to_owned();
 
-    Ok(InteractionResponse::Embed(embed))
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(embed))
+        .await
+        .map(|_| ())
 }
 
 #[allow(clippy::type_complexity)]
-pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
+pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
     // 議事録のIDを取得
@@ -309,7 +312,10 @@ pub async fn issue((map, _ctx, _interaction): ExecutorArgs) -> CommandResult {
         .success_color()
         .to_owned();
 
-    Ok(InteractionResponse::Embed(result_embed))
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(result_embed))
+        .await
+        .map(|_| ())
 }
 
 const RECORD_DESCRIPTIONS: &str = r"にアイデア会議を行います。
