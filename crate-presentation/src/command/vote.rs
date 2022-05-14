@@ -73,13 +73,12 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let message = interaction
         .send(&ctx.http, InteractionResponse::Embed(embed))
         .await?;
-
-    // vote_message_idを格納
-    global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
-
     // リアクション
     let _ = message.react(&ctx.http, '⭕').await;
     let _ = message.react(&ctx.http, '❌').await;
+
+    // vote_message_idを格納
+    global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
 
     Ok(())
 }
