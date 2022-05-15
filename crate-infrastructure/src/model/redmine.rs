@@ -29,8 +29,7 @@ pub struct RedmineIssueStatus {
 impl TryFrom<RedmineIssueStatus> for AgendaStatus {
     type Error = anyhow::Error;
     fn try_from(status: RedmineIssueStatus) -> anyhow::Result<Self> {
-        Self::from_id(status.id)
-            .ok_or_else(|| MyError::TicketHasUnexpectedStatus(status.id, status.name).into())
+        Ok(Self::from_id(status.id).unwrap_or(AgendaStatus::New))
     }
 }
 
