@@ -1,5 +1,5 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::{id::IssueId, redmine::Note};
+use crate_domain::redmine::Note;
 use crate_shared::{
     command::{
         builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
