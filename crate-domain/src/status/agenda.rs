@@ -1,5 +1,6 @@
 use super::StatusExt;
 
+use serenity::model::channel::ReactionType;
 use strum::{Display, EnumIter, EnumProperty, EnumString};
 
 #[derive(
@@ -58,5 +59,11 @@ impl StatusExt for AgendaStatus {
 
     fn is_closed(&self) -> bool {
         Self::closed().iter().any(|s| s == self)
+    }
+}
+
+impl From<AgendaStatus> for ReactionType {
+    fn from(status: AgendaStatus) -> Self {
+        Self::from(status.emoji().chars().next().unwrap())
     }
 }

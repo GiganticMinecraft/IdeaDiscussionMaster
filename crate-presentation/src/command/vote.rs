@@ -84,8 +84,9 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .send(&ctx.http, InteractionResponse::Embed(embed))
         .await?;
     // リアクション
-    let _ = message.react(&ctx.http, '⭕').await;
-    let _ = message.react(&ctx.http, '❌').await;
+    for status in AgendaStatus::closed().into_iter() {
+        let _ = message.react(&ctx.http, status).await;
+    }
 
     // vote_message_idを格納
     global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
