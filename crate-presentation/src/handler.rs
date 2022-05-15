@@ -7,7 +7,7 @@ use crate_shared::{
     SerenityContext,
 };
 
-use anyhow::{anyhow, Context};
+use anyhow::{anyhow, ensure, Context};
 use serenity::{
     async_trait,
     client::EventHandler,
@@ -49,7 +49,6 @@ impl EventHandler for Handler {
     }
 
     async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
-        // TODO: is guild? check
         // TODO: 会議が開始しているかどうかなどを確認
         if let Some(command) = interaction.clone().application_command() {
             let _ = command.defer(&ctx.http).await;
@@ -78,6 +77,15 @@ async fn create_interaction(
     interaction: &CommandInteraction,
     ctx: &SerenityContext,
 ) -> anyhow::Result<()> {
+    ensure!(
+        interaction.guild_id.is_some(),
+        "このコマンドはサーバー内からのみ実行できます。"
+    );
+    ensure!(
+        !interaction.user.bot,
+        "このコマンドはユーザーのみが実行できます。"
+    );
+
     let (command, args) = interaction.split_of().await?;
     let sub_command = args
         .get("sub_command")
