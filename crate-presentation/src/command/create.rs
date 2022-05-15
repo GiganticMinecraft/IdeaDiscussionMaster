@@ -94,7 +94,7 @@ pub fn builder() -> SlashCommandBuilder {
             .add_option(
                 SlashCommandOptionBuilder::new(
                     "idea_issue_numbers",
-                    "Issueを作成する議題のチケット番号（コンマ区切り）",
+                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
                     ApplicationCommandOptionType::String,
                 )
                 .required(true),
@@ -215,7 +215,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .to_owned()
         .try_into()?;
     let ideas = ideas
-        .split(',')
+        .split(' ')
         .filter_map(|str| str.parse::<u16>().ok())
         .map(IssueId::new)
         .filter(|id| record.relations.contains(id))
