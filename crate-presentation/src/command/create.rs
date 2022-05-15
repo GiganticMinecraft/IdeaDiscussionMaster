@@ -247,7 +247,6 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
                 record.url()
             );
 
-            // TODO: to_string_vecのtrait？
             (
                 idea.id,
                 GHIssue::new(
