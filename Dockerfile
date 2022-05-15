@@ -14,12 +14,11 @@ COPY --from=planner --link /app/recipe.json recipe.json
 RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 
 COPY --link . .
-RUN cargo build --target x86_64-unknown-linux-musl --release --bin app
+RUN cargo build --target x86_64-unknown-linux-musl --release
 
 ### Runner ###
 FROM gcr.io/distroless/cc
-
-COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/app /
 USER nonroot
+COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/idea-discussion-master /
 
-CMD ["/app"]
+CMD ["/idea-discussion-master"]
