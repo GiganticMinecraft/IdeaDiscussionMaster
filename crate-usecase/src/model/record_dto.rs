@@ -18,11 +18,11 @@ pub struct RecordDto {
 }
 
 impl RecordDto {
-    pub fn discussion_title(&self) -> anyhow::Result<String> {
+    pub fn discussion_title(&self) -> String {
         Self::title_regex()
             .find(&self.title)
-            .ok_or_else(|| anyhow!("No matches in record title"))
             .map(|m| m.as_str().to_string())
+            .unwrap_or_else(|| "アイデア会議".to_string())
     }
 
     pub fn discussion_number(&self) -> anyhow::Result<u16> {

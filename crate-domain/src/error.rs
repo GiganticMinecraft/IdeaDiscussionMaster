@@ -20,6 +20,10 @@ pub enum MyError {
     IsNotJoinedInVC,
     #[error("予期しないステータスが指定されています。:({0} {1})")]
     TicketHasUnexpectedStatus(u16, String),
+    #[error("必要な引数が指定されていません。:({0})")]
+    ArgIsNotFound(String),
+    #[error("会議はまだ開始していません。")]
+    DiscussionHasNotStartedYet,
 }
 
 #[allow(dead_code)]

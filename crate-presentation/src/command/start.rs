@@ -1,5 +1,5 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::id::IssueId;
+use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{
     self,
     command::{
@@ -10,6 +10,7 @@ use crate_shared::{
 };
 use crate_usecase::model::DtoExt;
 
+use anyhow::ensure;
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
 use serenity::{
@@ -34,6 +35,8 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
+    ensure!(!global::record_id::exists(), "すでに会議は進行中です。");
+
     // VCへの参加状況を取得
     // 参加していればグローバル変数にそのVCのChannelIdを格納
     // 参加していなければ終了
@@ -50,7 +53,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // 存在しなければ、終了
     let record_id: u16 = map
         .get("discussion_issue_number")
-        .unwrap()
+        .ok_or_else(|| MyError::ArgIsNotFound("discussion_issue_number".to_string()))?
         .to_owned()
         .try_into()?;
     let record_id = IssueId::new(record_id);

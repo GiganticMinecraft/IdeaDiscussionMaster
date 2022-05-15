@@ -1,5 +1,5 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::redmine::Note;
+use crate_domain::{error::MyError, redmine::Note};
 use crate_shared::{
     command::{
         builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
@@ -15,7 +15,7 @@ pub fn builder() -> SlashCommandBuilder {
 }
 
 pub async fn executor((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
-    let record_id = global::record_id::get().unwrap();
+    let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
     let result = global::agendas::grouped_list();
 
     // Embedを作る

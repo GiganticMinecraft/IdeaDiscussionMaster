@@ -134,6 +134,7 @@ impl Redmine {
             Ok(res)
         } else {
             match status {
+                // TODO: ここをわける
                 StatusCode::NOT_FOUND | StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
                     Err(MyError::TicketIsNotFound.into())
                 }

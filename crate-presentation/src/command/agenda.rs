@@ -1,5 +1,5 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::id::IssueId;
+use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
@@ -45,7 +45,7 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // 新規議題が存在しなければ、終了
     let new_agenda_id: u16 = map
         .get("idea_issue_number")
-        .unwrap()
+        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_number".to_string()))?
         .to_owned()
         .try_into()?;
     let new_agenda_id = IssueId::new(new_agenda_id);
@@ -53,7 +53,7 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     global::agendas::add(new_agenda.clone().into());
 
     // 議事録チケットと関連付ける
-    let record_id = global::record_id::get().unwrap();
+    let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
     println!("{} {}", record_id.0, new_agenda_id.0);
     module
         .record_usecase()
@@ -93,7 +93,7 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
 pub async fn list((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let agendas = global::agendas::grouped_list();
-    let record_id = global::record_id::get().unwrap();
+    let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
 
     let mut result_embed = CreateEmbed::default();
     let result_embed = discord_embeds::agendas_result(&mut result_embed, &record_id, &agendas)

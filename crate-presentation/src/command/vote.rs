@@ -1,5 +1,5 @@
 use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::status::AgendaStatus;
+use crate_domain::{error::MyError, status::AgendaStatus};
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
@@ -52,7 +52,7 @@ pub fn builder() -> SlashCommandBuilder {
 }
 
 pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
-    let record_id = global::record_id::get().unwrap();
+    let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
 
     let current_agenda = match global::agendas::find_current() {
         Some(agenda) => agenda,
@@ -91,7 +91,7 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // vote_message_idを格納
     global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
 
-    let vc_id = global::voice_chat_channel_id::get().unwrap();
+    let vc_id = global::voice_chat_channel_id::get().ok_or(MyError::IsNotJoinedInVC)?;
     // 投票Embedのリアクションを取得し、VC参加者の過半数を超えていれば/vote endを叩く
     loop {
         // end_votesコマンド等で議題が次に行っている場合処理を終了させないと永遠にループする
@@ -133,12 +133,7 @@ async fn get_votes_result(
 
     for status in AgendaStatus::iter() {
         if let Ok(users_count) = message
-            .reaction_users(
-                &http,
-                ReactionType::from_str(&status.emoji()).unwrap(),
-                Some(100),
-                None,
-            )
+            .reaction_users(&http, status, Some(100), None)
             .await
             .map(|vector| vector.len())
         {
@@ -155,9 +150,13 @@ pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
     // ステータスなど各種必要な変数を取得
-    let status: String = map.get("status").unwrap().to_owned().try_into()?;
+    let status: String = map
+        .get("status")
+        .ok_or_else(|| MyError::ArgIsNotFound("status".to_string()))?
+        .to_owned()
+        .try_into()?;
     let status = AgendaStatus::from_str(&status).unwrap();
-    let record_id = global::record_id::get().unwrap();
+    let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
     let current_agenda = match global::agendas::find_current() {
         Some(agenda) => agenda,
         None => {

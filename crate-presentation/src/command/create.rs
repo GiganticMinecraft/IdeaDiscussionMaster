@@ -1,5 +1,7 @@
 use super::super::{global, module::ModuleExt};
-use crate_domain::{github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus};
+use crate_domain::{
+    error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
+};
 use crate_shared::{
     command::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
@@ -106,10 +108,17 @@ pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult 
 
     // 次回の会議の日付・時刻を取得
     let date = {
-        let args: Vec<u16> = vec!["next_date_year", "next_date_month", "next_date_day"]
-            .into_iter()
-            .map(|str| map.get(str).cloned().unwrap().try_into().unwrap())
-            .collect_vec();
+        let arg_strs = vec!["next_date_year", "next_date_month", "next_date_day"];
+        let mut args = Vec::new();
+        for str in arg_strs.into_iter() {
+            let arg: u16 = map
+                .get(str)
+                .cloned()
+                .ok_or_else(|| MyError::ArgIsNotFound(str.to_string()))?
+                .try_into()
+                .unwrap();
+            args.push(arg);
+        }
 
         NaiveDate::from_ymd(args[0].into(), args[1].into(), args[2].into())
     };
@@ -184,14 +193,14 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // 議事録のIDを取得
     let record_id: u16 = map
         .get("record_issue_number")
-        .unwrap()
+        .ok_or_else(|| MyError::ArgIsNotFound("record_issue_number".to_string()))?
         .to_owned()
         .try_into()?;
     let record = module
         .record_usecase()
         .find(IssueId::new(record_id))
         .await
-        .with_context(|| format!("議事録の取得中にエラーが発声しました: #{:?}", record_id))?;
+        .with_context(|| format!("議事録の取得中にエラーが発生しました: #{:?}", record_id))?;
 
     // TODO: なぜだめなのかをちゃんと表示する
 
@@ -202,7 +211,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // * ステータスが承認である
     let ideas: String = map
         .get("idea_issue_numbers")
-        .unwrap()
+        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
         .to_owned()
         .try_into()?;
     let ideas = ideas
@@ -234,7 +243,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             let content = format!(
                 "{}\n[{}]({})にて承認されたアイデア。",
                 idea.url(),
-                record.discussion_title().unwrap(),
+                record.discussion_title(),
                 record.url()
             );
 
