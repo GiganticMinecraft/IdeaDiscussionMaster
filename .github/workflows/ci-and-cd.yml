@@ -8,8 +8,6 @@ on:
       - "renovate.json"
       - ".github/workflows/**"
       - "!.github/workflows/ci-and-cd.yml"
-env:
-  IMAGE: ghcr.io/giganticminecraft/idea-discussion-master
 
 jobs:
   lint-and-test:
@@ -44,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Docker Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -51,15 +50,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Output image name
-        id: image
-        env:
-          OWNER: ${{ github.repository_owner }}
-        run: |
-          NAME="ghcr.io/${OWNER,,}/idea-discussion-master"
-          echo "::set-output name=name::$NAME"
-      - name: Build and push
-        uses: docker/build-push-action@v3
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/${{ github.repository_owner }}/idea-discussion-master
           tags: |
