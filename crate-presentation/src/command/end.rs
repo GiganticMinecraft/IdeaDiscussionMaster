@@ -15,7 +15,7 @@ pub fn builder() -> SlashCommandBuilder {
 }
 
 pub async fn executor((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
-    let record_id = global::record_id::get().unwrap_or_else(|| IssueId::new(1));
+    let record_id = global::record_id::get().unwrap();
     let result = global::agendas::grouped_list();
 
     // Embedを作る
