@@ -121,5 +121,4 @@ async fn create_interaction(
         },
         _ => Err(error),
     }
-    .context("ApplicationInteractionの送信中にエラーが発生しました。")
 }
