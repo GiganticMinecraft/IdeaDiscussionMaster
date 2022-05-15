@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [package]
 name = "idea-discussion-master"
 version = "0.5.0"
@@ -24,3 +25,13 @@ mockall = "0.11"
 cfg-if = "1.0"
 futures = "0.3"
 create-github-app-token = "2.0"
+=======
+[workspace]
+members = [
+  "crate-domain",
+  "crate-usecase",
+  "crate-infrastructure",
+  "crate-presentation",
+  "crate-shared"
+]
+>>>>>>> Lucky3028/issue73

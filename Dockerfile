@@ -1,21 +1,24 @@
-FROM ekidd/rust-musl-builder:1.57.0 AS builder
+# syntax=docker/dockerfile:1.4
 
+### Builder ###
+FROM lukemathwalker/cargo-chef:latest-rust-1.60.0 AS chef
 WORKDIR /app
 
-COPY Cargo.lock .
-COPY Cargo.toml .
-RUN mkdir src
-RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
-RUN cargo build --release
-RUN rm -rf /src
+FROM chef AS planner
+COPY --link . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-COPY ./src ./src
-RUN cargo build --release
-RUN chmod +x /app/target/x86_64-unknown-linux-musl/release/idea-discussion-master
+FROM chef AS build
+COPY --from=planner --link /app/recipe.json recipe.json
+RUN cargo chef cook --release --recipe-path recipe.json
 
+COPY --link . .
+RUN cargo build --release
+
+### Runner ###
 FROM gcr.io/distroless/cc
 
-COPY --from=builder --chown=nonroot:nonroot /app/target/x86_64-unknown-linux-musl/release/idea-discussion-master /
+COPY --from=build --link /app/target/release/crate-presentation /idea-discussion-master
 USER nonroot
 
-ENTRYPOINT ["/idea-discussion-master"]
+CMD ["/idea-discussion-master"]

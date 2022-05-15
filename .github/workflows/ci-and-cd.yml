@@ -1,0 +1,119 @@
+name: CI and CD
+on:
+  push:
+    paths-ignore:
+      - ".env.example"
+      - "LICENSE"
+      - "README.md"
+      - "renovate.json"
+      - ".github/workflows/**"
+      - "!.github/workflows/ci-and-cd.yml"
+env:
+  IMAGE: ghcr.io/giganticminecraft/idea-discussion-master
+
+jobs:
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Swatinem/rust-cache@v1
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+      - name: Cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+      - name: Cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features
+
+  build-image:
+    name: Build Docker image, and Publish on main branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Output image name
+        id: image
+        env:
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          NAME="ghcr.io/${OWNER,,}/idea-discussion-master"
+          echo "::set-output name=name::$NAME"
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/idea-discussion-master
+          tags: |
+            type=sha,prefix=sha-,suffix=,format=short
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+            type=raw,value=latest
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy image on main branch
+    runs-on: ubuntu-latest
+    needs:
+      - lint-and-test
+      - build-image
+    if: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Make GitHub App Secret Key
+        working-directory: ./attachments
+        # 秘密鍵は改行が含まれているのでヒアドキュメントを利用して書き込む
+        run: |
+          cat > key.pem <<EOD
+          ${{ secrets.GH_APP_RSA_KEY }}
+          EOD
+      - name: Make .env
+        working-directory: ./attachments
+        run: |
+          cat > .env <<EOD
+          DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          REDMINE_KEY=${{ secrets.REDMINE_KEY }}
+          EXECUTABLE_ROLE_ID=${{ secrets.BOT_ROLE_ID }}
+          GH_APP_ID=${{ secrets.GH_APP_ID }}
+          EOD
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          config: |
+            Host vps
+              HostName ${{ secrets.SSH_ADDRESS }}
+              User ${{ secrets.SSH_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              Port ${{ secrets.SSH_PORT }}
+      - name: Rsync files
+        working-directory: ./attachments
+        run: rsync -auvz --delete ./ vps:~/idea/
+      - name: Launch
+        run: ssh vps "cd ~/idea/;chmod u+x release.sh;echo ${{ secrets.SSH_USER_PASS }} | sudo -S ./release.sh"
