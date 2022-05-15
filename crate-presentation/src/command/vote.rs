@@ -14,7 +14,7 @@ use serenity::{
     builder::CreateEmbed,
     http::Http,
     model::{
-        channel::{Message, ReactionType},
+        channel::Message,
         interactions::application_command::{
             ApplicationCommandInteractionDataOptionValue, ApplicationCommandOptionType,
         },
