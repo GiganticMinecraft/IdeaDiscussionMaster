@@ -14,8 +14,6 @@ pub enum MyError {
     TicketIsNotIdeaDiscussionRecord,
     #[error("チケットはアイデア会議議事録プロジェクトの未終了議事録ではありません。")]
     TicketIsNotUndoneIdeaDiscussionRecord,
-    #[error("チケットのステータスは終了ステータスとして適切なものではありません。")]
-    TicketStatusIsNotDone,
     #[error("VCに参加されていないようです。")]
     IsNotJoinedInVC,
     #[error("予期しないステータスが指定されています。:({0} {1})")]
