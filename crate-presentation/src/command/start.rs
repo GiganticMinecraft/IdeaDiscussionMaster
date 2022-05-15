@@ -91,7 +91,6 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             .join(", ")
     );
 
-    // TODO: ここ共通化できそう
     // 次の議題を選択
     let next_agenda_id = global::agendas::find_next();
     // 次の議題があれば、グローバル変数の中の議題のステータスを進行中に変更
