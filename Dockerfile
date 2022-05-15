@@ -2,7 +2,6 @@
 
 ### Builder ###
 FROM clux/muslrust:1.60.0 AS chef
-USER root
 RUN cargo install cargo-chef
 WORKDIR /app
 
@@ -20,7 +19,7 @@ RUN cargo build --target x86_64-unknown-linux-musl --release --bin app
 ### Runner ###
 FROM gcr.io/distroless/cc
 
-COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/app /app
+COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/app /
 USER nonroot
 
 CMD ["/app"]
