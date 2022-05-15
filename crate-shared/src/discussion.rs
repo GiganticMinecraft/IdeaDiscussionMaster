@@ -14,7 +14,6 @@ pub async fn get_voice_states(
 ) -> anyhow::Result<HashMap<UserId, VoiceState>> {
     cache
         .guild(guild_id)
-        .await
         .ok_or_else(|| anyhow!("guildが見つかりませんでした。（guild_id: {}）", guild_id))
         .map(|guild| guild.voice_states)
 }
