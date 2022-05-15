@@ -6,7 +6,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
-    CreateEmbedExt, IdExt,
+    ext::{CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::DtoExt;
 

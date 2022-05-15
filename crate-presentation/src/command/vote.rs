@@ -6,7 +6,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
     },
-    CreateEmbedExt, IdExt,
+    ext::{CreateEmbedExt, IdExt},
 };
 
 use anyhow::{bail, ensure};

@@ -1,4 +1,4 @@
-use crate::CreateEmbedExt;
+use crate::ext::CreateEmbedExt;
 
 use serenity::builder::CreateEmbed;
 

@@ -1,4 +1,4 @@
-use super::{IdExt, REDMINE_URL};
+use super::{super::REDMINE_URL, IdExt};
 use crate_domain::id::IssueId;
 
 use chrono::Utc;

@@ -4,7 +4,7 @@ use crate_shared::{
     command::{
         builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
-    IdExt,
+    ext::IdExt,
 };
 
 use itertools::Itertools;

@@ -7,7 +7,7 @@ use crate_shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
     },
-    ChronoExt, CreateEmbedExt, IdExt,
+    ext::{ChronoExt, CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::{DtoExt, RecordParam};
 

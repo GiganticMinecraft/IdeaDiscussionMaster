@@ -1,27 +1,14 @@
-mod secret_key;
-use secret_key::SecretKey;
-
 pub mod command;
-
-// TODO: extをmodにまとめる
-
-mod create_embed_ext;
-pub use create_embed_ext::CreateEmbedExt;
+pub mod ext;
 
 mod discussion;
 pub use discussion::*;
 
-mod hashset_ext;
-pub use hashset_ext::HashSetExt;
-
 mod env;
 pub use env::Env;
 
-mod chrono_ext;
-pub use chrono_ext::ChronoExt;
-
-mod id_ext;
-pub use id_ext::IdExt;
+mod secret_key;
+use secret_key::SecretKey;
 
 pub use serenity::client::Context as SerenityContext;
 
