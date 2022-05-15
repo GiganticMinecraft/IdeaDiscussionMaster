@@ -4,7 +4,7 @@ use crate_shared::{
         application_interaction::{ApplicationInteractions, SlashCommand},
         CommandExt, CommandInteraction,
     },
-    SerenityContext,
+    Env, SerenityContext,
 };
 
 use anyhow::{anyhow, ensure, Context};
@@ -60,7 +60,7 @@ impl EventHandler for Handler {
 }
 
 async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
-    let guild_id = serenity::model::id::GuildId(std::env::var("GUILD_ID")?.parse()?); // TODO: env
+    let guild_id = serenity::model::id::GuildId(Env::new().discord_guild_id);
     let commands =
         command::all_commands().context("SlashCommandの生成中にエラーが発生しました。")?;
     let _ = serenity::model::id::GuildId::set_application_commands(&guild_id, &http, |command| {

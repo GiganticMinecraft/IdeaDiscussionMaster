@@ -4,6 +4,7 @@ use std::{env, path::PathBuf};
 pub struct Env {
     pub discord_token: String,
     pub discord_application_id: u64,
+    pub discord_guild_id: u64,
     pub redmine_api_key: String,
     pub github_app_id: u64,
     pub github_secret_key: PathBuf,
@@ -17,6 +18,10 @@ impl Env {
             .ok()
             .and_then(|id| id.parse::<u64>().ok())
             .expect("DiscordBotのApplication IDが指定されていないか形式が正しくありません");
+        let discord_guild_id = env::var("DISCORD_GUILD_ID")
+            .ok()
+            .and_then(|id| id.parse::<u64>().ok())
+            .expect("DiscordBotを作動させるサーバーIDが指定されていないか形式が正しくありません");
         let redmine_api_key =
             env::var("REDMINE_KEY").expect("RedmineのAPIキーが指定されていません");
         let github_app_id = env::var("GH_APP_ID")
@@ -30,6 +35,7 @@ impl Env {
         Self {
             discord_token,
             discord_application_id,
+            discord_guild_id,
             redmine_api_key,
             github_app_id,
             github_secret_key,

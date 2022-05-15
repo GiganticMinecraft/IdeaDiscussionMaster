@@ -17,7 +17,7 @@
 
 ### 議題ステータス
 
-以下のアルファベットで指定できます。大文字・小文字は区別されません。全角・半角は区別され、前者では認識しません。
+以下のアルファベットのみで指定できます。大文字・小文字や全角・半角は区別されます。
 
 |アルファベット|日本語|
 |---|---|
@@ -30,6 +30,7 @@
 |---|---|
 |DISCORD_TOKEN|DiscordBotのToken。[Discord Developer Portal][1]から入手。|
 |DISCORD_APPLICATION_ID|DiscordBotのApplication ID。[Discord Developer Portal][1]から入手。|
+|DISCORD_GUILD_ID|Botを作動させるサーバーのID。|
 |REDMINE_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要。|
 |GH_APP_ID|GitHub AppのID。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
 |GH_APP_RSA_KEY_PATH|GitHub AppのPrivateSSHキーへのファイルパス。コンテナ側のマウントされるパスなので注意。省略した場合は、`/key.pem`が読み込まれる。|
