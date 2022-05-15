@@ -1,6 +1,6 @@
 use super::super::global::model::Agenda;
 use crate_domain::{id::IssueId, status::AgendaStatus};
-use crate_shared::{CreateEmbedExt, IdExt};
+use crate_shared::ext::{CreateEmbedExt, IdExt};
 use crate_usecase::model::{AgendaDto, DtoExt};
 
 use itertools::Itertools;
