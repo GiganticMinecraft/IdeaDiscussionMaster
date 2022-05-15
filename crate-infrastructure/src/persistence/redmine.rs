@@ -134,10 +134,7 @@ impl Redmine {
             Ok(res)
         } else {
             match status {
-                // TODO: ここをわける
-                StatusCode::NOT_FOUND | StatusCode::FORBIDDEN | StatusCode::UNAUTHORIZED => {
-                    Err(MyError::TicketIsNotFound.into())
-                }
+                StatusCode::NOT_FOUND => Err(MyError::TicketIsNotFound.into()),
                 _ => Err(anyhow!(
                     "Unexpected Http Status: {} {}",
                     status.as_str(),
