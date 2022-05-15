@@ -1,7 +1,9 @@
 # syntax=docker/dockerfile:1.4
 
 ### Builder ###
-FROM lukemathwalker/cargo-chef:latest-rust-1.60.0 AS chef
+FROM clux/muslrust:1.60.0 AS chef
+USER root
+RUN cargo install cargo-chef
 WORKDIR /app
 
 FROM chef AS planner
@@ -10,15 +12,15 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS build
 COPY --from=planner --link /app/recipe.json recipe.json
-RUN cargo chef cook --release --recipe-path recipe.json
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
 
 COPY --link . .
-RUN cargo build --release
+RUN cargo build --target x86_64-unknown-linux-musl --release --bin app
 
 ### Runner ###
 FROM gcr.io/distroless/cc
 
-COPY --from=build --link /app/target/release/crate-presentation /idea-discussion-master
+COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/app /app
 USER nonroot
 
-CMD ["/idea-discussion-master"]
+CMD ["/app"]
