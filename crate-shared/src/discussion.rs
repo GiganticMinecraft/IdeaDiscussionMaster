@@ -1,10 +1,8 @@
-use crate_domain::error::MyError;
-
 use anyhow::anyhow;
 use serenity::{
     cache::Cache,
     model::{
-        id::{ChannelId, GuildId, UserId},
+        id::{GuildId, UserId},
         voice::VoiceState,
     },
 };
