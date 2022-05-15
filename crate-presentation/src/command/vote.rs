@@ -41,7 +41,7 @@ pub fn builder() -> SlashCommandBuilder {
                 SlashCommandOptionBuilder::new(
                     "status",
                     "変更後のステータス",
-                    ApplicationCommandOptionType::Integer,
+                    ApplicationCommandOptionType::String,
                 )
                 .add_choice((
                     AgendaStatus::Approved.to_string(),
