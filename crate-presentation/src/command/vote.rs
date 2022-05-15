@@ -2,6 +2,7 @@ use super::super::{global, module::ModuleExt, utils::discord_embeds};
 use crate_domain::status::AgendaStatus;
 use crate_shared::{
     command::{
+        application_interaction::{ApplicationInteractions, SlashCommand},
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
     },
@@ -10,9 +11,18 @@ use crate_shared::{
 
 use anyhow::{bail, ensure};
 use serenity::{
-    builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
+    builder::CreateEmbed,
+    http::Http,
+    model::{
+        channel::{Message, ReactionType},
+        interactions::application_command::{
+            ApplicationCommandInteractionDataOptionValue, ApplicationCommandOptionType,
+        },
+    },
 };
-use std::str::FromStr;
+use std::{boxed::Box, collections::HashMap, str::FromStr};
+use strum::IntoEnumIterator;
+use tokio::time::{self, Duration};
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("vote", "投票を行います。")
@@ -80,7 +90,64 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // vote_message_idを格納
     global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
 
+    let vc_id = global::voice_chat_channel_id::get().unwrap();
+    // 投票Embedのリアクションを取得し、VC参加者の過半数を超えていれば/vote endを叩く
+    loop {
+        // end_votesコマンド等で議題が次に行っている場合処理を終了させないと永遠にループする
+        if global::agendas::find_current().map(|agenda| agenda.id) != Some(current_agenda.id) {
+            break;
+        }
+
+        let vc_members_count =
+            crate_shared::get_voice_states(&ctx.cache, &message.guild_id.unwrap())
+                .await?
+                .iter()
+                .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)
+                .count();
+        if let Some(status) = get_votes_result(&message, &ctx.http, vc_members_count).await {
+            // end_votesコマンドを強制的に叩く
+            let map = HashMap::from([(
+                "status".to_string(),
+                ApplicationInteractions::SlashCommand(SlashCommand::Option(Box::new(
+                    ApplicationCommandInteractionDataOptionValue::String(status.to_string()),
+                ))),
+            )]);
+            let _ = end((map, ctx, interaction)).await;
+
+            break;
+        };
+
+        time::sleep(Duration::from_secs(2)).await;
+    }
+
     Ok(())
+}
+
+async fn get_votes_result(
+    message: &Message,
+    http: impl AsRef<Http>,
+    vc_members_count: usize,
+) -> Option<AgendaStatus> {
+    let half_of_vc_members_count = vc_members_count / 2;
+
+    for status in AgendaStatus::iter() {
+        if let Ok(users_count) = message
+            .reaction_users(
+                &http,
+                ReactionType::from_str(&status.emoji()).unwrap(),
+                Some(100),
+                None,
+            )
+            .await
+            .map(|vector| vector.len())
+        {
+            if users_count - 1 > half_of_vc_members_count {
+                return Some(status);
+            }
+        }
+    }
+
+    None
 }
 
 pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
