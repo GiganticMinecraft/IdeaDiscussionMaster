@@ -43,8 +43,14 @@ pub fn builder() -> SlashCommandBuilder {
                     "変更後のステータス",
                     ApplicationCommandOptionType::Integer,
                 )
-                .add_choice(("Approved", SlashCommandChoice::Int(1)))
-                .add_choice(("Declined", SlashCommandChoice::Int(2)))
+                .add_choice((
+                    AgendaStatus::Approved.to_string(),
+                    SlashCommandChoice::String(AgendaStatus::Approved.to_string()),
+                ))
+                .add_choice((
+                    AgendaStatus::Declined,
+                    SlashCommandChoice::String(AgendaStatus::Declined.to_string()),
+                ))
                 .required(true),
             ),
         )
