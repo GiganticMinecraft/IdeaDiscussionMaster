@@ -10,6 +10,7 @@ use crate_shared::{
 };
 
 use anyhow::{bail, ensure};
+use itertools::Itertools;
 use serenity::{
     builder::CreateEmbed,
     http::Http,
@@ -141,9 +142,16 @@ async fn get_votes_result(
         if let Ok(users_count) = message
             .reaction_users(&http, status, Some(100), None)
             .await
-            .map(|vector| vector.len())
+            .map(|vector| {
+                vector
+                    .into_iter()
+                    // 本Bot含めBotのリアクションを数に入れない
+                    .filter(|user| !user.bot)
+                    .collect_vec()
+                    .len()
+            })
         {
-            if users_count - 1 > half_of_vc_members_count {
+            if users_count > half_of_vc_members_count {
                 return Some(status);
             }
         }
