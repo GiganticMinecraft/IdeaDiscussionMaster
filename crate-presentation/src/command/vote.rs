@@ -96,7 +96,7 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
     }
 
     // vote_message_idを格納
-    global::agendas::update_votes_message_id(current_agenda.id, Some(message.id));
+    global::agendas::set_votes_message_id(current_agenda.id, message.id);
 
     let vc_id = global::voice_chat_channel_id::get().ok_or(MyError::IsNotJoinedInVC)?;
     // 投票Embedのリアクションを取得し、VC参加者の過半数を超えていれば/vote endを叩く
@@ -180,7 +180,7 @@ pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
     // 投票メッセージの記録をリセット
     if current_agenda.votes_message_id.is_some() {
-        global::agendas::update_votes_message_id(current_agenda.id, None);
+        global::agendas::reset_votes_message_id(current_agenda.id);
     }
 
     // 投票結果のEmbedを作成
