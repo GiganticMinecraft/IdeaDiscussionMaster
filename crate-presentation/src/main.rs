@@ -11,7 +11,7 @@ async fn build_bot_client() -> anyhow::Result<Client> {
     } = crate_shared::Env::new();
 
     // NOTICE: Intents
-    Client::builder(discord_token, GatewayIntents::GUILDS)
+    Client::builder(discord_token, GatewayIntents::non_privileged())
         .application_id(discord_application_id)
         .event_handler(Handler)
         .await
