@@ -23,6 +23,30 @@ pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("create", "アイデア会議に関する様々なものを作成します。")
         .add_option(
             SlashCommandOptionBuilder::new(
+                "issue",
+                "承認された議題をGitHubのIssueとして作成します。",
+                ApplicationCommandOptionType::SubCommand,
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "record_issue_number",
+                    "Issueを作成する議題をもつ議事録のチケット番号",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(1)
+                .required(true),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "idea_issue_numbers",
+                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
+                    ApplicationCommandOptionType::String,
+                )
+                .required(true),
+            ),
+        )
+        .add_option(
+            SlashCommandOptionBuilder::new(
                 "new_record",
                 "議事録のチケットを新規作成します。",
                 ApplicationCommandOptionType::SubCommand,
@@ -74,30 +98,6 @@ pub fn builder() -> SlashCommandBuilder {
                 )
                 .min_int(0)
                 .max_int(59),
-            ),
-        )
-        .add_option(
-            SlashCommandOptionBuilder::new(
-                "issue",
-                "承認された議題をGitHubのIssueとして作成します。",
-                ApplicationCommandOptionType::SubCommand,
-            )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "record_issue_number",
-                    "Issueを作成する議題をもつ議事録のチケット番号",
-                    ApplicationCommandOptionType::Integer,
-                )
-                .min_int(1)
-                .required(true),
-            )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "idea_issue_numbers",
-                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
-                    ApplicationCommandOptionType::String,
-                )
-                .required(true),
             ),
         )
         .into()
