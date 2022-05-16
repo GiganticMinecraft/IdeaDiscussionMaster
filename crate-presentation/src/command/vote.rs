@@ -75,22 +75,22 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         "※リアクションがすべて表示されてからリアクションを行わないと、投票が無効になる場合があります。",
     ]
     .join("\n");
-    let embed = CreateEmbed::default()
+    let vote_embed = CreateEmbed::default()
         .custom_default(&record_id)
         .title(format!("採決: {}", record_id.formatted()))
         .description(embed_description)
         .to_owned();
 
-    let message = interaction
-        .send(&ctx.http, InteractionResponse::Embed(embed))
+    let vote_message = interaction
+        .send(&ctx.http, InteractionResponse::Embed(vote_embed))
         .await?;
     // リアクション
     for status in AgendaStatus::closed().into_iter() {
-        let _ = message.react(&ctx.http, status).await;
+        let _ = vote_message.react(&ctx.http, status).await;
     }
 
     // vote_message_idを格納
-    global::agendas::set_votes_message_id(current_agenda.id, message.id);
+    global::agendas::set_votes_message_id(current_agenda.id, vote_message.id);
 
     let vc_id = global::voice_chat_channel_id::get().ok_or(MyError::IsNotJoinedInVC)?;
     // 投票Embedのリアクションを取得し、VC参加者の過半数を超えていれば/vote endを叩く
