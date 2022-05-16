@@ -85,7 +85,7 @@ pub fn builder() -> SlashCommandBuilder {
             .add_option(
                 SlashCommandOptionBuilder::new(
                     "record_issue_number",
-                    "処理する議事録のチケット番号",
+                    "Issueを作成する議題をもつ議事録のチケット番号",
                     ApplicationCommandOptionType::Integer,
                 )
                 .min_int(1)
