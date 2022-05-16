@@ -2,7 +2,6 @@ use super::super::{global, module::ModuleExt, utils::discord_embeds};
 use crate_domain::{error::MyError, status::AgendaStatus};
 use crate_shared::{
     command::{
-        application_interaction::{ApplicationInteractions, SlashCommand},
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
     },
@@ -14,14 +13,9 @@ use itertools::Itertools;
 use serenity::{
     builder::CreateEmbed,
     http::Http,
-    model::{
-        channel::Message,
-        interactions::application_command::{
-            ApplicationCommandInteractionDataOptionValue, ApplicationCommandOptionType,
-        },
-    },
+    model::{channel::Message, interactions::application_command::ApplicationCommandOptionType},
 };
-use std::{boxed::Box, collections::HashMap, str::FromStr};
+use std::str::FromStr;
 use strum::IntoEnumIterator;
 use tokio::time::{self, Duration};
 
@@ -112,15 +106,16 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
                 .iter()
                 .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)
                 .count();
-        if let Some(status) = get_votes_result(&message, &ctx.http, vc_members_count).await {
-            // end_votesコマンドを強制的に叩く
-            let map = HashMap::from([(
-                "status".to_string(),
-                ApplicationInteractions::SlashCommand(SlashCommand::Option(Box::new(
-                    ApplicationCommandInteractionDataOptionValue::String(status.to_string()),
-                ))),
-            )]);
-            let _ = end((map, ctx, interaction)).await;
+        if let Some(status) = get_votes_result(&vote_message, &ctx.http, vc_members_count).await {
+            let result_embeds = end_votes(status).await?;
+            let _ = interaction
+                .channel_id
+                .delete_message(&ctx.http, vote_message.id)
+                .await;
+            let _ = interaction
+                .channel_id
+                .send_message(&ctx.http, |m| m.set_embeds(result_embeds))
+                .await;
 
             break;
         };
@@ -161,8 +156,6 @@ async fn get_votes_result(
 }
 
 pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
-    let module = global::module::get();
-
     // ステータスなど各種必要な変数を取得
     let status: String = map
         .get("status")
@@ -170,6 +163,17 @@ pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .to_owned()
         .try_into()?;
     let status = AgendaStatus::from_str(&status).unwrap();
+    let embeds = end_votes(status).await?;
+
+    interaction
+        .send(&ctx.http, InteractionResponse::Embeds(embeds))
+        .await
+        .map(|_| ())
+}
+
+async fn end_votes(status: AgendaStatus) -> anyhow::Result<Vec<CreateEmbed>> {
+    let module = global::module::get();
+
     let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
     let current_agenda = match global::agendas::find_current() {
         Some(agenda) => agenda,
@@ -234,11 +238,5 @@ pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     }
     .to_owned();
 
-    interaction
-        .send(
-            &ctx.http,
-            InteractionResponse::Embeds(vec![vote_result_embed, agenda_embed]),
-        )
-        .await
-        .map(|_| ())
+    Ok(vec![vote_result_embed, agenda_embed])
 }
