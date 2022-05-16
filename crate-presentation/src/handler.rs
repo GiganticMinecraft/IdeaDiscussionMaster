@@ -115,8 +115,9 @@ async fn create_interaction(
             _ => Err(error),
         },
         "create" => match sub_command.as_str() {
-            "new_record" => command::create::new_record(fn_args).await,
             "issue" => command::create::issue(fn_args).await,
+            "thread" => command::create::thread(fn_args).await,
+            "new_record" => command::create::new_record(fn_args).await,
             _ => Err(error),
         },
         _ => Err(error),
