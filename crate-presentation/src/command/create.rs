@@ -1,4 +1,4 @@
-use super::super::{global, module::ModuleExt};
+use super::super::{global, module::ModuleExt, utils::discord_embeds};
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
 };
@@ -21,6 +21,54 @@ use serenity::{
 
 pub fn builder() -> SlashCommandBuilder {
     SlashCommandBuilder::new("create", "アイデア会議に関する様々なものを作成します。")
+        .add_option(
+            SlashCommandOptionBuilder::new(
+                "issue",
+                "承認された議題をGitHubのIssueとして作成します。",
+                ApplicationCommandOptionType::SubCommand,
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "record_issue_number",
+                    "Issueを作成する議題をもつ議事録のチケット番号",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(1)
+                .required(true),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "idea_issue_numbers",
+                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
+                    ApplicationCommandOptionType::String,
+                )
+                .required(true),
+            ),
+        )
+        .add_option(
+            SlashCommandOptionBuilder::new(
+                "thread",
+                "承認された議題を議論するためのスレッドを作成します。",
+                ApplicationCommandOptionType::SubCommand,
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "record_issue_number",
+                    "スレッドを作成する議題をもつ議事録のチケット番号",
+                    ApplicationCommandOptionType::Integer,
+                )
+                .min_int(1)
+                .required(true),
+            )
+            .add_option(
+                SlashCommandOptionBuilder::new(
+                    "idea_issue_numbers",
+                    "スレッドを作成する議題のチケット番号（半角スペース区切り）",
+                    ApplicationCommandOptionType::String,
+                )
+                .required(true),
+            ),
+        )
         .add_option(
             SlashCommandOptionBuilder::new(
                 "new_record",
@@ -76,114 +124,7 @@ pub fn builder() -> SlashCommandBuilder {
                 .max_int(59),
             ),
         )
-        .add_option(
-            SlashCommandOptionBuilder::new(
-                "issue",
-                "承認された議題をGitHubのIssueとして作成します。",
-                ApplicationCommandOptionType::SubCommand,
-            )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "record_issue_number",
-                    "処理する議事録のチケット番号",
-                    ApplicationCommandOptionType::Integer,
-                )
-                .min_int(1)
-                .required(true),
-            )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "idea_issue_numbers",
-                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
-                    ApplicationCommandOptionType::String,
-                )
-                .required(true),
-            ),
-        )
         .into()
-}
-
-pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult {
-    let module = global::module::get();
-
-    // 次回の会議の日付・時刻を取得
-    let date = {
-        let arg_strs = vec!["next_date_year", "next_date_month", "next_date_day"];
-        let mut args = Vec::new();
-        for str in arg_strs.into_iter() {
-            let arg: u16 = map
-                .get(str)
-                .cloned()
-                .ok_or_else(|| MyError::ArgIsNotFound(str.to_string()))?
-                .try_into()
-                .unwrap();
-            args.push(arg);
-        }
-
-        NaiveDate::from_ymd(args[0].into(), args[1].into(), args[2].into())
-    };
-    let start_time = {
-        let args: Vec<u16> = vec![("next_time_hour", 21), ("next_time_minute", 0)]
-            .into_iter()
-            .map(|(str, default)| {
-                map.get(str)
-                    .cloned()
-                    .map(|arg| arg.try_into().unwrap())
-                    .unwrap_or(default)
-            })
-            .collect_vec();
-
-        NaiveTime::from_hms(args[0].into(), args[1].into(), 0)
-    };
-    let end_time = start_time + Duration::hours(2);
-
-    // 次回の会議の日付・時刻を文字列にフォーマット
-    let date_str = format!("{}({})", date.format("%Y/%m/%d"), date.weekday_ja());
-    let time_formatter = "%H:%M";
-    let start_time_str = start_time.format(time_formatter);
-    let end_time_str = end_time.format(time_formatter);
-
-    ensure!(
-        Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
-        format!(
-            "現在または現在より未来の日時を指定してください。: {} {}",
-            date_str, start_time_str
-        )
-    );
-
-    // 次回の会議の回数を取得
-    let latest_closed_record = module
-        .record_usecase()
-        .find_latest_closed()
-        .await
-        .context("No closed record")?;
-    let next_discussion_number = latest_closed_record
-        .discussion_number()
-        .context("Error while getting latest record number")?
-        + 1;
-
-    // 議事録のタイトルと説明文を生成
-    let record_title = format!("{}　第{}回アイデア会議", date_str, next_discussion_number);
-    let record_description_date_time =
-        format!("{}\n{}〜{}\n", date_str, start_time_str, end_time_str);
-    let record_description = format!("{}{}", record_description_date_time, RECORD_DESCRIPTIONS);
-
-    // 議事録をRedmine上に作成
-    let new_record_param = RecordParam::new(record_title, record_description, None, Some(date));
-    let new_record = module.record_usecase().add(new_record_param).await?;
-
-    let embed = CreateEmbed::default()
-        .title("議事録を新規作成しました")
-        .custom_field("タイトル", &new_record.title, false)
-        .custom_field("URL", new_record.url(), false)
-        .current_timestamp()
-        .success_color()
-        .to_owned();
-
-    interaction
-        .send(&ctx.http, InteractionResponse::Embed(embed))
-        .await
-        .map(|_| ())
 }
 
 #[allow(clippy::type_complexity)]
@@ -322,6 +263,173 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
     interaction
         .send(&ctx.http, InteractionResponse::Embed(result_embed))
+        .await
+        .map(|_| ())
+}
+
+pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
+    let module = global::module::get();
+
+    // 議事録のIDを取得
+    let record_id: u16 = map
+        .get("record_issue_number")
+        .ok_or_else(|| MyError::ArgIsNotFound("record_issue_number".to_string()))?
+        .to_owned()
+        .try_into()?;
+    let record = module
+        .record_usecase()
+        .find(IssueId::new(record_id))
+        .await
+        .with_context(|| format!("議事録の取得中にエラーが発生しました: #{:?}", record_id))?;
+
+    // スレッドを作成するアイデアを取得
+    // ただし、以下をすべて満たす必要がある
+    // * u16にパースできる
+    // * 議事録に関連付けられている
+    // * ステータスが承認である
+    let ideas: String = map
+        .get("idea_issue_numbers")
+        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
+        .to_owned()
+        .try_into()?;
+    let ideas = ideas
+        .split(' ')
+        .filter_map(|str| str.parse::<u16>().ok())
+        .map(IssueId::new)
+        .filter(|id| record.relations.contains(id))
+        .collect_vec();
+    let ideas: Vec<_> = stream::iter(ideas)
+        .then(|id| module.agenda_usecase().find(id))
+        .collect()
+        .await;
+    let ideas = ideas
+        .into_iter()
+        .filter_map(|res| res.ok())
+        .filter(|idea| idea.status == AgendaStatus::Approved)
+        .collect_vec();
+
+    ensure!(
+        !ideas.is_empty(),
+        anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
+    );
+
+    let base_msg = interaction
+        .send(
+            &ctx.http,
+            InteractionResponse::Message("スレッドを作成しました。".to_string()),
+        )
+        .await?;
+
+    for idea in ideas.iter() {
+        if let Ok(th) = interaction
+            .channel_id
+            .create_public_thread(&ctx.http, base_msg.id, |b| {
+                // Threads will be archived in 24 hours automatically
+                b.name(format!(
+                    "{}: {}",
+                    record.discussion_title(),
+                    idea.id.formatted()
+                ))
+                .auto_archive_duration(60 * 24)
+            })
+            .await
+        {
+            let _ = th
+                .send_message(&ctx.http, |b|
+                    b.content(format!(
+                        "このスレッドは、{}にて承認されたアイデアについて個別に議論を行うためのものです。",
+                         record.discussion_title()
+                    )).embed(|e|
+                        discord_embeds::next_agenda_embed(e, &record.id, idea)
+                            .title(format!("このスレッドで議論を行う議題は{}です", idea.id.formatted()))
+                    )
+                )
+                .await;
+        }
+    }
+
+    Ok(())
+}
+
+pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult {
+    let module = global::module::get();
+
+    // 次回の会議の日付・時刻を取得
+    let date = {
+        let arg_strs = vec!["next_date_year", "next_date_month", "next_date_day"];
+        let mut args = Vec::new();
+        for str in arg_strs.into_iter() {
+            let arg: u16 = map
+                .get(str)
+                .cloned()
+                .ok_or_else(|| MyError::ArgIsNotFound(str.to_string()))?
+                .try_into()
+                .unwrap();
+            args.push(arg);
+        }
+
+        NaiveDate::from_ymd(args[0].into(), args[1].into(), args[2].into())
+    };
+    let start_time = {
+        let args: Vec<u16> = vec![("next_time_hour", 21), ("next_time_minute", 0)]
+            .into_iter()
+            .map(|(str, default)| {
+                map.get(str)
+                    .cloned()
+                    .map(|arg| arg.try_into().unwrap())
+                    .unwrap_or(default)
+            })
+            .collect_vec();
+
+        NaiveTime::from_hms(args[0].into(), args[1].into(), 0)
+    };
+    let end_time = start_time + Duration::hours(2);
+
+    // 次回の会議の日付・時刻を文字列にフォーマット
+    let date_str = format!("{}({})", date.format("%Y/%m/%d"), date.weekday_ja());
+    let time_formatter = "%H:%M";
+    let start_time_str = start_time.format(time_formatter);
+    let end_time_str = end_time.format(time_formatter);
+
+    ensure!(
+        Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
+        format!(
+            "現在または現在より未来の日時を指定してください。: {} {}",
+            date_str, start_time_str
+        )
+    );
+
+    // 次回の会議の回数を取得
+    let latest_closed_record = module
+        .record_usecase()
+        .find_latest_closed()
+        .await
+        .context("No closed record")?;
+    let next_discussion_number = latest_closed_record
+        .discussion_number()
+        .context("Error while getting latest record number")?
+        + 1;
+
+    // 議事録のタイトルと説明文を生成
+    let record_title = format!("{}　第{}回アイデア会議", date_str, next_discussion_number);
+    let record_description_date_time =
+        format!("{}\n{}〜{}\n", date_str, start_time_str, end_time_str);
+    let record_description = format!("{}{}", record_description_date_time, RECORD_DESCRIPTIONS);
+
+    // 議事録をRedmine上に作成
+    let new_record_param = RecordParam::new(record_title, record_description, None, Some(date));
+    let new_record = module.record_usecase().add(new_record_param).await?;
+
+    let embed = CreateEmbed::default()
+        .title("議事録を新規作成しました")
+        .custom_field("タイトル", &new_record.title, false)
+        .custom_field("URL", new_record.url(), false)
+        .current_timestamp()
+        .success_color()
+        .to_owned();
+
+    interaction
+        .send(&ctx.http, InteractionResponse::Embed(embed))
         .await
         .map(|_| ())
 }

@@ -14,6 +14,7 @@
 |agenda list|すべての議題の進行状況を表示するコマンド。|
 |create new_record|次回の議事録チケットを作成するコマンド。|
 |create issue|SeichiAssistにIssueを追加するコマンド。|
+|create thread|承認された議題につき個別の議論をするために各議題ごとにスレッドを作成するコマンド。|
 
 ### 議題ステータス
 
