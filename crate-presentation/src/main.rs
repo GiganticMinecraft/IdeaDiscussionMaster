@@ -10,8 +10,8 @@ async fn build_bot_client() -> anyhow::Result<Client> {
         ..
     } = crate_shared::Env::new();
 
-    // FIXME: Intentを厳しくする
-    Client::builder(discord_token, GatewayIntents::non_privileged())
+    // NOTICE: Intents
+    Client::builder(discord_token, GatewayIntents::GUILDS)
         .application_id(discord_application_id)
         .event_handler(Handler)
         .await
