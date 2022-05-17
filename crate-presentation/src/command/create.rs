@@ -15,6 +15,7 @@ use anyhow::{anyhow, ensure, Context};
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
+use log::{debug, info};
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
 };
@@ -131,6 +132,8 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
+    info!("Create gh issues");
+
     // 議事録のIDを取得
     let record_id: u16 = map
         .get("record_issue_number")
@@ -171,11 +174,13 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .filter(|idea| idea.status == AgendaStatus::Approved)
         .collect_vec();
 
+    debug!("ideas: {:?}", ideas);
     ensure!(
         !ideas.is_empty(),
         anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
     );
 
+    info!("Create GitHub issues");
     // GitHubにIssueを作成
     let gh_issues = ideas
         .iter()
@@ -204,11 +209,15 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let mut gh_issued: Vec<(IssueId, String)> = Vec::new();
     for (id, issue) in gh_issues.into_iter() {
         let res = module.gh_issue_usecase().add(issue).await;
+
+        debug!("{}", id.formatted());
+
         if res.is_ok() {
             gh_issued.push((id, res.unwrap()))
         }
     }
 
+    info!("Add Redmine notes");
     // RedmineにGitHubのIssueのURLを注記
     let mut redmine_issued: Vec<IssueId> = Vec::new();
     for (id, gh_issue_url) in gh_issued.iter() {
@@ -228,6 +237,9 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
                 ),
             )
             .await;
+
+        debug!("{}", id.formatted());
+
         if res.is_ok() {
             redmine_issued.push(id)
         }
@@ -270,6 +282,8 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
+    info!("Create threads");
+
     // 議事録のIDを取得
     let record_id: u16 = map
         .get("record_issue_number")
@@ -308,6 +322,7 @@ pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .filter(|idea| idea.status == AgendaStatus::Approved)
         .collect_vec();
 
+    debug!("ideas: {:?}", ideas);
     ensure!(
         !ideas.is_empty(),
         anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
@@ -320,7 +335,10 @@ pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         )
         .await?;
 
+    info!("Start to create threads per each idea");
     for idea in ideas.iter() {
+        debug!("Create thread of {}", idea.id.formatted());
+
         if let Ok(th) = interaction
             .channel_id
             .create_public_thread(&ctx.http, base_msg.id, |b| {
@@ -353,6 +371,8 @@ pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
 pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
+
+    info!("Create new record");
 
     // 次回の会議の日付・時刻を取得
     let date = {
@@ -391,6 +411,7 @@ pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult 
     let start_time_str = start_time.format(time_formatter);
     let end_time_str = end_time.format(time_formatter);
 
+    info!("{} {} - {}", date_str, start_time_str, end_time_str);
     ensure!(
         Local::now().naive_local() <= NaiveDateTime::new(date, start_time),
         format!(
@@ -400,15 +421,19 @@ pub async fn new_record((map, ctx, interaction): ExecutorArgs) -> CommandResult 
     );
 
     // 次回の会議の回数を取得
-    let latest_closed_record = module
+    let latest_closed_discussion_number = module
         .record_usecase()
         .find_latest_closed()
         .await
-        .context("No closed record")?;
-    let next_discussion_number = latest_closed_record
+        .context("No closed record")?
         .discussion_number()
-        .context("Error while getting latest record number")?
-        + 1;
+        .context("Error while getting latest record number")?;
+    let next_discussion_number = latest_closed_discussion_number + 1;
+
+    debug!(
+        "latest {} -> next {}",
+        latest_closed_discussion_number, next_discussion_number
+    );
 
     // 議事録のタイトルと説明文を生成
     let record_title = format!("{}　第{}回アイデア会議", date_str, next_discussion_number);
