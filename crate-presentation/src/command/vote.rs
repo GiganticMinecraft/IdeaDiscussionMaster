@@ -248,7 +248,7 @@ async fn end_votes(status: AgendaStatus) -> anyhow::Result<Vec<CreateEmbed>> {
             info!("No next agenda!");
 
             discord_embeds::no_next_agenda(&mut agenda_embed, &record_id)
-        },
+        }
     }
     .to_owned();
 
