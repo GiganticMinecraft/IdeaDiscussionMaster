@@ -8,6 +8,7 @@ use crate_shared::{
 };
 
 use anyhow::{anyhow, ensure, Context};
+use log::{error, info};
 use serenity::{
     async_trait,
     client::EventHandler,
@@ -25,27 +26,19 @@ pub struct Handler;
 impl EventHandler for Handler {
     async fn ready(&self, ctx: SerenityContext, _data_about_bot: Ready) {
         if let Err(e) = create_slash_commands(&ctx.http).await {
-            println!("{:?}", e);
+            error!("{:?}", e);
         };
 
-        let interactions = ApplicationCommand::get_global_application_commands(&ctx.http).await;
-        if let Ok(commands) = interactions {
-            for cmd in commands.iter().filter(|cmd| {
-                !command::all_command_names()
-                    .iter()
-                    .any(|s| cmd.name.starts_with(s))
-            }) {
-                let _ =
-                    ApplicationCommand::delete_global_application_command(&ctx.http, cmd.id).await;
-            }
-        }
+        info!("Botが正常に起動しました。");
 
-        println!("Botが正常に起動しました");
-        // let commands = ApplicationCommand::get_global_application_commands(&ctx.http).await;
-        // println!(
-        //     "現在登録されているGuildCommandは以下の通りです: {:#?}",
-        //     commands
-        // );
+        let commands = ctx
+            .http
+            .get_guild_application_commands(Env::new().discord_guild_id)
+            .await;
+        info!(
+            "現在登録されているSlashCommandは以下の通りです。: {:#?}",
+            commands
+        );
     }
 
     async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
@@ -53,6 +46,7 @@ impl EventHandler for Handler {
             let _ = command.defer(&ctx.http).await;
 
             if let Err(e) = create_interaction(&command, &ctx).await {
+                error!("Create interactions Error: {:?}", e);
                 let _ = command.message(&ctx.http, format!("{:?}", e)).await;
             }
         }

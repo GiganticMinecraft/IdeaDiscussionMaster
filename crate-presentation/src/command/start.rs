@@ -13,6 +13,7 @@ use crate_usecase::model::DtoExt;
 use anyhow::ensure;
 use futures::stream::{self, StreamExt};
 use itertools::Itertools;
+use log::info;
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
 };
@@ -81,8 +82,8 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .custom_field("議事録チケット", record.url(), false)
         .to_owned();
 
-    println!("Discussion started: {}", record_id.formatted());
-    println!(
+    info!("Discussion started: {}", record_id.formatted());
+    info!(
         "Agendas({}): {:?}",
         agendas.len(),
         agendas
@@ -103,7 +104,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
-            println!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
+            info!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
 
             discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }

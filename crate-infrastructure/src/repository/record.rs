@@ -1,7 +1,4 @@
-use super::{
-    super::model::{CreateRecord, CreateRecordParam},
-    RedminePersistenceImpl,
-};
+use super::{super::model::CreateRecord, RedminePersistenceImpl};
 use crate_domain::{
     error::MyError,
     id::IssueId,
@@ -18,8 +15,7 @@ use serenity::async_trait;
 #[async_trait]
 impl RecordRepository for RedminePersistenceImpl<Record> {
     async fn add(&self, record: Record) -> anyhow::Result<Record> {
-        let new_record: CreateRecordParam = record.clone().into();
-        let new_record = CreateRecord::new(new_record);
+        let new_record = CreateRecord::new(record.clone().into());
         let new_record = serde_json::to_value(new_record)?;
         self.client
             .post_with_url(self.client.issues_url(), new_record)
@@ -54,6 +50,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             .join(",");
         let limit = limit.unwrap_or(20).to_string();
         let queries = vec![
+            // TODO: ProjectIdやTrackerIdをまとめておく
             ("project_id", "18"),
             ("tracker_id", "34"),
             ("status_id", &status),

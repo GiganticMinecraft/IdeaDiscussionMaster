@@ -1,7 +1,6 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Deserializer, Serializer};
 
-#[allow(dead_code)]
 pub fn serialize<S>(value: &Option<NaiveDate>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,

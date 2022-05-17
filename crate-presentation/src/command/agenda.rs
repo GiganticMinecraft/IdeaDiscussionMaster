@@ -8,6 +8,7 @@ use crate_shared::{
     ext::{CreateEmbedExt, IdExt},
 };
 
+use log::{debug, info};
 use serenity::{
     builder::CreateEmbed, model::interactions::application_command::ApplicationCommandOptionType,
 };
@@ -41,6 +42,8 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
+    info!("Add agenda");
+
     // 新規議題を取得し、グローバル変数に格納
     // 新規議題が存在しなければ、終了
     let new_agenda_id: u16 = map
@@ -54,7 +57,11 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
     // 議事録チケットと関連付ける
     let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
-    println!("{} {}", record_id.0, new_agenda_id.0);
+    debug!(
+        "record: {}, new_agenda: {}",
+        record_id.formatted(),
+        new_agenda_id.formatted()
+    );
     module
         .record_usecase()
         .add_relation(record_id, new_agenda_id)
@@ -67,7 +74,7 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .success_color()
         .to_owned();
 
-    println!("Agenda added: {}", new_agenda_id.formatted());
+    info!("Agenda added: {}", new_agenda_id.formatted());
 
     // 現在進行中の議題があれば何もせず、なければ議題として提示
     let response = match global::agendas::find_current() {
@@ -82,7 +89,7 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
                 discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &new_agenda)
                     .to_owned();
 
-            println!("Next Agenda: {}", new_agenda_id.formatted());
+            info!("Next Agenda: {}", new_agenda_id.formatted());
 
             InteractionResponse::Embeds(vec![add_agenda_embed, agenda_embed])
         }
@@ -92,6 +99,8 @@ pub async fn add((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 }
 
 pub async fn list((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
+    info!("agenda list");
+
     let agendas = global::agendas::grouped_list();
     let record_id = global::record_id::get().ok_or(MyError::DiscussionHasNotStartedYet)?;
 

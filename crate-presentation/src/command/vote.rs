@@ -10,6 +10,7 @@ use crate_shared::{
 
 use anyhow::{bail, ensure};
 use itertools::Itertools;
+use log::{debug, info};
 use serenity::{
     builder::CreateEmbed,
     http::Http,
@@ -66,6 +67,8 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         "すでに採決を開始しています。"
     );
 
+    info!("Vote started: {}", current_agenda.id.formatted());
+
     let embed_description = vec![
         "提起されている議題についての採決を行います。",
         "以下のリアクションで投票を行ってください。過半数を超え次第、次の議題へと移ります。",
@@ -81,22 +84,26 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .description(embed_description)
         .to_owned();
 
-    let vote_message = interaction
+    let votes_message = interaction
         .send(&ctx.http, InteractionResponse::Embed(vote_embed))
         .await?;
+    debug!("Vote message id: {}", votes_message.id);
     // リアクション
     for status in AgendaStatus::closed().into_iter() {
-        let _ = vote_message.react(&ctx.http, status).await;
+        debug!("Reaction for votes message: {}", status.emoji());
+        let _ = votes_message.react(&ctx.http, status).await;
     }
 
     // vote_message_idを格納
-    global::agendas::set_votes_message_id(current_agenda.id, vote_message.id);
+    global::agendas::set_votes_message_id(current_agenda.id, votes_message.id);
 
     let vc_id = global::voice_chat_channel_id::get().ok_or(MyError::IsNotJoinedInVC)?;
     // 投票Embedのリアクションを取得し、VC参加者の過半数を超えていれば/vote endを叩く
     loop {
+        debug!("Check vote status");
         // end_votesコマンド等で議題が次に行っている場合処理を終了させないと永遠にループする
         if global::agendas::find_current().map(|agenda| agenda.id) != Some(current_agenda.id) {
+            debug!("Current agenda has been changed, so loop is canceled");
             break;
         }
 
@@ -106,11 +113,13 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
                 .iter()
                 .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)
                 .count();
-        if let Some(status) = get_votes_result(&vote_message, &ctx.http, vc_members_count).await {
+        debug!("vc_members: {}", vc_members_count);
+        if let Some(status) = get_votes_result(&votes_message, &ctx.http, vc_members_count).await {
+            debug!("Vote finished, so loop is canceled: {}", status);
             let result_embeds = end_votes(status).await?;
             let _ = interaction
                 .channel_id
-                .delete_message(&ctx.http, vote_message.id)
+                .delete_message(&ctx.http, votes_message.id)
                 .await;
             let _ = interaction
                 .channel_id
@@ -163,6 +172,7 @@ pub async fn end((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .to_owned()
         .try_into()?;
     let status = AgendaStatus::from_str(&status).unwrap();
+    info!("Vote finished: {}", status);
     let embeds = end_votes(status).await?;
 
     interaction
@@ -230,11 +240,15 @@ async fn end_votes(status: AgendaStatus) -> anyhow::Result<Vec<CreateEmbed>> {
         Some(id) => {
             let next_agenda = module.agenda_usecase().find_new(id).await?;
 
-            println!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
+            info!("Next Agenda: {}", next_agenda_id.unwrap().formatted());
 
             discord_embeds::next_agenda_embed(&mut agenda_embed, &record_id, &next_agenda)
         }
-        None => discord_embeds::no_next_agenda(&mut agenda_embed, &record_id),
+        None => {
+            info!("No next agenda!");
+
+            discord_embeds::no_next_agenda(&mut agenda_embed, &record_id)
+        }
     }
     .to_owned();
 

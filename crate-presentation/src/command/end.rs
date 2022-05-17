@@ -8,6 +8,7 @@ use crate_shared::{
 };
 
 use itertools::Itertools;
+use log::info;
 use serenity::builder::CreateEmbed;
 
 pub fn builder() -> SlashCommandBuilder {
@@ -44,8 +45,8 @@ pub async fn executor((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .await?;
     let _ = module.record_usecase().close(record_id).await?;
 
-    println!("Discussion finished: {}", record_id.formatted());
-    println!("Result:\n {}", result_strings);
+    info!("Discussion finished: {}", record_id.formatted());
+    info!("Result:\n {}", result_strings);
 
     // グローバル変数をすべてリセット
     global::voice_chat_channel_id::clear();
