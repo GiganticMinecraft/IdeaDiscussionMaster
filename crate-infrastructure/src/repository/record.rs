@@ -50,6 +50,7 @@ impl RecordRepository for RedminePersistenceImpl<Record> {
             .join(",");
         let limit = limit.unwrap_or(20).to_string();
         let queries = vec![
+            // TODO: ProjectIdやTrackerIdをまとめておく
             ("project_id", "18"),
             ("tracker_id", "34"),
             ("status_id", &status),
