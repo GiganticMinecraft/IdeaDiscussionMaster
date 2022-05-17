@@ -27,7 +27,9 @@ fn setup_logger(is_verbosed: bool) -> Result<(), fern::InitError> {
         config.level(log::LevelFilter::Debug)
     } else {
         config.level(log::LevelFilter::Info)
-    };
+    }
+    .level_for("serenity", log::LevelFilter::Off)
+    .level_for("tracing::span", log::LevelFilter::Off);
 
     let stdout_config = fern::Dispatch::new()
         .format(|out, message, record| {
