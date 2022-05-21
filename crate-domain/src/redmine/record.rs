@@ -3,7 +3,7 @@ use crate::{id::IssueId, status::record::RecordStatus};
 use chrono::NaiveDate;
 use derive_new::new;
 
-#[derive(Clone, new, Debug)]
+#[derive(Clone, new, Debug, Default)]
 pub struct Record {
     pub id: IssueId,
     pub title: String,
@@ -20,5 +20,15 @@ impl Record {
             status: RecordStatus::Closed,
             ..self
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn succeeded_in_close() {
+        assert_eq!(Record::default().close().status, RecordStatus::Closed);
     }
 }

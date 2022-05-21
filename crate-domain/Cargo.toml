@@ -17,3 +17,6 @@ chrono = "0.4"
 version = "0.11"
 default-features = false
 features = ["cache", "client", "gateway", "rustls_backend", "model", "unstable_discord_api"]
+
+[dev-dependencies]
+test-case = "2.1"
