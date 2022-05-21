@@ -1,6 +1,7 @@
-use super::SecretKey;
-use std::{env, path::PathBuf};
+use serde::Deserialize;
+use std::path::PathBuf;
 
+#[derive(Deserialize)]
 pub struct Env {
     pub discord_token: String,
     pub discord_application_id: u64,
@@ -12,39 +13,38 @@ pub struct Env {
 
 impl Env {
     pub fn new() -> Self {
-        let discord_token =
-            env::var("DISCORD_TOKEN").expect("DiscordのBot Tokenが指定されていません");
-        let discord_application_id = env::var("DISCORD_APPLICATION_ID")
-            .ok()
-            .and_then(|id| id.parse::<u64>().ok())
-            .expect("DiscordBotのApplication IDが指定されていないか形式が正しくありません");
-        let discord_guild_id = env::var("DISCORD_GUILD_ID")
-            .ok()
-            .and_then(|id| id.parse::<u64>().ok())
-            .expect("DiscordBotを作動させるサーバーIDが指定されていないか形式が正しくありません");
-        let redmine_api_key =
-            env::var("REDMINE_KEY").expect("RedmineのAPIキーが指定されていません");
-        let github_app_id = env::var("GH_APP_ID")
-            .ok()
-            .and_then(|id| id.parse::<u64>().ok())
-            .expect("GitHubAppのIDが指定されていないか形式が正しくありません");
-        let github_secret_key = SecretKey::new(env::var("GH_APP_RSA_KEY_PATH").ok())
-            .expect("GitHubAppの秘密鍵ファイルが見つからないかファイルではありません")
-            .0;
-
-        Self {
-            discord_token,
-            discord_application_id,
-            discord_guild_id,
-            redmine_api_key,
-            github_app_id,
-            github_secret_key,
-        }
+        envy::from_env::<Self>().expect("必要な環境変数を取得できませんでした。")
     }
 }
 
 impl std::default::Default for Env {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use std::env;
+
+    #[test]
+    fn success() {
+        env::set_var("discord_token", "discord_token");
+        env::set_var("discord_application_id", "1000");
+        env::set_var("discord_guild_id", "1000");
+        env::set_var("redmine_api_key", "redmine_api_key");
+        env::set_var("github_app_id", "1000");
+        env::set_var("github_secret_key", "github_secret_key");
+
+        Env::new();
+    }
+
+    #[test]
+    #[should_panic]
+    fn failure() {
+        env::set_var("discord_application_id", "discord_application_id");
+
+        Env::new();
     }
 }
