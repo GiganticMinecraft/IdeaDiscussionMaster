@@ -13,10 +13,7 @@ use serenity::{
     async_trait,
     client::EventHandler,
     http::client::Http,
-    model::{
-        gateway::Ready,
-        interactions::{application_command::ApplicationCommand, Interaction},
-    },
+    model::{gateway::Ready, interactions::Interaction},
 };
 
 #[derive(Debug)]
