@@ -7,8 +7,8 @@ pub struct Env {
     pub discord_application_id: u64,
     pub discord_guild_id: u64,
     pub redmine_api_key: String,
-    pub github_app_id: u64,
-    pub github_secret_key: PathBuf,
+    pub gh_app_id: u64,
+    pub gh_rsa_key_path: PathBuf,
 }
 
 impl Env {
