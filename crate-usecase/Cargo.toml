@@ -13,3 +13,6 @@ anyhow = "1.0"
 derive-new = "0.5"
 chrono = "0.4"
 regex = "1.5"
+
+[dev-dependencies]
+test-case = "2.1"
