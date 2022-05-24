@@ -29,7 +29,7 @@ mod test {
     use std::env;
 
     #[test]
-    #[skip]
+    #[ignore]
     fn success() {
         env::set_var("discord_token", "discord_token");
         env::set_var("discord_application_id", "1000");
@@ -43,7 +43,7 @@ mod test {
 
     #[test]
     #[should_panic]
-    #[skip]
+    #[ignore]
     fn failure() {
         env::set_var("discord_application_id", "discord_application_id");
 
