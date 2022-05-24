@@ -67,3 +67,87 @@ impl From<AgendaStatus> for ReactionType {
         Self::from(status.emoji().chars().next().unwrap())
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use test_case::test_case;
+
+    #[test]
+    fn closed_statuses() {
+        assert_eq!(
+            AgendaStatus::closed(),
+            vec![AgendaStatus::Approved, AgendaStatus::Declined]
+        );
+    }
+
+    #[test_case(AgendaStatus::New => false; "new is false")]
+    #[test_case(AgendaStatus::InProgress => true; "in progress is true")]
+    #[test_case(AgendaStatus::Approved => false; "approved is false")]
+    #[test_case(AgendaStatus::Declined => false; "declined is false")]
+    fn whether_is_in_progress(status: AgendaStatus) -> bool {
+        status.is_in_progress()
+    }
+
+    #[test_case(AgendaStatus::New => true; "new is true")]
+    #[test_case(AgendaStatus::InProgress => false; "in progress is false")]
+    #[test_case(AgendaStatus::Approved => false; "approved is false")]
+    #[test_case(AgendaStatus::Declined => false; "declined is false")]
+    fn whether_is_new(status: AgendaStatus) -> bool {
+        status.is_new()
+    }
+
+    #[test_case(AgendaStatus::New => false; "new is false")]
+    #[test_case(AgendaStatus::InProgress => false; "in progress is false")]
+    #[test_case(AgendaStatus::Approved => true; "approved is true")]
+    #[test_case(AgendaStatus::Declined => true; "declined is true")]
+    fn whether_is_closed(status: AgendaStatus) -> bool {
+        status.is_closed()
+    }
+
+    #[test_case(AgendaStatus::New => "新規"; "new")]
+    #[test_case(AgendaStatus::InProgress => "進行中"; "in progress")]
+    #[test_case(AgendaStatus::Approved => "承認"; "approved")]
+    #[test_case(AgendaStatus::Declined => "却下"; "declined")]
+    fn ja(status: AgendaStatus) -> String {
+        status.ja()
+    }
+
+    #[test_case(AgendaStatus::New => "🆕"; "new")]
+    #[test_case(AgendaStatus::InProgress => "▶"; "in progress")]
+    #[test_case(AgendaStatus::Approved => "⭕"; "approved")]
+    #[test_case(AgendaStatus::Declined => "❌"; "declined")]
+    fn emoji(status: AgendaStatus) -> String {
+        status.emoji()
+    }
+
+    #[test_case(AgendaStatus::New => 1; "new")]
+    #[test_case(AgendaStatus::InProgress => 2; "in progress")]
+    #[test_case(AgendaStatus::Approved => 17; "approved")]
+    #[test_case(AgendaStatus::Declined => 6; "declined")]
+    fn id(status: AgendaStatus) -> u16 {
+        status.id()
+    }
+
+    #[test_case(1 => Some(AgendaStatus::New); "new")]
+    #[test_case(2 => Some(AgendaStatus::InProgress); "in progress")]
+    #[test_case(17 => Some(AgendaStatus::Approved); "approved")]
+    #[test_case(6 => Some(AgendaStatus::Declined); "declined")]
+    #[test_case(50 => None; "undefined number should return None")]
+    fn from_id(num: u16) -> Option<AgendaStatus> {
+        AgendaStatus::from_id(num)
+    }
+
+    #[test]
+    fn all() {
+        assert_eq!(
+            AgendaStatus::all(),
+            vec![
+                AgendaStatus::New,
+                AgendaStatus::InProgress,
+                AgendaStatus::Approved,
+                AgendaStatus::Declined
+            ]
+        );
+    }
+}

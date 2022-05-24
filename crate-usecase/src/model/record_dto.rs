@@ -7,7 +7,7 @@ use chrono::NaiveDate;
 use derive_new::new;
 use regex::Regex;
 
-#[derive(new, Debug, Clone)]
+#[derive(new, Debug, Clone, Default)]
 pub struct RecordDto {
     pub id: IssueId,
     pub title: String,
@@ -56,5 +56,58 @@ impl From<Record> for RecordDto {
             record.start_date,
             record.due_date,
         )
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use test_case::test_case;
+
+    #[test]
+    fn succeeded_in_create_title_regex() {
+        RecordDto::title_regex();
+    }
+
+    #[test_case("", "アイデア会議"; "empty string should be default")]
+    #[test_case("これはテストです", "アイデア会議"; "no match string should be default")]
+    #[test_case("第0回アイデア会議", "アイデア会議"; "no match string with 0th should be default")]
+    #[test_case("第1回アイデア会議", "第1回アイデア会議"; "1 digit number")]
+    #[test_case("第10回アイデア会議", "第10回アイデア会議"; "2 digits number")]
+    #[test_case("第100回アイデア会議", "第100回アイデア会議"; "3 digits number")]
+    #[test_case("第65432回アイデア会議", "第65432回アイデア会議"; "5 digits number")]
+    fn match_title_regex(given: &str, expected: &str) {
+        let record = RecordDto {
+            title: given.to_string(),
+            ..RecordDto::default()
+        };
+
+        assert_eq!(record.discussion_title(), expected.to_string());
+    }
+
+    #[test_case("第1回アイデア会議" => 1; "1 digit number")]
+    #[test_case("第10回アイデア会議" => 10; "2 digits number")]
+    #[test_case("第100回アイデア会議" => 100; "3 digits number")]
+    #[test_case("第65432回アイデア会議" => 65432; "5 digits number")]
+    fn succeeded_in_match_title_number(given: &str) -> u16 {
+        let record = RecordDto {
+            title: given.to_string(),
+            ..RecordDto::default()
+        };
+
+        record.discussion_number().unwrap()
+    }
+
+    #[test_case(""; "empty string")]
+    #[test_case("これはテストです"; "no match string")]
+    #[test_case("第0回アイデア会議"; "no match string with 0th")]
+    #[test_case("第987654回アイデア会議"; "no match string with overflowing number")]
+    fn failed_in_match_title_number(given: &str) {
+        let record = RecordDto {
+            title: given.to_string(),
+            ..RecordDto::default()
+        };
+
+        assert!(record.discussion_number().is_err());
     }
 }
