@@ -22,7 +22,7 @@ impl GitHub {
         let env = Env::new();
 
         Ok(
-            publish_token(env.gh_app_id, env.gh_rsa_key_path, "GiganticMinecraft")
+            publish_token(env.gh_app_id, "./key.pem", "GiganticMinecraft")
                 .await?
                 .token,
         )
