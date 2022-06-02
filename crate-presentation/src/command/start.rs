@@ -3,13 +3,13 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds, discord_utils, CommandExt,
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{
     self,
-    command::{CommandResult, ExecutorArgs, InteractionResponse},
     ext::{CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::DtoExt;

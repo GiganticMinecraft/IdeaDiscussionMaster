@@ -1,13 +1,14 @@
 use crate::{
     global,
     module::ModuleExt,
-    shared::{builder::SlashCommandBuilder, discord_embeds, CommandExt},
+    shared::{
+        builder::SlashCommandBuilder,
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
+        discord_embeds, CommandExt,
+    },
 };
 use crate_domain::{error::MyError, redmine::Note};
-use crate_shared::{
-    command::{CommandResult, ExecutorArgs, InteractionResponse},
-    ext::IdExt,
-};
+use crate_shared::ext::IdExt;
 
 use itertools::Itertools;
 use log::info;

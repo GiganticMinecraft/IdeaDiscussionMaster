@@ -3,14 +3,12 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds, CommandExt,
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
-use crate_shared::{
-    command::{CommandResult, ExecutorArgs, InteractionResponse},
-    ext::{CreateEmbedExt, IdExt},
-};
+use crate_shared::ext::{CreateEmbedExt, IdExt};
 
 use log::{debug, info};
 use serenity::{

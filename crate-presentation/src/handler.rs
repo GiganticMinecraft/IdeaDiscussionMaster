@@ -1,11 +1,14 @@
-use crate::{command, shared::CommandExt};
-use crate_shared::{
-    command::{
-        application_interaction::{ApplicationInteractions, SlashCommand},
-        CommandInteraction,
+use crate::{
+    command,
+    shared::{
+        command::{
+            application_interaction::{ApplicationInteractions, SlashCommand},
+            CommandInteraction,
+        },
+        CommandExt,
     },
-    Env, SerenityContext,
 };
+use crate_shared::{Env, SerenityContext};
 
 use anyhow::{anyhow, ensure, Context};
 use log::{error, info};

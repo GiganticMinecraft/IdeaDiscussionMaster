@@ -18,5 +18,5 @@ pub type ArgsMap = HashMap<String, ApplicationInteractions>;
 pub type CommandInteraction =
     serenity::model::interactions::application_command::ApplicationCommandInteraction;
 
-pub type ExecutorArgs = (ArgsMap, super::SerenityContext, CommandInteraction);
+pub type ExecutorArgs = (ArgsMap, serenity::client::Context, CommandInteraction);
 pub type CommandResult = anyhow::Result<()>;

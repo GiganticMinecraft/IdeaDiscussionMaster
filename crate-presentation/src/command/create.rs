@@ -3,16 +3,14 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds, CommandExt,
     },
 };
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
 };
-use crate_shared::{
-    command::{CommandResult, ExecutorArgs, InteractionResponse},
-    ext::{ChronoExt, CreateEmbedExt, IdExt},
-};
+use crate_shared::ext::{ChronoExt, CreateEmbedExt, IdExt};
 use crate_usecase::model::{DtoExt, RecordParam};
 
 use anyhow::{anyhow, ensure, Context};

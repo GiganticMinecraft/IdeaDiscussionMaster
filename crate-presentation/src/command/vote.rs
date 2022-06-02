@@ -3,14 +3,12 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        command::{CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
         discord_embeds, discord_utils, CommandExt,
     },
 };
 use crate_domain::{error::MyError, status::AgendaStatus};
-use crate_shared::{
-    command::{CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
-    ext::{CreateEmbedExt, IdExt},
-};
+use crate_shared::ext::{CreateEmbedExt, IdExt};
 
 use anyhow::{bail, ensure};
 use itertools::Itertools;

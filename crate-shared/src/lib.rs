@@ -1,4 +1,3 @@
-pub mod command;
 pub mod ext;
 
 mod env;

@@ -1,5 +1,5 @@
+use crate::shared::command::SlashCommandChoice;
 use crate_domain::error::{CommandBuilderError, CommandInfo};
-use crate_shared::command::SlashCommandChoice;
 
 use anyhow::{bail, ensure};
 use serenity::{
