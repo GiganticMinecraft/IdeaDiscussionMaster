@@ -1,9 +1,9 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
+use crate::{
+    global, module::ModuleExt, shared::builder::SlashCommandBuilder, utils::discord_embeds,
+};
 use crate_domain::{error::MyError, redmine::Note};
 use crate_shared::{
-    command::{
-        builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
-    },
+    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
     ext::IdExt,
 };
 

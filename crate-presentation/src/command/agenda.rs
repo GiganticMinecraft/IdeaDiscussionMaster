@@ -1,10 +1,12 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
+use crate::{
+    global,
+    module::ModuleExt,
+    shared::builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+    utils::discord_embeds,
+};
 use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{
-    command::{
-        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
-    },
+    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
     ext::{CreateEmbedExt, IdExt},
 };
 
