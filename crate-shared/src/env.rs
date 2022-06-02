@@ -35,7 +35,7 @@ mod test {
         env::set_var("discord_application_id", "1000");
         env::set_var("discord_guild_id", "1000");
         env::set_var("redmine_api_key", "redmine_api_key");
-        env::set_var("github_app_id", "1000");
+        env::set_var("gh_app_id", "1000");
         env::set_var("github_secret_key", "github_secret_key");
 
         Env::new();
