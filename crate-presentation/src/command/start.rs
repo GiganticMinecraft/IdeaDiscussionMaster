@@ -1,13 +1,15 @@
 use crate::{
     global,
     module::ModuleExt,
-    shared::builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    utils::discord_embeds,
+    shared::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        discord_embeds,
+    },
 };
 use crate_domain::{error::MyError, id::IssueId};
 use crate_shared::{
     self,
-    command::{ CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
+    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
     ext::{CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::DtoExt;

@@ -1,5 +1,7 @@
 use crate::{
-    global, module::ModuleExt, shared::builder::SlashCommandBuilder, utils::discord_embeds,
+    global,
+    module::ModuleExt,
+    shared::{builder::SlashCommandBuilder, discord_embeds},
 };
 use crate_domain::{error::MyError, redmine::Note};
 use crate_shared::{

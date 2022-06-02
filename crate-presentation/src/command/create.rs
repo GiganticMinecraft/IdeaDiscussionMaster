@@ -1,8 +1,10 @@
 use crate::{
     global,
     module::ModuleExt,
-    shared::builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-    utils::discord_embeds,
+    shared::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        discord_embeds,
+    },
 };
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
