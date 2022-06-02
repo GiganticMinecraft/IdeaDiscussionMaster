@@ -9,3 +9,6 @@ pub use chrono_ext::ChronoExt;
 
 mod id_ext;
 pub use id_ext::IdExt;
+
+mod command_ext;
+pub use command_ext::CommandExt;

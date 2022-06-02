@@ -5,7 +5,7 @@ use crate::{
             application_interaction::{ApplicationInteractions, SlashCommand},
             CommandInteraction,
         },
-        CommandExt,
+        ext::CommandExt,
     },
 };
 use crate_shared::{Env, SerenityContext};

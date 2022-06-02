@@ -5,8 +5,7 @@ use crate::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds,
-        ext::{ChronoExt, CreateEmbedExt, IdExt},
-        CommandExt,
+        ext::{ChronoExt, CommandExt, CreateEmbedExt, IdExt},
     },
 };
 use crate_domain::{

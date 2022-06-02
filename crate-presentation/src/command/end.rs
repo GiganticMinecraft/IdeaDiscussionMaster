@@ -5,8 +5,7 @@ use crate::{
         builder::SlashCommandBuilder,
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds,
-        ext::IdExt,
-        CommandExt,
+        ext::{CommandExt, IdExt},
     },
 };
 use crate_domain::{error::MyError, redmine::Note};

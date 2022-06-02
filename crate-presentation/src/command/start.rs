@@ -5,8 +5,7 @@ use crate::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds, discord_utils,
-        ext::{CreateEmbedExt, IdExt},
-        CommandExt,
+        ext::{CommandExt, CreateEmbedExt, IdExt},
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
