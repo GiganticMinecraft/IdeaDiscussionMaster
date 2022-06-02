@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use std::path::PathBuf;
 
 #[derive(Deserialize)]
 pub struct Env {
@@ -8,7 +7,6 @@ pub struct Env {
     pub discord_guild_id: u64,
     pub redmine_api_key: String,
     pub gh_app_id: u64,
-    pub gh_rsa_key_path: PathBuf,
 }
 
 impl Env {
@@ -36,7 +34,6 @@ mod test {
         env::set_var("discord_guild_id", "1000");
         env::set_var("redmine_api_key", "redmine_api_key");
         env::set_var("gh_app_id", "1000");
-        env::set_var("github_secret_key", "github_secret_key");
 
         Env::new();
     }

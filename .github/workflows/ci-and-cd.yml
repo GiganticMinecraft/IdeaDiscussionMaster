@@ -94,7 +94,6 @@ jobs:
           DISCORD_GUILD_ID=${{ secrets.DISCORD_GUILD_ID }}
           REDMINE_API_KEY=${{ secrets.REDMINE_KEY }}
           GH_APP_ID=${{ secrets.GH_APP_ID }}
-          GH_RSA_KEY_PATH=${{ secrets.GH_RSA_KEY_PATH }}
           EOD
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2

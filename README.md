@@ -25,7 +25,14 @@
 |Approved|承認|
 |Declined|却下|
 
-## 環境設定ファイルについて（.env）
+## 実行するには
+
+* Dockerコンテナでの利用が想定されていますが、バイナリ単体での実行も可能です。
+* `docker-compose.yml`やバイナリと同じディレクトリに`.env`と`key.pem`が必要です。
+  * `.env`: 実行に必要な環境変数。詳細は[こちら](#環境変数)を参照してください。
+  * `key.pem`: [GitHub App][2]の秘密鍵。
+
+### 環境変数
 
 |変数名|説明|
 |---|---|
@@ -33,8 +40,7 @@
 |DISCORD_APPLICATION_ID|DiscordBotのApplication ID。[Discord Developer Portal][1]から入手。|
 |DISCORD_GUILD_ID|Botを作動させるサーバーのID。|
 |REDMINE_API_KEY|RedmineのAPIキー。アイデア提案チケットと議事録チケットの追加・修正などを行うので、適切な権限設定が必要。|
-|GH_APP_ID|GitHub AppのID。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
-|GH_APP_RSA_KEY_PATH|GitHub AppのPrivateSSHキーへのファイルパス。コンテナ側のマウントされるパスなので注意。省略した場合は、`/key.pem`が読み込まれる。|
+|GH_APP_ID|[GitHub App][2]のID。Issueの作成をラベル付きで行うので、SeichiAssistにプッシュができるアカウントのものが必要。|
 
 ## License
 
@@ -45,3 +51,4 @@
 See [this file](./src/utils/commands/README.md).
 
 [1]: https://discord.com/developers/docs
+[2]: https://docs.github.com/ja/developers/apps/building-github-apps/authenticating-with-github-apps
