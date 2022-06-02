@@ -4,11 +4,12 @@ use crate::{
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         command::{CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
-        discord_embeds, discord_utils, CommandExt,
+        discord_embeds, discord_utils,
+        ext::{CreateEmbedExt, IdExt},
+        CommandExt,
     },
 };
 use crate_domain::{error::MyError, status::AgendaStatus};
-use crate_shared::ext::{CreateEmbedExt, IdExt};
 
 use anyhow::{bail, ensure};
 use itertools::Itertools;

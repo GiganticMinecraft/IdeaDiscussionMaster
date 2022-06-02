@@ -4,11 +4,12 @@ use crate::{
     shared::{
         builder::SlashCommandBuilder,
         command::{CommandResult, ExecutorArgs, InteractionResponse},
-        discord_embeds, CommandExt,
+        discord_embeds,
+        ext::IdExt,
+        CommandExt,
     },
 };
 use crate_domain::{error::MyError, redmine::Note};
-use crate_shared::ext::IdExt;
 
 use itertools::Itertools;
 use log::info;

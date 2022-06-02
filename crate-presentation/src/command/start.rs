@@ -4,14 +4,12 @@ use crate::{
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         command::{CommandResult, ExecutorArgs, InteractionResponse},
-        discord_embeds, discord_utils, CommandExt,
+        discord_embeds, discord_utils,
+        ext::{CreateEmbedExt, IdExt},
+        CommandExt,
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
-use crate_shared::{
-    self,
-    ext::{CreateEmbedExt, IdExt},
-};
 use crate_usecase::model::DtoExt;
 
 use anyhow::ensure;

@@ -1,9 +1,9 @@
 use super::model::Agenda;
+use crate::shared::ext::HashSetExt;
 use crate_domain::{
     id::IssueId,
     status::{AgendaStatus, StatusExt},
 };
-use crate_shared::ext::HashSetExt;
 
 use itertools::Itertools;
 use once_cell::sync::Lazy;
