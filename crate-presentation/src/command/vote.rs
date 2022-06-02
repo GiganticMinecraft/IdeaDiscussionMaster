@@ -3,7 +3,7 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        discord_embeds, CommandExt,
+        discord_embeds, discord_utils, CommandExt,
     },
 };
 use crate_domain::{error::MyError, status::AgendaStatus};
@@ -112,7 +112,7 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         }
 
         let vc_members_count =
-            crate_shared::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
+            discord_utils::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
                 .await?
                 .iter()
                 .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)

@@ -1,9 +1,6 @@
 pub mod command;
 pub mod ext;
 
-mod discussion;
-pub use discussion::*;
-
 mod env;
 pub use env::Env;
 

@@ -3,7 +3,7 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        discord_embeds, CommandExt,
+        discord_embeds, discord_utils, CommandExt,
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
@@ -45,7 +45,7 @@ pub async fn executor((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     // VCへの参加状況を取得
     // 参加していればグローバル変数にそのVCのChannelIdを格納
     // 参加していなければ終了
-    let vc_id = crate_shared::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
+    let vc_id = discord_utils::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
         .await?
         .get(&interaction.user.id)
         .and_then(|state| state.channel_id)
