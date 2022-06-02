@@ -3,12 +3,12 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        discord_embeds,
+        discord_embeds, CommandExt,
     },
 };
 use crate_domain::{error::MyError, status::AgendaStatus};
 use crate_shared::{
-    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
+    command::{CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
     ext::{CreateEmbedExt, IdExt},
 };
 

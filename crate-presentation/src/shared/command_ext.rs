@@ -1,4 +1,4 @@
-use super::{
+use crate_shared::command::{
     application_interaction::{ApplicationInteractions, SlashCommand},
     ArgsMap, CommandInteraction, InteractionResponse, Parser,
 };

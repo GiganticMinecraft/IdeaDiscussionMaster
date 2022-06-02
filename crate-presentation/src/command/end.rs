@@ -1,11 +1,11 @@
 use crate::{
     global,
     module::ModuleExt,
-    shared::{builder::SlashCommandBuilder, discord_embeds},
+    shared::{builder::SlashCommandBuilder, discord_embeds, CommandExt},
 };
 use crate_domain::{error::MyError, redmine::Note};
 use crate_shared::{
-    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
+    command::{CommandResult, ExecutorArgs, InteractionResponse},
     ext::IdExt,
 };
 

@@ -1,8 +1,8 @@
-use crate::command;
+use crate::{command, shared::CommandExt};
 use crate_shared::{
     command::{
         application_interaction::{ApplicationInteractions, SlashCommand},
-        CommandExt, CommandInteraction,
+        CommandInteraction,
     },
     Env, SerenityContext,
 };

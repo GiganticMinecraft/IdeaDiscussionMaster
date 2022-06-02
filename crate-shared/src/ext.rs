@@ -1,5 +1,3 @@
-pub use crate::command::CommandExt;
-
 mod create_embed_ext;
 pub use create_embed_ext::CreateEmbedExt;
 

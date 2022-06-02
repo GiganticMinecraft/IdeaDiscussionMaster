@@ -3,14 +3,14 @@ use crate::{
     module::ModuleExt,
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        discord_embeds,
+        discord_embeds, CommandExt,
     },
 };
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
 };
 use crate_shared::{
-    command::{CommandExt, CommandResult, ExecutorArgs, InteractionResponse},
+    command::{CommandResult, ExecutorArgs, InteractionResponse},
     ext::{ChronoExt, CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::{DtoExt, RecordParam};
