@@ -1,5 +1,3 @@
-pub use crate::command::CommandExt;
-
 mod create_embed_ext;
 pub use create_embed_ext::CreateEmbedExt;
 
@@ -11,3 +9,6 @@ pub use chrono_ext::ChronoExt;
 
 mod id_ext;
 pub use id_ext::IdExt;
+
+mod command_ext;
+pub use command_ext::CommandExt;

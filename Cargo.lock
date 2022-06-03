@@ -491,11 +491,7 @@ dependencies = [
 name = "crate-shared"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "chrono",
- "crate-domain",
  "envy",
- "itertools",
  "serde",
  "serenity",
 ]

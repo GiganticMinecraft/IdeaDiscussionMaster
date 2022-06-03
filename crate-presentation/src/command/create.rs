@@ -1,13 +1,15 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
+use crate::{
+    global,
+    module::ModuleExt,
+    shared::{
+        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
+        discord_embeds,
+        ext::{ChronoExt, CommandExt, CreateEmbedExt, IdExt},
+    },
+};
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
-};
-use crate_shared::{
-    command::{
-        builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
-    },
-    ext::{ChronoExt, CreateEmbedExt, IdExt},
 };
 use crate_usecase::model::{DtoExt, RecordParam};
 

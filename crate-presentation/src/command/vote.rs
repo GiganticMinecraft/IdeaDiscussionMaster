@@ -1,12 +1,14 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::{error::MyError, status::AgendaStatus};
-use crate_shared::{
-    command::{
+use crate::{
+    global,
+    module::ModuleExt,
+    shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandExt, CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice,
+        command::{CommandResult, ExecutorArgs, InteractionResponse, SlashCommandChoice},
+        discord_embeds, discord_utils,
+        ext::{CommandExt, CreateEmbedExt, IdExt},
     },
-    ext::{CreateEmbedExt, IdExt},
 };
+use crate_domain::{error::MyError, status::AgendaStatus};
 
 use anyhow::{bail, ensure};
 use itertools::Itertools;
@@ -108,7 +110,7 @@ pub async fn start((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         }
 
         let vc_members_count =
-            crate_shared::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
+            discord_utils::get_voice_states(&ctx.cache, &interaction.guild_id.unwrap())
                 .await?
                 .iter()
                 .filter(|(_, state)| state.channel_id.unwrap_or_default() == vc_id)

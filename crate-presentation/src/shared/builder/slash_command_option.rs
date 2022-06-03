@@ -1,4 +1,4 @@
-use super::super::SlashCommandChoice;
+use crate::shared::command::SlashCommandChoice;
 use crate_domain::error::{CommandBuilderError, CommandInfo};
 
 use anyhow::{bail, ensure};

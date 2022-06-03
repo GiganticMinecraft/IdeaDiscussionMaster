@@ -1,7 +1,8 @@
-use crate::ext::CreateEmbedExt;
+use crate::shared::ext::CreateEmbedExt;
 
 use serenity::builder::CreateEmbed;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum InteractionResponse {
     Message(String),

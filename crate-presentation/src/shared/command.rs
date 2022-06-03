@@ -1,11 +1,7 @@
 pub mod application_interaction;
-pub mod builder;
 
 mod interaction_response;
 pub use interaction_response::InteractionResponse;
-
-mod command_ext;
-pub use command_ext::CommandExt;
 
 mod parser;
 pub use parser::Parser;
@@ -22,5 +18,5 @@ pub type ArgsMap = HashMap<String, ApplicationInteractions>;
 pub type CommandInteraction =
     serenity::model::interactions::application_command::ApplicationCommandInteraction;
 
-pub type ExecutorArgs = (ArgsMap, super::SerenityContext, CommandInteraction);
+pub type ExecutorArgs = (ArgsMap, serenity::client::Context, CommandInteraction);
 pub type CommandResult = anyhow::Result<()>;

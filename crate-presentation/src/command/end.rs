@@ -1,11 +1,14 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::{error::MyError, redmine::Note};
-use crate_shared::{
-    command::{
-        builder::SlashCommandBuilder, CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
+use crate::{
+    global,
+    module::ModuleExt,
+    shared::{
+        builder::SlashCommandBuilder,
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
+        discord_embeds,
+        ext::{CommandExt, IdExt},
     },
-    ext::IdExt,
 };
+use crate_domain::{error::MyError, redmine::Note};
 
 use itertools::Itertools;
 use log::info;

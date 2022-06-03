@@ -1,12 +1,14 @@
-use super::super::{global, module::ModuleExt, utils::discord_embeds};
-use crate_domain::{error::MyError, id::IssueId};
-use crate_shared::{
-    command::{
+use crate::{
+    global,
+    module::ModuleExt,
+    shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
-        CommandExt, CommandResult, ExecutorArgs, InteractionResponse,
+        command::{CommandResult, ExecutorArgs, InteractionResponse},
+        discord_embeds,
+        ext::{CommandExt, CreateEmbedExt, IdExt},
     },
-    ext::{CreateEmbedExt, IdExt},
 };
+use crate_domain::{error::MyError, id::IssueId};
 
 use log::{debug, info};
 use serenity::{

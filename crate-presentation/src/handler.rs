@@ -1,17 +1,20 @@
-use crate::command;
-use crate_shared::{
-    command::{
-        application_interaction::{ApplicationInteractions, SlashCommand},
-        CommandExt, CommandInteraction,
+use crate::{
+    command,
+    shared::{
+        command::{
+            application_interaction::{ApplicationInteractions, SlashCommand},
+            CommandInteraction,
+        },
+        ext::CommandExt,
     },
-    Env, SerenityContext,
 };
+use crate_shared::Env;
 
-use anyhow::{anyhow, ensure, Context};
+use anyhow::{anyhow, ensure, Context as _};
 use log::{error, info};
 use serenity::{
     async_trait,
-    client::EventHandler,
+    client::{Context, EventHandler},
     http::client::Http,
     model::{gateway::Ready, interactions::Interaction},
 };
@@ -21,7 +24,7 @@ pub struct Handler;
 
 #[async_trait]
 impl EventHandler for Handler {
-    async fn ready(&self, ctx: SerenityContext, _data_about_bot: Ready) {
+    async fn ready(&self, ctx: Context, _data_about_bot: Ready) {
         if let Err(e) = create_slash_commands(&ctx.http).await {
             error!("{:?}", e);
         };
@@ -38,7 +41,7 @@ impl EventHandler for Handler {
         );
     }
 
-    async fn interaction_create(&self, ctx: SerenityContext, interaction: Interaction) {
+    async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Some(command) = interaction.clone().application_command() {
             let _ = command.defer(&ctx.http).await;
 
@@ -63,10 +66,7 @@ async fn create_slash_commands(http: impl AsRef<Http>) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn create_interaction(
-    interaction: &CommandInteraction,
-    ctx: &SerenityContext,
-) -> anyhow::Result<()> {
+async fn create_interaction(interaction: &CommandInteraction, ctx: &Context) -> anyhow::Result<()> {
     ensure!(
         interaction.guild_id.is_some(),
         "このコマンドはサーバー内からのみ実行できます。"

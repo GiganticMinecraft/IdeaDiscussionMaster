@@ -1,5 +1,6 @@
-use super::{super::REDMINE_URL, IdExt};
+use super::IdExt;
 use crate_domain::id::IssueId;
+use crate_shared::REDMINE_URL;
 
 use chrono::Utc;
 use serenity::{builder, utils::Color};
