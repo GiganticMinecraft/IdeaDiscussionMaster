@@ -48,7 +48,7 @@
 
 ### Some codes are licensed under the other one
 
-See [this file](./src/utils/commands/README.md).
+See [this file](./crate-presentation/src/shared/command/README.md).
 
 [1]: https://discord.com/developers/docs
 [2]: https://docs.github.com/ja/developers/apps/building-github-apps/authenticating-with-github-apps
