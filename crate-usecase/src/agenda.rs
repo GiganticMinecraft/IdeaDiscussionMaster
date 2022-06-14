@@ -4,7 +4,7 @@ use crate_domain::{
     error::MyError, id::IssueId, redmine::Note, repository::AgendaRepository, status::StatusExt,
 };
 
-use anyhow::ensure;
+use anyhow::{ensure, Context as _};
 use derive_new::new;
 use std::sync::Arc;
 
@@ -20,6 +20,7 @@ impl<R: RepositoryModuleExt> AgendaUseCase<R> {
             .find(id)
             .await
             .map(|a| a.into())
+            .context("議題の取得に失敗しました")
     }
 
     pub async fn find_new(&self, id: IssueId) -> anyhow::Result<AgendaDto> {
@@ -40,6 +41,7 @@ impl<R: RepositoryModuleExt> AgendaUseCase<R> {
             }
             Err(e) => Err(e),
         }
+        .context("ステータスの変更に失敗しました")
     }
 
     pub async fn decline(&self, id: IssueId) -> anyhow::Result<()> {
@@ -53,6 +55,7 @@ impl<R: RepositoryModuleExt> AgendaUseCase<R> {
             }
             Err(e) => Err(e),
         }
+        .context("ステータスの変更に失敗しました")
     }
 
     pub async fn add_note(&self, id: IssueId, note: Note) -> anyhow::Result<()> {
@@ -60,5 +63,6 @@ impl<R: RepositoryModuleExt> AgendaUseCase<R> {
             .agenda_repository()
             .add_note(id, note)
             .await
+            .context("注釈の追加に失敗しました")
     }
 }
