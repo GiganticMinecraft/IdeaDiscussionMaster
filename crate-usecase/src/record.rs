@@ -89,7 +89,9 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
         let record = repo.find(id).await?;
         let new = record.close();
 
-        repo.change_status(new).await.context("議事録を終了できませんでした")
+        repo.change_status(new)
+            .await
+            .context("議事録を終了できませんでした")
     }
 
     pub async fn add_relation(&self, id: IssueId, relation: IssueId) -> anyhow::Result<()> {

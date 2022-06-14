@@ -3,9 +3,9 @@ use crate_domain::{
     repository::{GitHubIssueRepository, RepositoryModuleExt},
 };
 
+use anyhow::Context as _;
 use derive_new::new;
 use std::sync::Arc;
-use anyhow::Context as _;
 
 #[derive(new, Clone)]
 pub struct GitHubIssueUseCase<R: RepositoryModuleExt> {
@@ -14,6 +14,10 @@ pub struct GitHubIssueUseCase<R: RepositoryModuleExt> {
 
 impl<R: RepositoryModuleExt> GitHubIssueUseCase<R> {
     pub async fn add(&self, issue: Issue) -> anyhow::Result<String> {
-        self.repositories.github_issue_repository().add(issue).await.context("GitHubにIssueを作成できませんでした")
+        self.repositories
+            .github_issue_repository()
+            .add(issue)
+            .await
+            .context("GitHubにIssueを作成できませんでした")
     }
 }
