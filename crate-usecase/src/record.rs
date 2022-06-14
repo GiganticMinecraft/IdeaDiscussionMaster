@@ -7,7 +7,7 @@ use crate_domain::{
     status::{RecordStatus, StatusExt},
 };
 
-use anyhow::ensure;
+use anyhow::{ensure, Context as _};
 use derive_new::new;
 use std::sync::Arc;
 
@@ -33,6 +33,7 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
             .add(new_record)
             .await
             .map(|record| record.into())
+            .context("議事録の作成に失敗しました")
     }
 
     pub async fn find(&self, id: IssueId) -> anyhow::Result<RecordDto> {
@@ -41,6 +42,7 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
             .find(id)
             .await
             .map(|r| r.into())
+            .context("議事録の取得に失敗しました")
     }
 
     pub async fn find_new(&self, id: IssueId) -> anyhow::Result<RecordDto> {
@@ -63,6 +65,7 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
             .list(limit, status)
             .await
             .map(|vec| vec.into_iter().map(|r| r.into()).collect())
+            .context("議事録の一覧の取得に失敗しました")
     }
 
     pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
@@ -78,6 +81,7 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
             .record_repository()
             .add_note(id, note)
             .await
+            .context("議事録に注釈を追加できませんでした")
     }
 
     pub async fn close(&self, id: IssueId) -> anyhow::Result<()> {
@@ -85,7 +89,9 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
         let record = repo.find(id).await?;
         let new = record.close();
 
-        repo.change_status(new).await
+        repo.change_status(new)
+            .await
+            .context("議事録を終了できませんでした")
     }
 
     pub async fn add_relation(&self, id: IssueId, relation: IssueId) -> anyhow::Result<()> {
@@ -93,5 +99,6 @@ impl<R: RepositoryModuleExt> RecordUseCase<R> {
             .record_repository()
             .add_relation(id, relation)
             .await
+            .context("議事録にチケットを関連付けできませんでした")
     }
 }
