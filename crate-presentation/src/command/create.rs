@@ -1,6 +1,6 @@
 use crate::{
     global,
-    module::ModuleExt,
+    module::{Module, ModuleExt},
     shared::{
         builder::{SlashCommandBuilder, SlashCommandOptionBuilder},
         command::{CommandResult, ExecutorArgs, InteractionResponse},
@@ -11,7 +11,7 @@ use crate::{
 use crate_domain::{
     error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
 };
-use crate_usecase::model::{DtoExt, RecordParam};
+use crate_usecase::model::{AgendaDto, DtoExt, RecordParam};
 
 use anyhow::{anyhow, ensure, Context};
 use chrono::{Duration, Local, NaiveDate, NaiveDateTime, NaiveTime};
@@ -130,6 +130,118 @@ pub fn builder() -> SlashCommandBuilder {
         .into()
 }
 
+async fn fetch_agendas(
+    module: &Module,
+    id: IssueId,
+) -> (IssueId, Result<AgendaDto, anyhow::Error>) {
+    (id, module.agenda_usecase().find(id).await)
+}
+
+fn refine_all_related_ideas(
+    ideas: Vec<IssueId>,
+    relations: &Vec<IssueId>,
+) -> anyhow::Result<Vec<IssueId>> {
+    let related = ideas
+        .clone()
+        .into_iter()
+        .filter(|id| relations.contains(id))
+        .collect_vec();
+    let not_related = ideas
+        .iter()
+        .filter(|id| !related.contains(id))
+        .collect_vec();
+    ensure!(
+        not_related.is_empty(),
+        "議事録に関連付けられていないチケットがあります。:{:?}",
+        not_related.iter().map(|id| id.formatted()).collect_vec()
+    );
+
+    Ok(related)
+}
+
+fn refine_all_fetched_idea(
+    ideas: Vec<(IssueId, Result<AgendaDto, anyhow::Error>)>,
+) -> anyhow::Result<Vec<AgendaDto>> {
+    let succeeded = ideas
+        .iter()
+        .filter(|(_, res)| res.is_ok())
+        .map(|(_, res)| res.as_ref().unwrap().to_owned())
+        .collect_vec();
+    let failed = ideas
+        .iter()
+        .filter(|(id, _)| !succeeded.iter().map(|v| v.id).contains(id))
+        .map(|(id, res)| (id, res.as_ref().err().unwrap()))
+        .collect_vec();
+    ensure!(
+        failed.is_empty(),
+        "詳細を取得できない議題があります。:{:?}",
+        failed
+            .iter()
+            .map(|(id, err)| format!("{} {:?}", id.formatted(), err))
+            .collect_vec()
+    );
+
+    Ok(succeeded)
+}
+
+fn refine_all_approved_ideas(ideas: Vec<AgendaDto>) -> anyhow::Result<Vec<AgendaDto>> {
+    let not_approved = ideas
+        .iter()
+        .filter(|v| v.status != AgendaStatus::Approved)
+        .collect_vec();
+    let approved = ideas
+        .iter()
+        .filter(|v| !not_approved.contains(v))
+        .map(|dto| dto.to_owned())
+        .collect_vec();
+    ensure!(
+        not_approved.is_empty(),
+        "承認されていない議題があります。:{:?}",
+        not_approved.iter().map(|v| v.id.formatted()).collect_vec()
+    );
+
+    Ok(approved)
+}
+
+/// 指定された議題を連結した文字列が当該議事録の承認された議題として正しいかどうかを確認する
+///
+/// すべての議題が以下の条件を満たす必要がある
+/// * u16にパースできる
+/// * 議事録に関連付けられている
+/// * ステータスが承認である
+///
+/// ## 引数
+///
+/// * `idea_args` - 議題のチケット番号をスペース区切りでつなげた文字列
+/// * `relations` - 議事録の関連チケットID
+/// * `module` - ユースケースを解決するModule
+async fn fetch_ideas(
+    idea_args: String,
+    relations: &Vec<IssueId>,
+    module: &Module,
+) -> anyhow::Result<Vec<AgendaDto>> {
+    debug!("議題文字列: {:?}", idea_args);
+    let ideas = idea_args
+        .split(' ')
+        .filter_map(|str| str.parse::<u16>().ok())
+        .map(IssueId::new)
+        .collect_vec();
+    ensure!(
+        !ideas.is_empty(),
+        "指定された文字列を議題のリストとして認識できません。"
+    );
+
+    let related = refine_all_related_ideas(ideas, relations)?;
+
+    let fetch_agenda_results: Vec<_> = stream::iter(related)
+        .then(|id| fetch_agendas(&module, id))
+        .collect()
+        .await;
+    let fetched = refine_all_fetched_idea(fetch_agenda_results)?;
+
+    refine_all_approved_ideas(fetched)
+}
+
 #[allow(clippy::type_complexity)]
 pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
@@ -146,41 +258,17 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .record_usecase()
         .find(IssueId::new(record_id))
         .await
-        .with_context(|| format!("議事録の取得中にエラーが発生しました: #{:?}", record_id))?;
+        .with_context(|| format!("議事録の取得中にエラーが発生しました。: #{:?}", record_id))?;
 
     // TODO: なぜだめなのかをちゃんと表示する
 
     // Issueを作成するアイデアを取得
-    // ただし、以下をすべて満たす必要がある
-    // * u16にパースできる
-    // * 議事録に関連付けられている
-    // * ステータスが承認である
     let ideas: String = map
         .get("idea_issue_numbers")
         .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
         .to_owned()
         .try_into()?;
-    let ideas = ideas
-        .split(' ')
-        .filter_map(|str| str.parse::<u16>().ok())
-        .map(IssueId::new)
-        .filter(|id| record.relations.contains(id))
-        .collect_vec();
-    let ideas: Vec<_> = stream::iter(ideas)
-        .then(|id| module.agenda_usecase().find(id))
-        .collect()
-        .await;
-    let ideas = ideas
-        .into_iter()
-        .filter_map(|res| res.ok())
-        .filter(|idea| idea.status == AgendaStatus::Approved)
-        .collect_vec();
-
-    debug!("ideas: {:?}", ideas);
-    ensure!(
-        !ideas.is_empty(),
-        anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
-    );
+    let ideas = fetch_ideas(ideas, &record.relations, &module).await?;
 
     info!("Create GitHub issues");
     // GitHubにIssueを作成
