@@ -24,9 +24,11 @@ async fn create_gh_issue(
     (id, module.gh_issue_usecase().add(issue).await)
 }
 
+type FailedIssues = Vec<(IssueId, anyhow::Error)>;
+
 fn group_github_issues(
     issues: Vec<(IssueId, anyhow::Result<String, anyhow::Error>)>,
-) -> (Vec<(IssueId, String)>, Vec<(IssueId, anyhow::Error)>) {
+) -> (Vec<(IssueId, String)>, FailedIssues) {
     let succeeded = issues
         .iter()
         .filter(|(_, res)| res.is_ok())
@@ -49,9 +51,7 @@ async fn add_redmine_notes(
     (id, module.record_usecase().add_note(id, note).await)
 }
 
-fn group_redmine_notes(
-    notes: Vec<(IssueId, anyhow::Result<()>)>,
-) -> (Vec<IssueId>, Vec<(IssueId, anyhow::Error)>) {
+fn group_redmine_notes(notes: Vec<(IssueId, anyhow::Result<()>)>) -> (Vec<IssueId>, FailedIssues) {
     let succeeded = notes
         .iter()
         .filter(|(_, res)| res.is_ok())
