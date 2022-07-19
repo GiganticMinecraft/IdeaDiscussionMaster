@@ -42,11 +42,11 @@ pub async fn executor((_map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .join("\n");
 
     let module = global::module::get();
-    let _ = module
+    module
         .record_usecase()
         .add_note(record_id, Note::from_string_content(result_strings.clone()))
         .await?;
-    let _ = module.record_usecase().close(record_id).await?;
+    module.record_usecase().close(record_id).await?;
 
     info!("Discussion finished: {}", record_id.formatted());
     info!("Result:\n {}", result_strings);

@@ -26,7 +26,7 @@ async fn fetch_agendas(
 
 fn refine_all_related_ideas(
     ideas: Vec<IssueId>,
-    relations: &Vec<IssueId>,
+    relations: &[IssueId],
 ) -> anyhow::Result<Vec<IssueId>> {
     let related = ideas
         .clone()
@@ -104,7 +104,7 @@ fn refine_all_approved_ideas(ideas: Vec<AgendaDto>) -> anyhow::Result<Vec<Agenda
 /// * `module` - ユースケースを解決するModule
 async fn fetch_ideas(
     idea_args: String,
-    relations: &Vec<IssueId>,
+    relations: &[IssueId],
     module: &Module,
 ) -> anyhow::Result<Vec<AgendaDto>> {
     debug!("議題文字列: {:?}", idea_args);
@@ -121,7 +121,7 @@ async fn fetch_ideas(
     let related = refine_all_related_ideas(ideas, relations)?;
 
     let fetch_agenda_results: Vec<_> = stream::iter(related)
-        .then(|id| fetch_agendas(&module, id))
+        .then(|id| fetch_agendas(module, id))
         .collect()
         .await;
     let fetched = refine_all_fetched_idea(fetch_agenda_results)?;
@@ -251,7 +251,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .iter()
         .map(|(id, gh_issue_url)| {
             (
-                id.clone(),
+                *id,
                 Note::new(
                     vec![
                         "GitHubにIssueを作成しました。以下URLより確認できます。",
