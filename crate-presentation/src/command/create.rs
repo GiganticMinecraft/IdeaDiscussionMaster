@@ -242,6 +242,64 @@ async fn fetch_ideas(
     refine_all_approved_ideas(fetched)
 }
 
+async fn create_gh_issue(
+    id: IssueId,
+    issue: GHIssue,
+    module: &Module,
+) -> (IssueId, anyhow::Result<String>) {
+    (id, module.gh_issue_usecase().add(issue).await)
+}
+
+fn refine_gh_issues(
+    issues: Vec<(IssueId, anyhow::Result<String, anyhow::Error>)>,
+) -> anyhow::Result<Vec<(IssueId, String)>> {
+    let succeeded = issues
+        .iter()
+        .filter(|(_, res)| res.is_ok())
+        .map(|(id, res)| (id.to_owned(), res.as_ref().unwrap().to_owned()))
+        .collect_vec();
+    let failed = issues
+        .iter()
+        .filter(|(_, res)| res.is_err())
+        .map(|(id, res)| (id.to_owned(), res.as_ref().err().unwrap()))
+        .collect_vec();
+    ensure!(
+        failed.is_empty(),
+        "GitHubにIssueを起票できなかった議題があります。:{:?}",
+        failed
+    );
+
+    Ok(succeeded)
+}
+
+async fn add_redmine_notes(
+    id: IssueId,
+    note: Note,
+    module: &Module,
+) -> (IssueId, anyhow::Result<()>) {
+    (id, module.record_usecase().add_note(id, note).await)
+}
+
+fn refine_redmine_notes(notes: Vec<(IssueId, anyhow::Result<()>)>) -> anyhow::Result<Vec<IssueId>> {
+    let succeeded = notes
+        .iter()
+        .filter(|(_, res)| res.is_ok())
+        .map(|(id, _)| id.to_owned())
+        .collect_vec();
+    let failed = notes
+        .iter()
+        .filter(|(_, res)| res.is_err())
+        .map(|(id, res)| (id.to_owned(), res.as_ref().err().unwrap()))
+        .collect_vec();
+    ensure!(
+        failed.is_empty(),
+        "Redmineに注記できなかった議題があります。:{:?}",
+        failed
+    );
+
+    Ok(succeeded)
+}
+
 #[allow(clippy::type_complexity)]
 pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
@@ -259,8 +317,6 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .find(IssueId::new(record_id))
         .await
         .with_context(|| format!("議事録の取得中にエラーが発生しました。: #{:?}", record_id))?;
-
-    // TODO: なぜだめなのかをちゃんと表示する
 
     // Issueを作成するアイデアを取得
     let ideas: String = map
@@ -296,26 +352,19 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
             )
         })
         .collect_vec();
-    let mut gh_issued: Vec<(IssueId, String)> = Vec::new();
-    for (id, issue) in gh_issues.into_iter() {
-        let res = module.gh_issue_usecase().add(issue).await;
-
-        debug!("{}", id.formatted());
-
-        if res.is_ok() {
-            gh_issued.push((id, res.unwrap()))
-        }
-    }
+    let github_result: Vec<_> = stream::iter(gh_issues)
+        .then(|(id, issue)| create_gh_issue(id, issue, &module))
+        .collect()
+        .await;
+    let gh_issues = refine_gh_issues(github_result)?;
 
     info!("Add Redmine notes");
     // RedmineにGitHubのIssueのURLを注記
-    let mut redmine_issued: Vec<IssueId> = Vec::new();
-    for (id, gh_issue_url) in gh_issued.iter() {
-        let id = id.to_owned();
-        let res = module
-            .agenda_usecase()
-            .add_note(
-                id,
+    let redmine_notes = gh_issues
+        .iter()
+        .map(|(id, gh_issue_url)| {
+            (
+                id.clone(),
                 Note::new(
                     vec![
                         "GitHubにIssueを作成しました。以下URLより確認できます。",
@@ -326,19 +375,17 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
                     .collect_vec(),
                 ),
             )
-            .await;
-
-        debug!("{}", id.formatted());
-
-        if res.is_ok() {
-            redmine_issued.push(id)
-        }
-    }
+        })
+        .collect_vec();
+    let redmine_result: Vec<_> = stream::iter(redmine_notes)
+        .then(|(id, note)| add_redmine_notes(id, note, &module))
+        .collect()
+        .await;
+    let redmine_notes = refine_redmine_notes(redmine_result)?;
 
     let result_embed = CreateEmbed::default()
         .custom_default(&record.id)
-        .title("GitHubへの起票を完了しました")
-        .description("以下に番号の記載がないものは失敗しています。")
+        .title("GitHubへの起票とRedmineへの注記を行いました")
         .custom_field(
             "処理を開始した議題",
             ideas.into_iter().map(|idea| idea.id.formatted()).join(", "),
@@ -346,7 +393,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         )
         .custom_field(
             "GitHubにIssueを作成した議題",
-            gh_issued
+            gh_issues
                 .into_iter()
                 .map(|(id, _)| id.formatted())
                 .join(", "),
@@ -354,7 +401,7 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         )
         .custom_field(
             "Redmineに注記をした議題",
-            redmine_issued
+            redmine_notes
                 .into_iter()
                 .map(|id| id.formatted())
                 .join(", "),
