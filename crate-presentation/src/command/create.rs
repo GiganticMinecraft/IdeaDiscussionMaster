@@ -134,7 +134,7 @@ pub fn builder() -> SlashCommandBuilder {
 pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
     let module = global::module::get();
 
-    info!("Create gh issues");
+    info!("Start /create issue");
 
     // 議事録のIDを取得
     let record_id: u16 = map
