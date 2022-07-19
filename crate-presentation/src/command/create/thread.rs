@@ -5,13 +5,12 @@ use crate::{
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds,
         ext::{CommandExt, IdExt},
+        issue_id_array_parser::refine_all_approved_agendas,
     },
 };
-use crate_domain::{error::MyError, id::IssueId, status::AgendaStatus};
+use crate_domain::{error::MyError, id::IssueId};
 
-use anyhow::{anyhow, ensure, Context};
-use futures::stream::{self, StreamExt};
-use itertools::Itertools;
+use anyhow::Context;
 use log::{debug, info};
 
 pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
@@ -41,27 +40,7 @@ pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
         .to_owned()
         .try_into()?;
-    let ideas = ideas
-        .split(' ')
-        .filter_map(|str| str.parse::<u16>().ok())
-        .map(IssueId::new)
-        .filter(|id| record.relations.contains(id))
-        .collect_vec();
-    let ideas: Vec<_> = stream::iter(ideas)
-        .then(|id| module.agenda_usecase().find(id))
-        .collect()
-        .await;
-    let ideas = ideas
-        .into_iter()
-        .filter_map(|res| res.ok())
-        .filter(|idea| idea.status == AgendaStatus::Approved)
-        .collect_vec();
-
-    debug!("ideas: {:?}", ideas);
-    ensure!(
-        !ideas.is_empty(),
-        anyhow!("指定された議題は、いずれも存在しないか条件を満たしていません。")
-    );
+    let ideas = refine_all_approved_agendas(ideas, &record.relations, &module).await?;
 
     let base_msg = interaction
         .send(
