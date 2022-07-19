@@ -137,26 +137,21 @@ async fn create_gh_issue(
     (id, module.gh_issue_usecase().add(issue).await)
 }
 
-fn refine_gh_issues(
+fn group_github_issues(
     issues: Vec<(IssueId, anyhow::Result<String, anyhow::Error>)>,
-) -> anyhow::Result<Vec<(IssueId, String)>> {
+) -> (Vec<(IssueId, String)>, Vec<(IssueId, anyhow::Error)>) {
     let succeeded = issues
         .iter()
         .filter(|(_, res)| res.is_ok())
         .map(|(id, res)| (id.to_owned(), res.as_ref().unwrap().to_owned()))
         .collect_vec();
     let failed = issues
-        .iter()
+        .into_iter()
         .filter(|(_, res)| res.is_err())
-        .map(|(id, res)| (id.to_owned(), res.as_ref().err().unwrap()))
+        .map(|(id, res)| (id, res.err().unwrap()))
         .collect_vec();
-    ensure!(
-        failed.is_empty(),
-        "GitHubにIssueを起票できなかった議題があります。:{:?}",
-        failed
-    );
 
-    Ok(succeeded)
+    (succeeded, failed)
 }
 
 async fn add_redmine_notes(
@@ -167,24 +162,34 @@ async fn add_redmine_notes(
     (id, module.record_usecase().add_note(id, note).await)
 }
 
-fn refine_redmine_notes(notes: Vec<(IssueId, anyhow::Result<()>)>) -> anyhow::Result<Vec<IssueId>> {
+fn group_redmine_notes(
+    notes: Vec<(IssueId, anyhow::Result<()>)>,
+) -> (Vec<IssueId>, Vec<(IssueId, anyhow::Error)>) {
     let succeeded = notes
         .iter()
         .filter(|(_, res)| res.is_ok())
         .map(|(id, _)| id.to_owned())
         .collect_vec();
     let failed = notes
-        .iter()
+        .into_iter()
         .filter(|(_, res)| res.is_err())
-        .map(|(id, res)| (id.to_owned(), res.as_ref().err().unwrap()))
+        .map(|(id, res)| (id, res.err().unwrap()))
         .collect_vec();
-    ensure!(
-        failed.is_empty(),
-        "Redmineに注記できなかった議題があります。:{:?}",
-        failed
-    );
 
-    Ok(succeeded)
+    (succeeded, failed)
+}
+
+fn create_failures_embed(failed: &[(IssueId, anyhow::Error)], record_id: &IssueId) -> CreateEmbed {
+    let contents = failed
+        .iter()
+        .map(|(id, err)| format!("{}\n{:?}", id.formatted(), err))
+        .join("\n\n");
+
+    CreateEmbed::default()
+        .custom_default(record_id)
+        .description(contents)
+        .failure_color()
+        .to_owned()
 }
 
 #[allow(clippy::type_complexity)]
@@ -243,7 +248,10 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .then(|(id, issue)| create_gh_issue(id, issue, &module))
         .collect()
         .await;
-    let gh_issues = refine_gh_issues(github_result)?;
+    let (gh_issues, failed_gh_issues) = group_github_issues(github_result);
+    let github_failures_embed = create_failures_embed(&failed_gh_issues, &record.id)
+        .title("GitHubにIssueを起票できなかった議題があります")
+        .to_owned();
 
     info!("Add Redmine notes");
     // RedmineにGitHubのIssueのURLを注記
@@ -268,38 +276,36 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .then(|(id, note)| add_redmine_notes(id, note, &module))
         .collect()
         .await;
-    let redmine_notes = refine_redmine_notes(redmine_result)?;
+    let (redmine_notes, failed_redmine_notes) = group_redmine_notes(redmine_result);
+    let redmine_failures_embed = create_failures_embed(&failed_redmine_notes, &record.id)
+        .title("Redmineに注記できなかった議題があります")
+        .to_owned();
 
-    // 結果を送信する
-    let result_embed = CreateEmbed::default()
+    let success_embed = CreateEmbed::default()
         .custom_default(&record.id)
-        .title("GitHubへの起票とRedmineへの注記を行いました")
-        .custom_field(
-            "処理を開始した議題",
-            ideas.into_iter().map(|idea| idea.id.formatted()).join(", "),
-            false,
-        )
-        .custom_field(
-            "GitHubにIssueを作成した議題",
-            gh_issues
-                .into_iter()
-                .map(|(id, _)| id.formatted())
-                .join(", "),
-            false,
-        )
-        .custom_field(
-            "Redmineに注記をした議題",
-            redmine_notes
-                .into_iter()
-                .map(|id| id.formatted())
-                .join(", "),
-            false,
-        )
+        .title("GitHubへの起票とRedmineへの注記をどちらも完了した議題は以下の通りです")
+        .description(redmine_notes.iter().map(|id| id.formatted()).join(", "))
         .success_color()
         .to_owned();
 
+    let results = {
+        let mut res: Vec<CreateEmbed> = vec![];
+        if !redmine_notes.is_empty() {
+            res.push(success_embed);
+        }
+        if !failed_gh_issues.is_empty() {
+            res.push(github_failures_embed)
+        }
+        if !failed_redmine_notes.is_empty() {
+            res.push(redmine_failures_embed)
+        }
+
+        res
+    };
+
+    // 結果を送信する
     interaction
-        .send(&ctx.http, InteractionResponse::Embed(result_embed))
+        .send(&ctx.http, InteractionResponse::Embeds(results))
         .await
         .map(|_| ())
 }
