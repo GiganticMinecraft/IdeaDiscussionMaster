@@ -5,7 +5,7 @@ use crate::{
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         discord_embeds,
         ext::{CommandExt, IdExt},
-        issue_id_array_parser::refine_all_approved_agendas,
+        issue_id_array_parser::{refine_all_agendas, refine_all_approved_agendas},
     },
 };
 use crate_domain::{error::MyError, id::IssueId};
@@ -31,16 +31,13 @@ pub async fn thread((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .with_context(|| format!("議事録の取得中にエラーが発生しました: #{:?}", record_id))?;
 
     // スレッドを作成するアイデアを取得
-    // ただし、以下をすべて満たす必要がある
-    // * u16にパースできる
-    // * 議事録に関連付けられている
-    // * ステータスが承認である
     let ideas: String = map
         .get("idea_issue_numbers")
         .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
         .to_owned()
         .try_into()?;
-    let ideas = refine_all_approved_agendas(ideas, &record.relations, &module).await?;
+    let ideas = refine_all_agendas(ideas, &record.relations, &module).await?;
+    let ideas = refine_all_approved_agendas(ideas)?;
 
     let base_msg = interaction
         .send(
