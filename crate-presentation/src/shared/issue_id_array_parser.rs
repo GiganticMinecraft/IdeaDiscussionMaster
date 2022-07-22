@@ -10,6 +10,21 @@ use futures::stream::{self, StreamExt};
 use itertools::Itertools;
 use log::debug;
 
+fn parse_string_as_issue_ids(idea_args: String) -> anyhow::Result<Vec<IssueId>> {
+    debug!("議題文字列: {:?}", idea_args);
+    let ideas = idea_args
+        .split(' ')
+        .filter_map(|str| str.parse::<u16>().ok())
+        .map(IssueId::new)
+        .collect_vec();
+    ensure!(
+        !ideas.is_empty(),
+        "指定された文字列を議題のリストとして認識できません。"
+    );
+
+    Ok(ideas)
+}
+
 async fn fetch_agendas(
     module: &Module,
     id: IssueId,
@@ -100,19 +115,8 @@ pub async fn refine_all_approved_agendas(
     relations: &[IssueId],
     module: &Module,
 ) -> anyhow::Result<Vec<AgendaDto>> {
-    debug!("議題文字列: {:?}", idea_args);
-    let ideas = idea_args
-        .split(' ')
-        .filter_map(|str| str.parse::<u16>().ok())
-        .map(IssueId::new)
-        .collect_vec();
-    ensure!(
-        !ideas.is_empty(),
-        "指定された文字列を議題のリストとして認識できません。"
-    );
-
+    let ideas = parse_string_as_issue_ids(idea_args)?;
     let related = refine_all_related_ideas(ideas, relations)?;
-
     let fetch_agenda_results: Vec<_> = stream::iter(related)
         .then(|id| fetch_agendas(module, id))
         .collect()
