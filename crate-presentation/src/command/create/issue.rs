@@ -4,10 +4,12 @@ use crate::{
     shared::{
         command::{CommandResult, ExecutorArgs, InteractionResponse},
         ext::{CommandExt, CreateEmbedExt, IdExt},
-        issue_id_array_parser::refine_all_approved_agendas,
+        issue_id_array_parser::refine_all_agendas,
     },
 };
-use crate_domain::{error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note};
+use crate_domain::{
+    error::MyError, github::Issue as GHIssue, id::IssueId, redmine::Note, status::AgendaStatus,
+};
 use crate_usecase::model::DtoExt;
 
 use anyhow::Context;
@@ -97,13 +99,30 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
         .await
         .with_context(|| format!("議事録の取得中にエラーが発生しました。: #{:?}", record_id))?;
 
-    // Issueを作成するアイデアを取得
-    let ideas: String = map
+    // Issueを作成しないアイデアを取得
+    let excluded_ideas: Option<String> = map
         .get("idea_issue_number_exceptions")
-        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_number_exceptions".to_string()))?
-        .to_owned()
-        .try_into()?;
-    let ideas = refine_all_approved_agendas(ideas, &record.relations, &module).await?;
+        .and_then(|i| i.to_owned().try_into().ok());
+    let excluded_ideas = match excluded_ideas {
+        Some(v) => refine_all_agendas(v, &record.relations, &module).await?,
+        None => vec![],
+    }
+    .iter()
+    .map(|dto| dto.id)
+    .collect_vec();
+
+    // Issueを作成するアイデアを取得
+    let ideas = record
+        .relations
+        .iter()
+        .filter(|id| !excluded_ideas.contains(id))
+        .map(|v| v.0.to_string())
+        .join(" ");
+    let ideas = refine_all_agendas(ideas, &record.relations, &module).await?;
+    let ideas = ideas
+        .iter()
+        .filter(|dto| dto.status == AgendaStatus::Approved)
+        .collect_vec();
 
     info!("Create GitHub issues");
     // GitHubにIssueを作成
