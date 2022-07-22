@@ -19,4 +19,4 @@ default-features = false
 features = ["cache", "client", "gateway", "rustls_backend", "model", "unstable_discord_api"]
 
 [dev-dependencies]
-test-case = "2.1"
+test-case = "2.2"

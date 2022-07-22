@@ -15,4 +15,4 @@ chrono = "0.4"
 regex = "1.6"
 
 [dev-dependencies]
-test-case = "2.1"
+test-case = "2.2"
