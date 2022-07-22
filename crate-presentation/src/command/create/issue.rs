@@ -99,8 +99,8 @@ pub async fn issue((map, ctx, interaction): ExecutorArgs) -> CommandResult {
 
     // Issueを作成するアイデアを取得
     let ideas: String = map
-        .get("idea_issue_numbers")
-        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_numbers".to_string()))?
+        .get("idea_issue_number_exceptions")
+        .ok_or_else(|| MyError::ArgIsNotFound("idea_issue_number_exceptions".to_string()))?
         .to_owned()
         .try_into()?;
     let ideas = refine_all_approved_agendas(ideas, &record.relations, &module).await?;

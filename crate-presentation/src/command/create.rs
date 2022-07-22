@@ -28,14 +28,11 @@ pub fn builder() -> SlashCommandBuilder {
                 .min_int(1)
                 .required(true),
             )
-            .add_option(
-                SlashCommandOptionBuilder::new(
-                    "idea_issue_numbers",
-                    "Issueを作成する議題のチケット番号（半角スペース区切り）",
-                    ApplicationCommandOptionType::String,
-                )
-                .required(true),
-            ),
+            .add_option(SlashCommandOptionBuilder::new(
+                "idea_issue_number_exceptions",
+                "Issueを作成しない議題のチケット番号（半角スペース区切り）",
+                ApplicationCommandOptionType::String,
+            )),
         )
         .add_option(
             SlashCommandOptionBuilder::new(
