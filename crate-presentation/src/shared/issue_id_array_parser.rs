@@ -54,7 +54,7 @@ fn refine_all_related_ideas(
     Ok(related)
 }
 
-fn refine_all_fetched_ideas(
+fn refine_all_fetched_agendas(
     ideas: Vec<(IssueId, Result<AgendaDto, anyhow::Error>)>,
 ) -> anyhow::Result<Vec<AgendaDto>> {
     let succeeded = ideas
@@ -79,7 +79,7 @@ fn refine_all_fetched_ideas(
     Ok(succeeded)
 }
 
-fn refine_all_approved_ideas(ideas: Vec<AgendaDto>) -> anyhow::Result<Vec<AgendaDto>> {
+pub fn refine_all_approved_agendas(ideas: Vec<AgendaDto>) -> anyhow::Result<Vec<AgendaDto>> {
     let not_approved = ideas
         .iter()
         .filter(|v| v.status != AgendaStatus::Approved)
@@ -98,19 +98,18 @@ fn refine_all_approved_ideas(ideas: Vec<AgendaDto>) -> anyhow::Result<Vec<Agenda
     Ok(approved)
 }
 
-/// 指定された議題を連結した文字列が当該議事録の承認された議題として正しいかどうかを確認する
+/// 指定された議題を連結した文字列が当該議事録の議題として正しいかどうかを確認する
 ///
 /// すべての議題が以下の条件を満たす必要がある
 /// * u16にパースできる
 /// * 議事録に関連付けられている
-/// * ステータスが承認である
 ///
 /// ## 引数
 ///
 /// * `idea_args` - 議題のチケット番号をスペース区切りでつなげた文字列
 /// * `relations` - 議事録の関連チケットID
 /// * `module` - ユースケースを解決するModule
-pub async fn refine_all_approved_agendas(
+pub async fn refine_all_agendas(
     idea_args: String,
     relations: &[IssueId],
     module: &Module,
@@ -121,7 +120,6 @@ pub async fn refine_all_approved_agendas(
         .then(|id| fetch_agendas(module, id))
         .collect()
         .await;
-    let fetched = refine_all_fetched_ideas(fetch_agenda_results)?;
 
-    refine_all_approved_ideas(fetched)
+    refine_all_fetched_agendas(fetch_agenda_results)
 }
