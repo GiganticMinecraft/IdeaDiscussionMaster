@@ -5,7 +5,7 @@ use chrono::NaiveDate;
 use derive_new::new;
 use regex::Regex;
 
-#[derive(new, Debug, Clone, Default)]
+#[derive(new, Debug, Clone, Default, PartialEq, Eq)]
 pub struct RecordDto {
     pub id: u16,
     pub title: String,
@@ -103,5 +103,27 @@ mod test {
         };
 
         assert!(record.discussion_number().is_err());
+    }
+
+    #[test]
+    fn success_into() {
+        let record = Record::default();
+        let dto: RecordDto = record.clone().into();
+        let relations: Vec<u16> = record
+            .relations
+            .clone()
+            .into_iter()
+            .map(|id| id.into())
+            .collect();
+        let expected_dto = RecordDto {
+            id: record.id.into(),
+            title: record.title,
+            status: record.status,
+            relations,
+            start_date: record.start_date,
+            due_date: record.due_date,
+        };
+
+        assert_eq!(dto, expected_dto);
     }
 }
