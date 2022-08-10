@@ -39,39 +39,6 @@ mod test {
 
     use test_case::test_case;
 
-    #[test]
-    fn create() {
-        let expected_agenda = Agenda {
-            id: AgendaId::new(0),
-            title: String::default(),
-            description: String::default(),
-            status: AgendaStatus::New,
-        };
-
-        assert_eq!(
-            Agenda::new(
-                expected_agenda.id.clone(),
-                expected_agenda.title.clone(),
-                expected_agenda.description.clone(),
-                expected_agenda.status
-            ),
-            expected_agenda
-        )
-    }
-
-    #[test]
-    fn create_default() {
-        assert_eq!(
-            Agenda::default(),
-            Agenda {
-                id: AgendaId::new(0),
-                title: String::default(),
-                description: String::default(),
-                status: AgendaStatus::New
-            }
-        );
-    }
-
     #[test_case(Agenda::in_progress => AgendaStatus::InProgress; "in_progress")]
     #[test_case(Agenda::approve => AgendaStatus::Approved; "approve")]
     #[test_case(Agenda::decline => AgendaStatus::Declined; "decline")]
