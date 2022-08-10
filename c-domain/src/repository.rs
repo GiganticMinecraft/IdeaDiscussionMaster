@@ -6,12 +6,14 @@ use crate::{
 
 use async_trait::async_trait;
 
+#[cfg_attr(feature = "mock", mockall::automock)]
 #[async_trait]
 pub trait AgendaRepository {
     async fn find(&self, id: AgendaId) -> anyhow::Result<Agenda>;
     async fn change_status(&self, id: AgendaId, status: AgendaStatus) -> anyhow::Result<()>;
 }
 
+#[cfg_attr(feature = "mock", mockall::automock)]
 #[async_trait]
 pub trait RecordRepository {
     async fn add(&self, new_record: Record) -> anyhow::Result<Record>;
