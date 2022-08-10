@@ -23,3 +23,27 @@ pub struct MessageId(u64);
 
 #[derive(new)]
 pub struct ChannelId(u64);
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use test_case::test_case;
+
+    #[test_case(1; "1")]
+    #[test_case(39; "39")]
+    #[test_case(100; "100")]
+    fn agenda_id_into(num: u16) {
+        let id = AgendaId::new(num);
+
+        assert_eq!(num, id.into());
+    }
+
+    #[test_case(1; "1")]
+    #[test_case(39; "39")]
+    #[test_case(100; "100")]
+    fn record_id_into(num: u16) {
+        let id = RecordId::new(num);
+
+        assert_eq!(num, id.into());
+    }
+}
