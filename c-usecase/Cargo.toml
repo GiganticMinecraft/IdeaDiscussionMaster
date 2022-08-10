@@ -1,0 +1,17 @@
+[package]
+name = "c-usecase"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+c-domain = { path = "../c-domain" }
+
+anyhow = "1.0"
+derive-new = "0.5"
+chrono = "0.4"
+regex = "1.6"
+
+[dev-dependencies]
+test-case = "2.2"
