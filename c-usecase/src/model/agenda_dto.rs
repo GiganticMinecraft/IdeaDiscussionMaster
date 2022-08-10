@@ -29,10 +29,13 @@ mod test {
     fn success_into() {
         let agenda = Agenda::default();
         let dto: AgendaDto = agenda.clone().into();
+        let expected_dto = AgendaDto {
+            id: agenda.id.into(),
+            title: agenda.title,
+            description: agenda.description,
+            status: agenda.status,
+        };
 
-        assert_eq!(dto.id, agenda.id.into());
-        assert_eq!(dto.title, agenda.title);
-        assert_eq!(dto.description, agenda.description);
-        assert_eq!(dto.status, agenda.status);
+        assert_eq!(dto, expected_dto);
     }
 }
