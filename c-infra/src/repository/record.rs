@@ -1,5 +1,8 @@
 use super::RedmineRepositoryImpl;
-use crate::{model::CreateRecord, UseStatusId};
+use crate::{
+    model::redmine::{CreateRecord, UpdateRecord},
+    UseStatusId,
+};
 use c_domain::{
     id::{AgendaId, RecordId},
     repository::RecordRepository,
@@ -71,13 +74,10 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
             .collect_vec())
     }
 
-    async fn change_status(&self, id: RecordId, status: RecordStatus) -> anyhow::Result<()> {
-        let value = json!({
-          "issue": {
-            "status_id": status.id()
-          }
-        });
-        let _ = self.client.put(id.into(), &value).await?;
+    async fn save(&self, record: Record) -> anyhow::Result<()> {
+        let record_id = record.id.clone();
+        let value = UpdateRecord::new(record.into());
+        let _ = self.client.put(record_id.into(), &value).await;
 
         Ok(())
     }

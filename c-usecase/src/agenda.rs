@@ -1,5 +1,5 @@
 use super::model::AgendaDto;
-use c_domain::{id::AgendaId, repository::AgendaRepository, status::AgendaStatus};
+use c_domain::{id::AgendaId, repository::AgendaRepository};
 
 use anyhow::{ensure, Context as _};
 use derive_new::new;
@@ -26,17 +26,17 @@ impl AgendaUseCase {
         Ok(issue)
     }
 
-    async fn change_status(&self, id: AgendaId, new_status: AgendaStatus) -> anyhow::Result<()> {
-        let agenda = self.repo.find(id).await?;
-
-        self.repo.change_status(agenda.id, new_status).await
-    }
-
     pub async fn approve(&self, id: AgendaId) -> anyhow::Result<()> {
-        self.change_status(id, AgendaStatus::Approved).await
+        let agenda = self.repo.find(id).await?;
+        let agenda = agenda.approve();
+
+        self.repo.save(agenda).await
     }
 
     pub async fn decline(&self, id: AgendaId) -> anyhow::Result<()> {
-        self.change_status(id, AgendaStatus::Declined).await
+        let agenda = self.repo.find(id).await?;
+        let agenda = agenda.decline();
+
+        self.repo.save(agenda).await
     }
 }

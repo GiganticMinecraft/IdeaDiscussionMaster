@@ -1,11 +1,9 @@
 use super::RedmineRepositoryImpl;
-use crate::UseStatusId;
-
-use c_domain::{id::AgendaId, repository::AgendaRepository, status::AgendaStatus, Agenda};
+use crate::model::redmine::UpdateAgenda;
+use c_domain::{id::AgendaId, repository::AgendaRepository, Agenda};
 
 use anyhow::{anyhow, ensure};
 use async_trait::async_trait;
-use serde_json::json;
 
 #[async_trait]
 impl AgendaRepository for RedmineRepositoryImpl<Agenda> {
@@ -16,13 +14,11 @@ impl AgendaRepository for RedmineRepositoryImpl<Agenda> {
         Ok(res.issue.into())
     }
 
-    async fn change_status(&self, id: AgendaId, status: AgendaStatus) -> anyhow::Result<()> {
-        let json_value = json!({
-          "issue": {
-            "status_id": status.id()
-          }
-        });
+    async fn save(&self, agenda: Agenda) -> anyhow::Result<()> {
+        let agenda_id = agenda.id.clone();
+        let value = UpdateAgenda::new(agenda.into());
+        let _ = self.client.put(agenda_id.into(), &value).await;
 
-        self.client.put(id.into(), &json_value).await.map(|_| ())
+        Ok(())
     }
 }

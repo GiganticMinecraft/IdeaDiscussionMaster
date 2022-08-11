@@ -69,14 +69,11 @@ impl RecordUseCase {
             .ok_or_else(|| anyhow::anyhow!("Error!"))
     }
 
-    async fn change_status(&self, id: RecordId, new_status: RecordStatus) -> anyhow::Result<()> {
-        let record = self.repo.find(id).await?;
-
-        self.repo.change_status(record.id, new_status).await
-    }
-
     pub async fn close(&self, id: RecordId) -> anyhow::Result<()> {
-        self.change_status(id, RecordStatus::Closed).await
+        let record = self.repo.find(id).await?;
+        let record = record.close();
+
+        self.repo.save(record).await
     }
 
     pub async fn add_relation(&self, id: RecordId, relation: AgendaId) -> anyhow::Result<()> {

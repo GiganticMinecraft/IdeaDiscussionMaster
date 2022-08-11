@@ -359,6 +359,7 @@ dependencies = [
  "strum",
  "surf",
  "test-case",
+ "tokio",
 ]
 
 [[package]]
