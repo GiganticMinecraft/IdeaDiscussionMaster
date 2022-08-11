@@ -17,7 +17,7 @@ impl AgendaRepository for RedmineRepositoryImpl<Agenda> {
     async fn save(&self, agenda: Agenda) -> anyhow::Result<()> {
         let agenda_id = agenda.id.clone();
         let value = UpdateAgenda::new(agenda.into());
-        let _ = self.client.put(agenda_id.into(), &value).await;
+        let _ = self.client.put(agenda_id.into(), &value).await?;
 
         Ok(())
     }

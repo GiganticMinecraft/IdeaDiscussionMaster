@@ -77,7 +77,7 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
     async fn save(&self, record: Record) -> anyhow::Result<()> {
         let record_id = record.id.clone();
         let value = UpdateRecord::new(record.into());
-        let _ = self.client.put(record_id.into(), &value).await;
+        let _ = self.client.put(record_id.into(), &value).await?;
 
         Ok(())
     }
