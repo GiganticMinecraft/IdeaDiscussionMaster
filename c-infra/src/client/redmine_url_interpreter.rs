@@ -10,7 +10,7 @@ impl RedmineUrlInterpreter {
     pub fn new(url: String) -> Self {
         Self {
             url,
-            token: Env::new().redmine_api_key,
+            token: format!("key={}", Env::new().redmine_api_key),
         }
     }
 
