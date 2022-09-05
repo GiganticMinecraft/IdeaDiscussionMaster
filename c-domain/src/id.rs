@@ -21,7 +21,7 @@ impl From<RecordId> for u16 {
 #[derive(new, PartialEq, Eq, Hash, Clone)]
 pub struct MessageId(u64);
 
-#[derive(new)]
+#[derive(new, Debug, Clone)]
 pub struct ChannelId(u64);
 
 #[cfg(test)]
