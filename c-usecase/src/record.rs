@@ -61,6 +61,16 @@ impl RecordUseCase {
             .context("議事録の一覧の取得に失敗しました")
     }
 
+    // TODO: replace error message
+
+    pub async fn find_latest_new(&self) -> anyhow::Result<RecordDto> {
+        self.list(Some(1), vec![RecordStatus::New])
+            .await?
+            .first()
+            .cloned()
+            .ok_or_else(|| anyhow::anyhow!("Error!"))
+    }
+
     pub async fn find_latest_closed(&self) -> anyhow::Result<RecordDto> {
         self.list(Some(1), vec![RecordStatus::Closed])
             .await?
