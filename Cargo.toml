@@ -1,9 +1,5 @@
 [workspace]
 members = [
-  "crate-domain",
-  "crate-usecase",
-  "crate-infrastructure",
-  "crate-presentation",
   "crate-shared",
   "c-domain",
   "c-usecase",
