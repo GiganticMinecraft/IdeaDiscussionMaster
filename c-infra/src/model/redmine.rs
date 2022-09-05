@@ -37,7 +37,7 @@ pub struct RedmineIssueRelations {
 /// `GET /issues/[id]`で返ってくる形
 ///
 /// `/issues`で返ってくるのは[RedmineIssuesResult](RedmineIssuesResult)
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssueResult {
     pub issue: RedmineIssue,
 }
@@ -45,7 +45,7 @@ pub struct RedmineIssueResult {
 /// `GET /issues`で返ってくる形
 ///
 /// `/issues/[id]`で返ってくるのは[RedmineIssueResult](RedmineIssueResult)
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssuesResult {
     pub issues: Vec<RedmineIssue>,
 }
