@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/c-domain/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c-infra/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c-presentation/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c-usecase/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/c-usecase/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/crate-domain/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crate-infrastructure/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crate-presentation/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crate-shared/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/crate-usecase/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
