@@ -25,7 +25,7 @@ async fn test_with_fixtures() {
         Agenda::all_fixtures()
             .into_iter()
             .find(|agenda| agenda.id == id)
-            .ok_or(anyhow::anyhow!("The agenda you want does not exist"))
+            .ok_or_else(|| anyhow::anyhow!("The agenda you want does not exist"))
     });
     repo.expect_save().returning(|_| Ok(()));
     let use_case = AgendaUseCase::new(Arc::new(repo));
