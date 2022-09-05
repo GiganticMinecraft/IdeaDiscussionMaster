@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use c_presentation::{commands, serenity, shared::Data};
 use crate_shared::Env;
 
