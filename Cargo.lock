@@ -367,7 +367,6 @@ name = "c-presentation"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "argh",
  "c-domain",
  "c-infra",
  "c-usecase",
