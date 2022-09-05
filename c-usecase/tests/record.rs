@@ -18,6 +18,8 @@ async fn test_with_err_repo() {
     assert!(use_case.find(RecordId::new(3)).await.is_err());
 }
 
+// TODO: impl #find_latest_new
+// TODO: 分割しろ
 #[tokio::test]
 async fn test_with_fixtures() {
     let mut repo = MockRecordRepository::new();
