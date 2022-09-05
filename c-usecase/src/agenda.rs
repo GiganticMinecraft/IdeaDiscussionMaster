@@ -28,21 +28,21 @@ impl AgendaUseCase {
 
     pub async fn in_progress(&self, id: AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
-        let agenda = agenda.in_progress();
+        let agenda = agenda.in_progress()?;
 
         self.repo.save(agenda).await
     }
 
     pub async fn approve(&self, id: AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
-        let agenda = agenda.approve();
+        let agenda = agenda.approve()?;
 
         self.repo.save(agenda).await
     }
 
     pub async fn decline(&self, id: AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
-        let agenda = agenda.decline();
+        let agenda = agenda.decline()?;
 
         self.repo.save(agenda).await
     }
