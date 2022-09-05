@@ -3,7 +3,7 @@ use crate::{id::RecordId, status::RecordStatus};
 use chrono::NaiveDate;
 use derive_new::new;
 
-#[derive(new, PartialEq, Debug, Default, Clone)]
+#[derive(new, PartialEq, Eq, Debug, Default, Clone)]
 pub struct Record {
     pub id: RecordId,
     pub title: String,

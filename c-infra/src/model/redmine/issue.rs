@@ -10,7 +10,7 @@ use chrono::NaiveDate;
 use itertools::Itertools;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssue {
     pub id: u16,
     pub project: RedmineProject,
