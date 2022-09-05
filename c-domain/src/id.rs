@@ -1,6 +1,6 @@
 use derive_new::new;
 
-#[derive(new, Debug, PartialEq, Clone, Default)]
+#[derive(new, Debug, PartialEq, Eq, Hash, Clone, Default)]
 pub struct AgendaId(u16);
 
 impl From<AgendaId> for u16 {
@@ -18,7 +18,7 @@ impl From<RecordId> for u16 {
     }
 }
 
-#[derive(new)]
+#[derive(new, PartialEq, Eq, Hash, Clone)]
 pub struct MessageId(u64);
 
 #[derive(new)]
