@@ -18,6 +18,7 @@ async fn test_with_err_repo() {
     assert!(use_case.find(AgendaId::new(3)).await.is_err());
 }
 
+// TODO: add test of #in_progress or changing status
 #[tokio::test]
 async fn test_with_fixtures() {
     let mut repo = MockAgendaRepository::new();
