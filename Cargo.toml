@@ -7,5 +7,6 @@ members = [
   "crate-shared",
   "c-domain",
   "c-usecase",
-  "c-infra"
+  "c-infra",
+  "c-presentation"
 ]
