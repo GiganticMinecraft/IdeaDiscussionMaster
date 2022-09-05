@@ -58,7 +58,7 @@ async fn main() {
         )
         .user_data_setup(move |_, _, _| {
             // FIXME: fix url
-            Box::pin(async move { Ok(Data::new("redmine".to_string(), HashSet::new())) })
+            Box::pin(async move { Ok(Data::new("redmine".to_string())) })
         });
 
     framework.run().await.unwrap();

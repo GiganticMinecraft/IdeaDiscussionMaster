@@ -26,10 +26,10 @@ pub struct Data {
 }
 
 impl Data {
-    pub fn new(redmine_url: String, agendas: HashSet<GlobalAgenda>) -> Self {
+    pub fn new(redmine_url: String) -> Self {
         Self {
             repos: Repos::new(redmine_url),
-            agendas: GlobalAgendas::new(agendas),
+            agendas: GlobalAgendas::new(HashSet::new()),
         }
     }
 }
