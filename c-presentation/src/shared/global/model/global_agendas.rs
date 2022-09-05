@@ -1,4 +1,4 @@
-use super::global_agenda::GlobalAgenda;
+use crate::shared::global::model::global_agenda::GlobalAgenda;
 use crate::shared::HashSetExt;
 use c_domain::id::AgendaId;
 
