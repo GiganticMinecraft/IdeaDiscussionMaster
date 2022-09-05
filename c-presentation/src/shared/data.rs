@@ -1,6 +1,7 @@
 use c_domain::repository::{AgendaRepository, RecordRepository};
 use c_infra::repository::RedmineRepositoryImpl;
 
+use crate::shared::global::{GlobalRecordId, GlobalVcId};
 use std::sync::Arc;
 
 pub struct Repos {
@@ -21,12 +22,16 @@ impl Repos {
 
 pub struct Data {
     pub repos: Repos,
+    pub vc_id: GlobalVcId,
+    pub record_id: GlobalRecordId,
 }
 
 impl Data {
     pub fn new(redmine_url: String) -> Self {
         Self {
             repos: Repos::new(redmine_url),
+            vc_id: GlobalVcId::new(),
+            record_id: GlobalRecordId::new(),
         }
     }
 }
