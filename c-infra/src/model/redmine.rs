@@ -12,22 +12,22 @@ pub use update_agenda::UpdateAgenda;
 mod update_record;
 pub use update_record::UpdateRecord;
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineProject {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssueTracker {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssueStatus {
     pub id: u16,
 }
 
-#[derive(Debug, Deserialize, Default, PartialEq)]
+#[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineIssueRelations {
     pub issue_id: u16,
     pub issue_to_id: u16,

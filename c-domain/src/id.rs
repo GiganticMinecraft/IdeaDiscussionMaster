@@ -9,7 +9,7 @@ impl From<AgendaId> for u16 {
     }
 }
 
-#[derive(new, Debug, PartialEq, Clone, Default)]
+#[derive(new, Debug, PartialEq, Eq, Clone, Default)]
 pub struct RecordId(u16);
 
 impl From<RecordId> for u16 {

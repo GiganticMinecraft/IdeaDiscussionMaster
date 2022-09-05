@@ -2,7 +2,7 @@ use super::{id::AgendaId, status::AgendaStatus};
 
 use derive_new::new;
 
-#[derive(new, PartialEq, Debug, Default, Clone)]
+#[derive(new, PartialEq, Eq, Debug, Default, Clone)]
 pub struct Agenda {
     pub id: AgendaId,
     pub title: String,
