@@ -9,7 +9,10 @@ use async_trait::async_trait;
 impl AgendaRepository for RedmineRepositoryImpl<Agenda> {
     async fn find(&self, id: AgendaId) -> anyhow::Result<Agenda> {
         let res = self.client.get(id.into()).await?;
-        ensure!(res.issue.is_idea_ticket(), anyhow!("is not idea ticket"));
+        ensure!(
+            res.issue.is_idea_ticket(),
+            "チケットはアイデア提案のものではありません"
+        );
 
         Ok(res.issue.into())
     }

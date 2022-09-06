@@ -37,7 +37,7 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         let res = self.client.get(id.into()).await?;
         ensure!(
             res.issue.is_idea_discussion_record(),
-            anyhow!("this is not record")
+            anyhow!("チケットはアイデア会議の議事録ではありません")
         );
 
         Ok(res.issue.into())
