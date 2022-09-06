@@ -34,7 +34,7 @@ impl RedmineClient {
 
     pub async fn get_list<T: ToString, U: ToString>(
         &self,
-        queries: HashMap<T, U>,
+        queries: Vec<(T, U)>,
     ) -> anyhow::Result<RedmineIssuesResult> {
         let url = self.url_interpreter.issues_url();
         let queries: HashMap<String, String> = queries
