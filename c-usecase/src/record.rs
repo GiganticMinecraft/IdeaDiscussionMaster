@@ -44,7 +44,10 @@ impl RecordUseCase {
 
     pub async fn find_new(&self, id: RecordId) -> anyhow::Result<RecordDto> {
         let record = self.find(id).await?;
-        ensure!(record.status.is_new(),);
+        ensure!(
+            record.status.is_new(),
+            "議事録のステータスが新規ではありません"
+        );
 
         Ok(record)
     }
