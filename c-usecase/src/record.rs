@@ -54,11 +54,10 @@ impl RecordUseCase {
         limit: Option<u16>,
         status: Vec<RecordStatus>,
     ) -> anyhow::Result<Vec<RecordDto>> {
-        let res = self.repo.list(limit, status).await;
-
-        println!("{:#?}", res);
-
-        res.map(|vec| vec.into_iter().map(|r| r.into()).collect())
+        self.repo
+            .list(limit, status)
+            .await
+            .map(|vec| vec.into_iter().map(|r| r.into()).collect())
             .context("議事録の一覧の取得に失敗しました")
     }
 
