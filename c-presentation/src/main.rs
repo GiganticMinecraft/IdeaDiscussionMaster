@@ -12,7 +12,9 @@ fn setup_logger() -> Result<(), fern::InitError> {
         .level_for("c_usecase", log::LevelFilter::Debug)
         .level_for("c_infra", log::LevelFilter::Debug)
         .level_for("c_presentation", log::LevelFilter::Debug)
-        .level_for("surf", log::LevelFilter::Off);
+        .level_for("surf", log::LevelFilter::Off)
+        .level_for("serenity", log::LevelFilter::Off)
+        .level_for("tracing::span", log::LevelFilter::Off);
 
     let stdout_config = fern::Dispatch::new()
         .format(|out, message, record| {
