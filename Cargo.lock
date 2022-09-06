@@ -351,6 +351,7 @@ dependencies = [
  "once_cell",
  "poise",
  "regex",
+ "strum",
  "tokio",
 ]
 
