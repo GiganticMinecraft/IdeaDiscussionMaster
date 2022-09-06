@@ -8,8 +8,11 @@ fn setup_logger() -> Result<(), fern::InitError> {
     let mut config = fern::Dispatch::new();
     config = config
         .level(log::LevelFilter::Info)
-        .level_for("serenity", log::LevelFilter::Off)
-        .level_for("tracing::span", log::LevelFilter::Off);
+        .level_for("c_domain", log::LevelFilter::Debug)
+        .level_for("c_usecase", log::LevelFilter::Debug)
+        .level_for("c_infra", log::LevelFilter::Debug)
+        .level_for("c_presentation", log::LevelFilter::Debug)
+        .level_for("surf", log::LevelFilter::Off);
 
     let stdout_config = fern::Dispatch::new()
         .format(|out, message, record| {
