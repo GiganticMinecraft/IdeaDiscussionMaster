@@ -361,6 +361,7 @@ dependencies = [
  "anyhow",
  "c-domain",
  "chrono",
+ "crate-shared",
  "derive-new",
  "regex",
  "test-case",
