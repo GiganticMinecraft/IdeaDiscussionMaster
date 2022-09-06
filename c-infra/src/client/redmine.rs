@@ -1,8 +1,7 @@
 use super::RedmineUrlInterpreter;
 use crate::model::redmine::{RedmineIssueResult, RedmineIssuesResult};
 
-use itertools::Itertools;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 use surf::{Client, Response};
 
 pub struct RedmineClient {
@@ -33,19 +32,19 @@ impl RedmineClient {
 
     pub async fn get_list<T: ToString, U: ToString>(
         &self,
-        queries: Vec<(T, U)>,
+        queries: HashMap<T, U>,
     ) -> anyhow::Result<RedmineIssuesResult> {
         let url = self.url_interpreter.issues_url();
-        let queries = queries
+        let queries: HashMap<String, String> = queries
             .into_iter()
             .map(|(k, v)| (k.to_string(), v.to_string()))
-            .collect_vec();
+            .collect();
 
         self.client
             .get(url)
             .query(&queries)
             .unwrap()
-            .recv_json::<RedmineIssuesResult>()
+            .recv_json()
             .await
             .map_err(|e| e.into_inner())
     }

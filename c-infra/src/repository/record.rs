@@ -14,6 +14,7 @@ use anyhow::{anyhow, ensure};
 use async_trait::async_trait;
 use itertools::Itertools;
 use serde_json::json;
+use std::collections::HashMap;
 
 #[async_trait]
 impl RecordRepository for RedmineRepositoryImpl<Record> {
@@ -47,18 +48,19 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         limit: Option<u16>,
         status: Vec<RecordStatus>,
     ) -> anyhow::Result<Vec<Record>> {
+        let limit = limit.unwrap_or(20).to_string();
+        // TODO: ProjectIdやTrackerIdをまとめておく
+        let mut queries = HashMap::new();
+        queries.insert("project_id", "18");
+        queries.insert("tracker_id", "34");
+        queries.insert("limit", &limit);
         let status = status
             .iter()
             .map(|status| status.id().to_string())
             .join(",");
-        let limit = limit.unwrap_or(20).to_string();
-        let queries = vec![
-            // TODO: ProjectIdやTrackerIdをまとめておく
-            ("project_id", "18"),
-            ("tracker_id", "34"),
-            ("status_id", &status),
-            ("limit", &limit),
-        ];
+        if !status.is_empty() {
+            queries.insert("status_id", &status);
+        }
         let res = self.client.get_list(queries).await?;
         ensure!(
             res.issues
