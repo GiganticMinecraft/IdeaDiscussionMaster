@@ -2,7 +2,7 @@ use super::RedmineRepositoryImpl;
 use crate::model::redmine::UpdateAgenda;
 use c_domain::{id::AgendaId, repository::AgendaRepository, Agenda};
 
-use anyhow::{anyhow, ensure};
+use anyhow::ensure;
 use async_trait::async_trait;
 
 #[async_trait]

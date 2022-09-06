@@ -2,7 +2,7 @@ use crate::{
     commands::{CommandResult, Context},
     shared::{discord_embed, ext::CreateEmbedExt},
 };
-use c_domain::id::{AgendaId, ChannelId, RecordId};
+use c_domain::id::{AgendaId, RecordId};
 
 use anyhow::ensure;
 use futures::{stream, StreamExt};
