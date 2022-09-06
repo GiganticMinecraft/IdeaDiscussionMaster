@@ -1,7 +1,9 @@
+use crate::shared::global::{GlobalRecordId, GlobalVcId};
 use c_domain::repository::{AgendaRepository, RecordRepository};
 use c_infra::repository::RedmineRepositoryImpl;
+use c_usecase::{AgendaUseCase, RecordUseCase};
 
-use crate::shared::global::{GlobalRecordId, GlobalVcId};
+use derive_new::new;
 use std::sync::Arc;
 
 pub struct Repos {
@@ -20,16 +22,28 @@ impl Repos {
     }
 }
 
+#[derive(new)]
+pub struct UseCases {
+    pub agenda: AgendaUseCase,
+    pub record: RecordUseCase,
+}
+
 pub struct Data {
-    pub repos: Repos,
+    pub use_cases: UseCases,
     pub vc_id: GlobalVcId,
     pub record_id: GlobalRecordId,
 }
 
 impl Data {
     pub fn new(redmine_url: String) -> Self {
+        let repos = Repos::new(redmine_url);
+        let use_cases = UseCases::new(
+            AgendaUseCase::new(repos.agenda),
+            RecordUseCase::new(repos.record),
+        );
+
         Self {
-            repos: Repos::new(redmine_url),
+            use_cases,
             vc_id: GlobalVcId::new(),
             record_id: GlobalRecordId::new(),
         }
