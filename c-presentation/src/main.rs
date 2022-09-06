@@ -1,7 +1,8 @@
 use c_presentation::{commands, serenity, shared::Data};
 use crate_shared::Env;
+use log::info;
 
-use poise::PrefixFrameworkOptions;
+use poise::{FrameworkError, PrefixFrameworkOptions};
 
 fn setup_logger() -> Result<(), fern::InitError> {
     let mut config = fern::Dispatch::new();
@@ -47,6 +48,31 @@ async fn main() {
                     Ok(is_in_guild && is_user)
                 })
             }),
+            pre_command: |ctx| {
+                Box::pin(async move {
+                    let _ = ctx.defer().await;
+                })
+            },
+            post_command: |ctx| {
+                Box::pin(async move {
+                    info!(
+                        "{} executed the command (/{}) and it is executed successfully",
+                        ctx.author().name,
+                        ctx.command().name
+                    );
+                })
+            },
+            on_error: |err| {
+                Box::pin(async move {
+                    if let FrameworkError::Command { error, ctx } = err {
+                        info!(
+                            "Error has occurred while executing command (/{}):",
+                            ctx.command().name
+                        );
+                        info!("{:#?}", error);
+                    }
+                })
+            },
             ..Default::default()
         })
         .token(Env::new().discord_token)
