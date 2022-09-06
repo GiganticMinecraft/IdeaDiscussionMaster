@@ -20,10 +20,12 @@ impl RedmineClient {
 
     pub async fn get(&self, id: u16) -> anyhow::Result<RedmineIssueResult> {
         let url = self.url_interpreter.issue_url(id);
+        let mut query = HashMap::new();
+        query.insert("include", "relations");
 
         self.client
             .get(url)
-            .query(&[("include", "relations")])
+            .query(&query)
             .unwrap()
             .recv_json::<RedmineIssueResult>()
             .await
