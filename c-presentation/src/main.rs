@@ -33,7 +33,7 @@ fn setup_logger() -> Result<(), fern::InitError> {
 
 #[tokio::main]
 async fn main() {
-    setup_logger().expect("ログの初期化に失敗しました。");
+    setup_logger().expect("ログの初期化に失敗しました");
 
     let commands = vec![commands::register()];
     let framework = poise::Framework::builder()
