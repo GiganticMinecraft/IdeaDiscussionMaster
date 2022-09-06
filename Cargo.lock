@@ -350,6 +350,7 @@ dependencies = [
  "log",
  "once_cell",
  "poise",
+ "regex",
  "tokio",
 ]
 
