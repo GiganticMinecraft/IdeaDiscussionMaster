@@ -1,7 +1,7 @@
 use c_presentation::{commands, serenity, shared::Data};
 use crate_shared::Env;
-use log::{error, info};
 
+use log::{error, info};
 use poise::{FrameworkError, PrefixFrameworkOptions};
 
 fn setup_logger() -> Result<(), fern::InitError> {
