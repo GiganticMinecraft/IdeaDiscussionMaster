@@ -1,17 +1,33 @@
 use c_presentation::{commands, serenity, shared::Data};
 use crate_shared::Env;
 
-use log::{error, info};
+use argh::FromArgs;
+use log::{debug, error, info};
 use poise::{FrameworkError, PrefixFrameworkOptions};
 
-fn setup_logger() -> Result<(), fern::InitError> {
+#[derive(FromArgs)]
+/// CLI arg
+struct Arg {
+    #[argh(switch, short = 'v')]
+    /// whether or not to log debug
+    is_verbose: bool,
+}
+
+fn setup_logger(is_verbose: bool) -> Result<(), fern::InitError> {
     let mut config = fern::Dispatch::new();
+
+    let crate_log_level = if is_verbose {
+        log::LevelFilter::Debug
+    } else {
+        log::LevelFilter::Info
+    };
+
     config = config
         .level(log::LevelFilter::Info)
-        .level_for("c_domain", log::LevelFilter::Debug)
-        .level_for("c_usecase", log::LevelFilter::Debug)
-        .level_for("c_infra", log::LevelFilter::Debug)
-        .level_for("c_presentation", log::LevelFilter::Debug)
+        .level_for("c_domain", crate_log_level)
+        .level_for("c_usecase", crate_log_level)
+        .level_for("c_infra", crate_log_level)
+        .level_for("c_presentation", crate_log_level)
         .level_for("surf", log::LevelFilter::Off)
         .level_for("serenity", log::LevelFilter::Off)
         .level_for("tracing::span", log::LevelFilter::Off);
@@ -35,7 +51,11 @@ fn setup_logger() -> Result<(), fern::InitError> {
 
 #[tokio::main]
 async fn main() {
-    setup_logger().expect("ログの初期化に失敗しました");
+    let arg: Arg = argh::from_env();
+    setup_logger(arg.is_verbose).expect("ログの初期化に失敗しました");
+    if arg.is_verbose {
+        debug!("Logging level is debug")
+    };
 
     let commands = vec![commands::register(), commands::start()];
     let framework = poise::Framework::builder()
