@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 #[derive(new, Clone)]
 pub struct RecordUseCase {
-    repo: Arc<dyn RecordRepository>,
+    repo: Arc<dyn RecordRepository + Sync + Send>,
 }
 
 impl RecordUseCase {
@@ -54,17 +54,18 @@ impl RecordUseCase {
         limit: Option<u16>,
         status: Vec<RecordStatus>,
     ) -> anyhow::Result<Vec<RecordDto>> {
-        self.repo
-            .list(limit, status)
-            .await
-            .map(|vec| vec.into_iter().map(|r| r.into()).collect())
+        let res = self.repo.list(limit, status).await;
+
+        println!("{:#?}", res);
+
+        res.map(|vec| vec.into_iter().map(|r| r.into()).collect())
             .context("議事録の一覧の取得に失敗しました")
     }
 
     // TODO: replace error message
 
     pub async fn find_latest_new(&self) -> anyhow::Result<RecordDto> {
-        self.list(Some(1), vec![RecordStatus::New])
+        self.list(Some(1), vec![])
             .await?
             .first()
             .cloned()

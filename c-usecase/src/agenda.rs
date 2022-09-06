@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 #[derive(new, Clone)]
 pub struct AgendaUseCase {
-    repo: Arc<dyn AgendaRepository>,
+    repo: Arc<dyn AgendaRepository + Sync + Send>,
 }
 
 impl AgendaUseCase {
