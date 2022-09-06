@@ -7,9 +7,7 @@ pub trait UseStatusId {
     where
         Self: EnumProperty,
     {
-        self.get_str("id")
-            .and_then(|str| str.parse().ok())
-            .unwrap_or(1)
+        self.get_str("id").and_then(|str| str.parse().ok()).unwrap()
     }
 
     fn from_id(id: u16) -> Self
