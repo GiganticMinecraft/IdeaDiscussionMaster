@@ -33,7 +33,7 @@ pub async fn start(
     let record_use_case = &ctx.data().use_cases.record;
 
     let record = match record_id.map(RecordId::new) {
-        Some(id) => record_use_case.find_new(id).await,
+        Some(id) => record_use_case.find_new(&id).await,
         None => record_use_case.find_latest_new().await,
     }?;
     let record_id = RecordId::new(record.id);

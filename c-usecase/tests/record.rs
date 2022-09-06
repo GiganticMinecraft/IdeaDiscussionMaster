@@ -13,9 +13,9 @@ async fn test_with_err_repo() {
         .returning(|_| Err(anyhow::anyhow!("There are no records")));
     let use_case = RecordUseCase::new(Arc::new(repo));
 
-    assert!(use_case.find(RecordId::new(1)).await.is_err());
-    assert!(use_case.find(RecordId::new(2)).await.is_err());
-    assert!(use_case.find(RecordId::new(3)).await.is_err());
+    assert!(use_case.find(&RecordId::new(1)).await.is_err());
+    assert!(use_case.find(&RecordId::new(2)).await.is_err());
+    assert!(use_case.find(&RecordId::new(3)).await.is_err());
 }
 
 // TODO: impl #find_latest_new
@@ -40,14 +40,14 @@ async fn test_with_fixtures() {
         });
     let use_case = RecordUseCase::new(Arc::new(repo));
 
-    assert!(use_case.find(RecordId::new(1)).await.is_ok());
-    assert!(use_case.find(RecordId::new(2)).await.is_ok());
-    assert!(use_case.find(RecordId::new(10)).await.is_err());
+    assert!(use_case.find(&RecordId::new(1)).await.is_ok());
+    assert!(use_case.find(&RecordId::new(2)).await.is_ok());
+    assert!(use_case.find(&RecordId::new(10)).await.is_err());
 
-    assert!(use_case.find_new(RecordId::new(1)).await.is_ok());
-    assert!(use_case.find_new(RecordId::new(2)).await.is_err());
-    assert!(use_case.find_new(RecordId::new(3)).await.is_err());
-    assert!(use_case.find_new(RecordId::new(10)).await.is_err());
+    assert!(use_case.find_new(&RecordId::new(1)).await.is_ok());
+    assert!(use_case.find_new(&RecordId::new(2)).await.is_err());
+    assert!(use_case.find_new(&RecordId::new(3)).await.is_err());
+    assert!(use_case.find_new(&RecordId::new(10)).await.is_err());
 
     assert_eq!(
         use_case.list(None, vec![RecordStatus::New]).await.unwrap(),

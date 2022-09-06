@@ -34,7 +34,7 @@ impl RecordUseCase {
             .context("議事録の作成に失敗しました")
     }
 
-    pub async fn find(&self, id: RecordId) -> anyhow::Result<RecordDto> {
+    pub async fn find(&self, id: &RecordId) -> anyhow::Result<RecordDto> {
         self.repo
             .find(id)
             .await
@@ -42,7 +42,7 @@ impl RecordUseCase {
             .context("議事録の取得に失敗しました")
     }
 
-    pub async fn find_new(&self, id: RecordId) -> anyhow::Result<RecordDto> {
+    pub async fn find_new(&self, id: &RecordId) -> anyhow::Result<RecordDto> {
         let record = self.find(id).await?;
         ensure!(
             record.status.is_new(),
@@ -82,14 +82,14 @@ impl RecordUseCase {
             .ok_or_else(|| anyhow::anyhow!("Error!"))
     }
 
-    pub async fn close(&self, id: RecordId) -> anyhow::Result<()> {
+    pub async fn close(&self, id: &RecordId) -> anyhow::Result<()> {
         let record = self.repo.find(id).await?;
         let record = record.close();
 
         self.repo.save(record).await
     }
 
-    pub async fn add_relation(&self, id: RecordId, relation: AgendaId) -> anyhow::Result<()> {
+    pub async fn add_relation(&self, id: &RecordId, relation: &AgendaId) -> anyhow::Result<()> {
         self.repo
             .add_relation(id, relation)
             .await

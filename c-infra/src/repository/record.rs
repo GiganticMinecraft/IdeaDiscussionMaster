@@ -32,8 +32,8 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
             .unwrap())
     }
 
-    async fn find(&self, id: RecordId) -> anyhow::Result<Record> {
-        let res = self.client.get(id.into()).await?;
+    async fn find(&self, id: &RecordId) -> anyhow::Result<Record> {
+        let res = self.client.get(id.clone().into()).await?;
         ensure!(
             res.issue.is_idea_discussion_record(),
             anyhow!("チケットはアイデア会議の議事録ではありません")
@@ -85,8 +85,8 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         Ok(())
     }
 
-    async fn add_relation(&self, id: RecordId, relate_id: AgendaId) -> anyhow::Result<()> {
-        let relate_id: u16 = relate_id.into();
+    async fn add_relation(&self, id: &RecordId, relate_id: &AgendaId) -> anyhow::Result<()> {
+        let relate_id: u16 = relate_id.clone().into();
         let value = json!({
           "relation": {
             "issue_to_id": relate_id,
@@ -96,7 +96,9 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         let _ = self
             .client
             .post_with_url(
-                self.client.url_interpreter.issue_relations_url(id.into()),
+                self.client
+                    .url_interpreter
+                    .issue_relations_url(id.clone().into()),
                 &value,
             )
             .await?;
