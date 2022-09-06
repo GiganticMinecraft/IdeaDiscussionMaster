@@ -55,8 +55,7 @@ async fn main() {
                 .union(serenity::GatewayIntents::MESSAGE_CONTENT),
         )
         .user_data_setup(move |_, _, _| {
-            // FIXME: fix url
-            Box::pin(async move { Ok(Data::new("redmine".to_string())) })
+            Box::pin(async move { Ok(Data::new("https://redmine.seichi.click".to_string())) })
         });
 
     framework.run().await.unwrap();
