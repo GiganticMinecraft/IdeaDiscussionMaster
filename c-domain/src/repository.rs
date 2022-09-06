@@ -9,7 +9,7 @@ use async_trait::async_trait;
 #[cfg_attr(feature = "mock", mockall::automock)]
 #[async_trait]
 pub trait AgendaRepository {
-    async fn find(&self, id: AgendaId) -> anyhow::Result<Agenda>;
+    async fn find(&self, id: &AgendaId) -> anyhow::Result<Agenda>;
     async fn save(&self, agenda: Agenda) -> anyhow::Result<()>;
 }
 

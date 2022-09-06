@@ -11,7 +11,7 @@ pub struct AgendaUseCase {
 }
 
 impl AgendaUseCase {
-    pub async fn find(&self, id: AgendaId) -> anyhow::Result<AgendaDto> {
+    pub async fn find(&self, id: &AgendaId) -> anyhow::Result<AgendaDto> {
         self.repo
             .find(id)
             .await
@@ -19,28 +19,28 @@ impl AgendaUseCase {
             .context("議題の取得に失敗しました")
     }
 
-    pub async fn find_new(&self, id: AgendaId) -> anyhow::Result<AgendaDto> {
+    pub async fn find_new(&self, id: &AgendaId) -> anyhow::Result<AgendaDto> {
         let issue = self.find(id).await?;
         ensure!(issue.status.is_new());
 
         Ok(issue)
     }
 
-    pub async fn in_progress(&self, id: AgendaId) -> anyhow::Result<()> {
+    pub async fn in_progress(&self, id: &AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
         let agenda = agenda.in_progress()?;
 
         self.repo.save(agenda).await
     }
 
-    pub async fn approve(&self, id: AgendaId) -> anyhow::Result<()> {
+    pub async fn approve(&self, id: &AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
         let agenda = agenda.approve()?;
 
         self.repo.save(agenda).await
     }
 
-    pub async fn decline(&self, id: AgendaId) -> anyhow::Result<()> {
+    pub async fn decline(&self, id: &AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
         let agenda = agenda.decline()?;
 
