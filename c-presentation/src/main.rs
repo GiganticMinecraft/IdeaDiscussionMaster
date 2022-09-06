@@ -1,6 +1,6 @@
 use c_presentation::{commands, serenity, shared::Data};
 use crate_shared::Env;
-use log::info;
+use log::{error, info};
 
 use poise::{FrameworkError, PrefixFrameworkOptions};
 
@@ -59,20 +59,24 @@ async fn main() {
             post_command: |ctx| {
                 Box::pin(async move {
                     info!(
-                        "{} executed the command (/{}) and it is executed successfully",
+                        "{}#{}さんがコマンド(/{})を実行し成功しました",
                         ctx.author().name,
+                        ctx.author().discriminator,
                         ctx.command().name
                     );
                 })
             },
-            on_error: |err| {
+            on_error: |err: FrameworkError<_, anyhow::Error>| {
                 Box::pin(async move {
                     if let FrameworkError::Command { error, ctx } = err {
-                        info!(
-                            "Error has occurred while executing command (/{}):",
-                            ctx.command().name
+                        let message = format!(
+                            "コマンド(/{})の処理中にエラーが発生しました: {:#?}",
+                            ctx.command().name,
+                            error
                         );
-                        info!("{:#?}", error);
+
+                        error!("{}", message);
+                        let _ = ctx.say(message).await;
                     }
                 })
             },
