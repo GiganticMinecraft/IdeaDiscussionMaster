@@ -1,4 +1,5 @@
 use c_domain::{status::AgendaStatus, Agenda};
+use crate_shared::REDMINE_URL;
 
 use derive_new::new;
 
@@ -8,6 +9,16 @@ pub struct AgendaDto {
     pub title: String,
     pub description: String,
     pub status: AgendaStatus,
+}
+
+impl AgendaDto {
+    pub fn formatted_id(&self) -> String {
+        format!("#{}", self.id)
+    }
+
+    pub fn url(&self) -> String {
+        format!("{}/issues/{}", REDMINE_URL, self.id)
+    }
 }
 
 impl From<Agenda> for AgendaDto {

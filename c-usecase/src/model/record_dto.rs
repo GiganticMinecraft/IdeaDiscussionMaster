@@ -1,4 +1,5 @@
 use c_domain::{status::RecordStatus, Record};
+use crate_shared::REDMINE_URL;
 
 use anyhow::anyhow;
 use chrono::NaiveDate;
@@ -13,6 +14,16 @@ pub struct RecordDto {
     pub relations: Vec<u16>,
     pub start_date: Option<NaiveDate>,
     pub due_date: Option<NaiveDate>,
+}
+
+impl RecordDto {
+    pub fn formatted_id(&self) -> String {
+        format!("#{}", self.id)
+    }
+
+    pub fn url(&self) -> String {
+        format!("{}/issues/{}", REDMINE_URL, self.id)
+    }
 }
 
 impl RecordDto {
