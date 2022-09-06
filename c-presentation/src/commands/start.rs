@@ -5,7 +5,6 @@ use crate::{
 use c_domain::id::{AgendaId, RecordId};
 
 use anyhow::ensure;
-use futures::{stream, StreamExt};
 use itertools::Itertools;
 use log::info;
 
@@ -40,18 +39,22 @@ pub async fn start(
     let record_id = RecordId::new(record.id);
     ctx.data().record_id.save(record_id);
 
-    let agendas: Vec<_> = {
+    let agendas = {
         let relations = record
             .relations
             .iter()
             .map(|id| AgendaId::new(id.to_owned()))
             .collect_vec();
 
-        stream::iter(relations)
-            .then(|id| ctx.data().use_cases.agenda.find_new(id))
-            .filter_map(|res| async { res.ok() })
-            .collect()
-            .await
+        let mut result = Vec::new();
+        for id in relations.iter() {
+            let find_result = ctx.data().use_cases.agenda.find_new(id).await;
+            if let Ok(dto) = find_result {
+                result.push(dto)
+            }
+        }
+
+        result
     };
 
     info!("Discussion started: {}", record.formatted_id());
