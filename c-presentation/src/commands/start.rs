@@ -36,7 +36,6 @@ pub async fn start(
         Some(id) => record_use_case.find_new(&id).await,
         None => record_use_case.find_latest_new().await,
     }?;
-    let record_id = RecordId::new(record.id);
     ctx.data().record_id.save(record.id);
 
     let agendas = {
