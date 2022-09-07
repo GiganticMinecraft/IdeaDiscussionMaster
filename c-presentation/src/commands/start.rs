@@ -47,7 +47,7 @@ pub async fn start(
 
         let mut result = Vec::new();
         for id in relations.iter() {
-            let find_result = ctx.data().use_cases.agenda.find(id).await;
+            let find_result = ctx.data().use_cases.agenda.find_new(id).await;
             if let Ok(dto) = find_result {
                 result.push(dto)
             }
