@@ -7,7 +7,7 @@ pub trait UseStatusJa {
     where
         Self: EnumProperty,
     {
-        self.get_str("id").unwrap().to_string()
+        self.get_str("ja").unwrap().to_string()
     }
 }
 
