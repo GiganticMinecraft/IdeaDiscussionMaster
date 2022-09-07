@@ -1,7 +1,7 @@
 mod register;
-mod start;
-
 pub use register::register;
+
+mod start;
 pub use start::start;
 
 pub type CommandResult = anyhow::Result<()>;
