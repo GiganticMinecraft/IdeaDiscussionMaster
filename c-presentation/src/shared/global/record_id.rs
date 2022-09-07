@@ -5,10 +5,10 @@ use once_cell::sync::Lazy;
 use std::sync::{Arc, Mutex};
 
 #[derive(new)]
-pub struct GlobalRecordId(#[new(default)] Lazy<Arc<Mutex<Option<RecordId>>>>);
+pub struct GlobalRecordId(#[new(default)] Lazy<Arc<Mutex<Option<u16>>>>);
 
 impl GlobalRecordId {
-    pub fn save(&self, id: RecordId) {
+    pub fn save(&self, id: u16) {
         let mut lock = self.0.lock().unwrap();
         *lock = Some(id)
     }
@@ -18,7 +18,7 @@ impl GlobalRecordId {
         *lock = None
     }
 
-    pub fn get(&self) -> Option<RecordId> {
-        self.0.lock().unwrap().clone()
+    pub fn get(&self) -> Option<u16> {
+        *self.0.lock().unwrap()
     }
 }
