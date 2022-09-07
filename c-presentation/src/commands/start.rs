@@ -37,7 +37,7 @@ pub async fn start(
         None => record_use_case.find_latest_new().await,
     }?;
     let record_id = RecordId::new(record.id);
-    ctx.data().record_id.save(record_id);
+    ctx.data().record_id.save(record.id);
 
     let agendas = {
         let relations = record
@@ -48,7 +48,7 @@ pub async fn start(
 
         let mut result = Vec::new();
         for id in relations.iter() {
-            let find_result = ctx.data().use_cases.agenda.find_new(id).await;
+            let find_result = ctx.data().use_cases.agenda.find(id).await;
             if let Ok(dto) = find_result {
                 result.push(dto)
             }
@@ -70,7 +70,7 @@ pub async fn start(
     let next_agenda = agendas.first();
     if let Some(agenda) = next_agenda {
         info!("Next Agenda: {}", agenda.formatted_id());
-        ctx.data().current_agenda_id.save(AgendaId::new(agenda.id));
+        ctx.data().current_agenda_id.save(agenda.id);
     };
 
     let _ = ctx
