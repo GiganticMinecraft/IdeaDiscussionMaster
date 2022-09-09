@@ -11,6 +11,18 @@ pub struct Agenda {
 }
 
 impl Agenda {
+    pub fn init(self) -> anyhow::Result<Self> {
+        anyhow::ensure!(
+            !self.status.is_new() && !self.status.is_closed(),
+            "ステータスが新規でも終了済みでもない議題のみ「新規」に変更できます"
+        );
+
+        Ok(Self {
+            status: AgendaStatus::New,
+            ..self
+        })
+    }
+
     pub fn in_progress(self) -> anyhow::Result<Self> {
         anyhow::ensure!(
             self.status.is_new(),
