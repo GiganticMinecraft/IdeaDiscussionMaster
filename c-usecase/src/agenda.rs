@@ -26,6 +26,13 @@ impl AgendaUseCase {
         Ok(issue)
     }
 
+    pub async fn init(&self, id: &AgendaId) -> anyhow::Result<()> {
+        let agenda = self.repo.find(id).await?;
+        let agenda = agenda.init()?;
+
+        self.repo.save(agenda).await
+    }
+
     pub async fn in_progress(&self, id: &AgendaId) -> anyhow::Result<()> {
         let agenda = self.repo.find(id).await?;
         let agenda = agenda.in_progress()?;
