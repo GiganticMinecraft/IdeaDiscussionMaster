@@ -5,6 +5,7 @@ use crate::{
 use c_domain::id::{AgendaId, RecordId};
 
 use anyhow::ensure;
+use futures::future;
 use itertools::Itertools;
 use log::info;
 
@@ -44,16 +45,24 @@ pub async fn start(
             .iter()
             .map(|id| AgendaId::new(id.to_owned()))
             .collect_vec();
+        let agenda_use_case = &ctx.data().use_cases.agenda;
 
-        let mut result = Vec::new();
-        for id in relations.iter() {
-            let find_result = ctx.data().use_cases.agenda.find_new(id).await;
-            if let Ok(dto) = find_result {
-                result.push(dto)
-            }
-        }
+        let _ = future::join_all(
+            relations
+                .iter()
+                .map(|id| async move { agenda_use_case.init(id).await }),
+        )
+        .await;
 
-        result
+        future::join_all(
+            relations
+                .iter()
+                .map(|id| async move { agenda_use_case.find_new(id).await }),
+        )
+        .await
+        .into_iter()
+        .filter_map(|agenda| agenda.ok())
+        .collect_vec()
     };
 
     info!("Discussion started: {}", record.formatted_id());
