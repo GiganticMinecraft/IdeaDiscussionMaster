@@ -13,7 +13,7 @@ pub struct Agenda {
 impl Agenda {
     pub fn in_progress(self) -> anyhow::Result<Self> {
         anyhow::ensure!(
-            self.status == AgendaStatus::New,
+            self.status.is_new(),
             "ステータスが「新規」である議題のみ「進行中」に変更できます"
         );
 
