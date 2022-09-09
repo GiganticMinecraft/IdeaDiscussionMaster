@@ -16,6 +16,10 @@ impl AgendaStatus {
     pub fn is_new(&self) -> bool {
         *self == Self::New
     }
+
+    pub fn is_closed(&self) -> bool {
+        *self == Self::Declined || *self == Self::Approved
+    }
 }
 
 impl Default for AgendaStatus {
