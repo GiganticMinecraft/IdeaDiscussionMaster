@@ -42,8 +42,8 @@ pub async fn start(
     let agendas = {
         let relations = record
             .relations
-            .iter()
-            .map(|id| AgendaId::new(id.to_owned()))
+            .into_iter()
+            .map(AgendaId::new)
             .collect_vec();
         let agenda_use_case = &ctx.data().use_cases.agenda;
 
