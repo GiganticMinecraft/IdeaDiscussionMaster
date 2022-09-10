@@ -57,7 +57,7 @@ async fn main() {
         debug!("Logging level is debug")
     };
 
-    let commands = vec![commands::register(), commands::start()];
+    let commands = vec![commands::register(), commands::start(), commands::end()];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands,
