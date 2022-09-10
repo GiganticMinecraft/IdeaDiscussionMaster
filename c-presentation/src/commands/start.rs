@@ -78,7 +78,12 @@ pub async fn start(
     let next_agenda = agendas.first();
     if let Some(agenda) = next_agenda {
         info!("Next Agenda: {}", agenda.formatted_id());
-        ctx.data().current_agenda_id.save(agenda.id);
+        let _ = ctx
+            .data()
+            .use_cases
+            .agenda
+            .in_progress(&AgendaId::new(agenda.id))
+            .await;
     };
 
     let _ = ctx
