@@ -58,7 +58,6 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
     info!("Discussion finished: {}", record.formatted_id());
     info!("Result:\n {}", result_strings);
 
-    ctx.data().current_agenda_id.clear();
     ctx.data().record_id.clear();
     ctx.data().vc_id.clear();
 
