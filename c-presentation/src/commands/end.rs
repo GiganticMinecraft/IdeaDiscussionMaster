@@ -3,12 +3,11 @@ use crate::{
     shared::ext::{SortAgendasExt, UseStatusJa},
 };
 use c_domain::id::{AgendaId, RecordId};
-use c_usecase::model::AgendaDto;
 
 use crate::shared::discord_embed;
 use futures::future;
 use itertools::Itertools;
-use log::{debug, info};
+use log::info;
 
 /// 会議を終了します
 #[poise::command(slash_command)]
