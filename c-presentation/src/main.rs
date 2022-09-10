@@ -84,7 +84,7 @@ async fn main() {
                         "{}#{}さんがコマンド(/{})を実行し成功しました",
                         ctx.author().name,
                         ctx.author().discriminator,
-                        ctx.command().name
+                        ctx.command().qualified_name
                     );
                 })
             },
@@ -93,7 +93,7 @@ async fn main() {
                     if let FrameworkError::Command { error, ctx } = err {
                         let message = format!(
                             "コマンド(/{})の処理中にエラーが発生しました: {:#?}",
-                            ctx.command().name,
+                            ctx.command().qualified_name,
                             error
                         );
 
