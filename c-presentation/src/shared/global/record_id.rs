@@ -1,5 +1,3 @@
-use c_domain::id::RecordId;
-
 use derive_new::new;
 use once_cell::sync::Lazy;
 use std::sync::{Arc, Mutex};
