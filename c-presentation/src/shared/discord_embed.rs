@@ -36,11 +36,11 @@ pub fn no_next_agenda<'a>(
         .description("Redmine上で提起されていた議題は全て処理されました。")
 }
 
-pub fn agendas_result<'a>(
-    embed: &'a mut builder::CreateEmbed,
-    record: &'a RecordDto,
-    agenda_list: &'a [(AgendaStatus, Vec<AgendaDto>)],
-) -> &'a mut builder::CreateEmbed {
+pub fn agendas_result(
+    embed: &mut builder::CreateEmbed,
+    record: RecordDto,
+    agenda_list: Vec<(AgendaStatus, Vec<AgendaDto>)>,
+) -> &mut builder::CreateEmbed {
     let agenda_fields = agenda_list
         .iter()
         .map(|(status, agendas)| {
@@ -60,7 +60,7 @@ pub fn agendas_result<'a>(
         .collect_vec();
 
     embed
-        .custom_default(record)
-        .record_url_field(record)
+        .custom_default(&record)
+        .record_url_field(&record)
         .custom_fields(agenda_fields)
 }
