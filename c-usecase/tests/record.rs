@@ -26,7 +26,7 @@ async fn test_with_fixtures() {
     repo.expect_find().returning(|id| {
         Record::all_fixtures()
             .into_iter()
-            .find(|record| record.id == id)
+            .find(|record| &record.id == id)
             .ok_or_else(|| anyhow::anyhow!("The record you want does not exist"))
     });
     repo.expect_list()
