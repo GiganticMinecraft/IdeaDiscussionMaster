@@ -10,7 +10,7 @@ pub trait SortAgendasExt {
 impl SortAgendasExt for Vec<AgendaDto> {
     fn sort_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)> {
         let agendas = self
-            .into_iter()
+            .iter()
             .sorted_by_cached_key(|agenda| agenda.status)
             .collect_vec();
 
