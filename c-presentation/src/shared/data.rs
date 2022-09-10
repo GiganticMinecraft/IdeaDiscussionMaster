@@ -1,4 +1,4 @@
-use crate::shared::global::{GlobalCurrentAgendaId, GlobalRecordId, GlobalVcId};
+use crate::shared::global::{GlobalRecordId, GlobalVcId};
 use c_domain::repository::{AgendaRepository, RecordRepository};
 use c_infra::repository::RedmineRepositoryImpl;
 use c_usecase::{AgendaUseCase, RecordUseCase};
@@ -32,7 +32,6 @@ pub struct Data {
     pub use_cases: UseCases,
     pub vc_id: GlobalVcId,
     pub record_id: GlobalRecordId,
-    pub current_agenda_id: GlobalCurrentAgendaId,
 }
 
 impl Data {
@@ -47,7 +46,6 @@ impl Data {
             use_cases,
             vc_id: GlobalVcId::new(),
             record_id: GlobalRecordId::new(),
-            current_agenda_id: GlobalCurrentAgendaId::new(),
         }
     }
 }
