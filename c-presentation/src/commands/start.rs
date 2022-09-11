@@ -19,7 +19,7 @@ pub async fn start(
 ) -> CommandResult {
     ensure!(
         ctx.data().record_id.get().is_none(),
-        "すでに会議は進行中です"
+        "すでに会議が開始されているため、新しく会議を開始することはできません"
     );
 
     // TODO: remove comment out

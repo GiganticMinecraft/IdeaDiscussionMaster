@@ -92,7 +92,7 @@ async fn main() {
                 Box::pin(async move {
                     if let FrameworkError::Command { error, ctx } = err {
                         let message = format!(
-                            "コマンド(/{})の処理中にエラーが発生しました: {:#?}",
+                            "コマンド(/{})の処理中にエラーが発生しました: {:?}",
                             ctx.command().qualified_name,
                             error
                         );
