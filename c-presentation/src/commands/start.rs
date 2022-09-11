@@ -1,6 +1,9 @@
 use crate::{
     commands::{CommandResult, Context},
-    shared::{discord_embed, ext::CreateEmbedExt},
+    shared::{
+        discord_embed,
+        ext::{CreateEmbedExt, SortAgendasExt},
+    },
 };
 use c_domain::id::{AgendaId, RecordId};
 
@@ -63,6 +66,7 @@ pub async fn start(
         .into_iter()
         .filter_map(|agenda| agenda.ok())
         .collect_vec()
+        .sort_by_id()
     };
 
     info!("Discussion started: {}", record.formatted_id());
