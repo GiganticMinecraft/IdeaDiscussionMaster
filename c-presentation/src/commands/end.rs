@@ -62,6 +62,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
 
     ctx.data().record_id.clear();
     ctx.data().vc_id.clear();
+    ctx.data().current_agenda_id.clear();
 
     let _ = ctx
         .send(|r| {
