@@ -1,7 +1,7 @@
 use crate::{
     commands::{CommandResult, Context},
     shared::{
-        ext::{SortAgendasExt, UseStatusJa},
+        ext::{SortAgendasExt, UseFormattedId, UseStatusJa},
         CommandError,
     },
 };
@@ -46,7 +46,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
                 status.ja(),
                 agendas
                     .iter()
-                    .map(|agenda| agenda.formatted_id())
+                    .map(|agenda| agenda.id.as_formatted_id())
                     .join(", ")
             )
         })
@@ -57,7 +57,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
     //     .await?;
     ctx.data().use_cases.record.close(&record_id).await?;
 
-    info!("Discussion finished: {}", record.formatted_id());
+    info!("Discussion finished: {}", record.id.as_formatted_id());
     info!("Result:\n {}", result_strings);
 
     ctx.data().record_id.clear();

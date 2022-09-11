@@ -2,7 +2,7 @@ use crate::{
     commands::{CommandResult, Context},
     shared::{
         discord_embed,
-        ext::{CreateEmbedExt, SortAgendasExt},
+        ext::{CreateEmbedExt, SortAgendasExt, UseFormattedId},
     },
 };
 use c_domain::id::{AgendaId, RecordId};
@@ -69,19 +69,19 @@ pub async fn start(
         .sort_by_id()
     };
 
-    info!("Discussion started: {}", record.formatted_id());
+    info!("Discussion started: {}", record.id.as_formatted_id());
     info!(
         "Agendas({}): {:?}",
         agendas.len(),
         agendas
             .iter()
-            .map(|agenda| agenda.formatted_id())
+            .map(|agenda| agenda.id.as_formatted_id())
             .join(", ")
     );
 
     let next_agenda = agendas.first();
     if let Some(agenda) = next_agenda {
-        info!("Next Agenda: {}", agenda.formatted_id());
+        info!("Next Agenda: {}", agenda.id.as_formatted_id());
         ctx.data().current_agenda_id.save(agenda.id);
     };
 

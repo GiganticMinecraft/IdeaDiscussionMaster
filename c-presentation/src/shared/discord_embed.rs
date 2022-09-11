@@ -1,6 +1,6 @@
 use crate::{
     serenity::builder,
-    shared::ext::{CreateEmbedExt, UseStatusJa},
+    shared::ext::{CreateEmbedExt, UseFormattedId, UseStatusJa},
 };
 use c_domain::status::AgendaStatus;
 use c_usecase::model::{AgendaDto, RecordDto};
@@ -19,7 +19,10 @@ pub fn next_agenda_embed<'a>(
     embed
         .custom_default(record)
         .simple_color()
-        .title(format!("次の議題は{}です", next_agenda.formatted_id()))
+        .title(format!(
+            "次の議題は{}です",
+            next_agenda.id.as_formatted_id()
+        ))
         .custom_field("議題チケット", next_agenda.url(), false)
         .custom_field("タイトル", subject, false)
         .custom_field("説明", next_agenda.description.clone(), false)

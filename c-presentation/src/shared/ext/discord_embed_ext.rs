@@ -1,4 +1,7 @@
-use crate::serenity::{builder, utils::Color};
+use crate::{
+    serenity::{builder, utils::Color},
+    shared::ext::UseFormattedId,
+};
 use c_usecase::model::RecordDto;
 
 use chrono::Utc;
@@ -33,7 +36,7 @@ impl CreateEmbedExt for builder::CreateEmbed {
     }
 
     fn with_record_id(&mut self, record: &RecordDto) -> &mut Self {
-        self.footer(|footer| footer.text(format!("アイデア会議: {}", record.formatted_id())))
+        self.footer(|footer| footer.text(format!("アイデア会議: {}", record.id.as_formatted_id())))
     }
 
     fn simple_color(&mut self) -> &mut Self {

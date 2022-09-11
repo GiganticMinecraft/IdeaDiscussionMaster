@@ -17,10 +17,6 @@ pub struct RecordDto {
 }
 
 impl RecordDto {
-    pub fn formatted_id(&self) -> String {
-        format!("#{}", self.id)
-    }
-
     pub fn url(&self) -> String {
         format!("{}/issues/{}", REDMINE_URL, self.id)
     }
