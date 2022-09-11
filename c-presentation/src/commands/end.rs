@@ -1,6 +1,9 @@
 use crate::{
     commands::{CommandResult, Context},
-    shared::ext::{SortAgendasExt, UseStatusJa},
+    shared::{
+        ext::{SortAgendasExt, UseStatusJa},
+        CommandError,
+    },
 };
 use c_domain::id::{AgendaId, RecordId};
 
@@ -17,7 +20,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
         .record_id
         .get()
         .map(RecordId::new)
-        .ok_or_else(|| anyhow::anyhow!("会議が開始されている必要があります"))?;
+        .ok_or(CommandError::DiscussionHasBeenStarted)?;
     let record = ctx.data().use_cases.record.find(&record_id).await?;
     let result = {
         let agenda_ids = record
