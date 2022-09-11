@@ -36,7 +36,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
         .filter_map(|agenda| agenda.ok())
         .collect_vec()
     }
-    .sort_by_status();
+    .sort_and_grouping_by_status();
 
     let result_strings = result
         .iter()

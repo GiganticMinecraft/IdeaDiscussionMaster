@@ -4,12 +4,12 @@ use c_usecase::model::AgendaDto;
 use itertools::Itertools;
 
 pub trait SortAgendasExt {
-    fn sort_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)>;
+    fn sort_and_grouping_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)>;
     fn sort_by_id(&self) -> Vec<AgendaDto>;
 }
 
 impl SortAgendasExt for Vec<AgendaDto> {
-    fn sort_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)> {
+    fn sort_and_grouping_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)> {
         // ソート
         let agendas = self
             .iter()
