@@ -54,7 +54,7 @@ pub fn agendas_result(
                 // フィールドの内容
                 agendas
                     .iter()
-                    .map(|agenda| agenda.formatted_id())
+                    .map(|agenda| agenda.id.as_formatted_id())
                     .join(", "),
                 // フィールドをインラインにするかどうか
                 false,
