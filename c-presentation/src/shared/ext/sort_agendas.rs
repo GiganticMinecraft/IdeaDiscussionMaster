@@ -5,6 +5,7 @@ use itertools::Itertools;
 
 pub trait SortAgendasExt {
     fn sort_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)>;
+    fn sort_by_id(&self) -> Vec<AgendaDto>;
 }
 
 impl SortAgendasExt for Vec<AgendaDto> {
@@ -22,5 +23,12 @@ impl SortAgendasExt for Vec<AgendaDto> {
             .into_iter()
             .map(|(status, group)| (status, group.cloned().collect()))
             .collect()
+    }
+
+    fn sort_by_id(&self) -> Vec<AgendaDto> {
+        self.iter()
+            .sorted_by_key(|agenda| agenda.id)
+            .cloned()
+            .collect_vec()
     }
 }
