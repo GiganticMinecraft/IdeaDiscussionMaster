@@ -382,6 +382,7 @@ dependencies = [
  "poise",
  "regex",
  "strum",
+ "thiserror",
  "tokio",
 ]
 
