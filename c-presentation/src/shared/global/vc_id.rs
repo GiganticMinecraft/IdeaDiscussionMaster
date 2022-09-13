@@ -1,8 +1,7 @@
-use c_domain::id::ChannelId;
-
 use derive_new::new;
 use once_cell::sync::Lazy;
 use std::sync::{Arc, Mutex};
+use poise::serenity_prelude::ChannelId;
 
 #[derive(new)]
 pub struct GlobalVcId(#[new(default)] Lazy<Arc<Mutex<Option<ChannelId>>>>);
@@ -19,6 +18,6 @@ impl GlobalVcId {
     }
 
     pub fn get(&self) -> Option<ChannelId> {
-        self.0.lock().unwrap().clone()
+        *self.0.lock().unwrap()
     }
 }
