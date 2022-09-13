@@ -10,7 +10,7 @@ use c_domain::id::{AgendaId, RecordId};
 use crate::shared::discord_embed;
 use futures::future;
 use itertools::Itertools;
-use log::info;
+use log::{debug, info};
 
 /// 会議を終了します
 #[poise::command(slash_command)]
@@ -22,6 +22,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
         .map(RecordId::new)
         .ok_or(CommandError::DiscussionHasBeenStarted)?;
     let record = ctx.data().use_cases.record.find(&record_id).await?;
+    debug!("record_id: {}", record.id.as_formatted_id());
     let result = {
         let agenda_ids = record
             .relations
