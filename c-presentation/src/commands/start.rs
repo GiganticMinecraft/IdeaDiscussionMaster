@@ -10,7 +10,7 @@ use c_domain::id::{AgendaId, RecordId};
 use anyhow::ensure;
 use futures::future;
 use itertools::Itertools;
-use log::info;
+use log::{debug, info};
 
 /// 会議を開始します
 #[poise::command(slash_command)]
@@ -32,6 +32,7 @@ pub async fn start(
         .and_then(|state| state.channel_id)
         .ok_or_else(|| anyhow::anyhow!("会議を開始するにはVCに参加してください"))?;
     ctx.data().vc_id.save(vc_id);
+    debug!("vc_id: {}", vc_id);
 
     let record_use_case = &ctx.data().use_cases.record;
 
