@@ -22,6 +22,10 @@ impl AgendaStatus {
     pub fn is_closed(&self) -> bool {
         *self == Self::Declined || *self == Self::Approved
     }
+
+    pub fn from_string(str: &str) -> Option<Self> {
+        Self::iter().find(|status| str == status.to_string())
+    }
 }
 
 impl Default for AgendaStatus {
