@@ -75,6 +75,12 @@ async fn main() {
             }),
             pre_command: |ctx| {
                 Box::pin(async move {
+                    info!(
+                        "{}#{}さんがコマンド(/{})を実行しました",
+                        ctx.author().name,
+                        ctx.author().discriminator,
+                        ctx.command().qualified_name
+                    );
                     let _ = ctx.defer().await;
                 })
             },
