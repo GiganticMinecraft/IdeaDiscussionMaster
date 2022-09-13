@@ -41,6 +41,7 @@ pub async fn start(
         None => record_use_case.find_latest_new().await,
     }?;
     ctx.data().record_id.save(record.id);
+    info!("Discussion started: {}", record.id.as_formatted_id());
 
     let agendas = {
         let relations = record
@@ -69,7 +70,6 @@ pub async fn start(
         .sort_by_id()
     };
 
-    info!("Discussion started: {}", record.id.as_formatted_id());
     info!(
         "Agendas({}): {:?}",
         agendas.len(),
