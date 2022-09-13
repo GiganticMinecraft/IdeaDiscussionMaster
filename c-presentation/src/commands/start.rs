@@ -25,14 +25,13 @@ pub async fn start(
         "すでに会議が開始されているため、新しく会議を開始することはできません"
     );
 
-    // TODO: remove comment out
-    // let vc_id = ctx
-    //     .guild()
-    //     .map(|g| g.voice_states)
-    //     .and_then(|map| map.get(&ctx.author().id).cloned())
-    //     .and_then(|state| state.channel_id)
-    //     .ok_or_else(|| anyhow::anyhow!("会議を開始するにはVCに参加してください"))?;
-    // ctx.data().vc_id.save(ChannelId::new(vc_id.0));
+    let vc_id = ctx
+        .guild()
+        .map(|g| g.voice_states)
+        .and_then(|map| map.get(&ctx.author().id).cloned())
+        .and_then(|state| state.channel_id)
+        .ok_or_else(|| anyhow::anyhow!("会議を開始するにはVCに参加してください"))?;
+    ctx.data().vc_id.save(vc_id);
 
     let record_use_case = &ctx.data().use_cases.record;
 
