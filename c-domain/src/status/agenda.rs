@@ -1,6 +1,8 @@
-use strum::{EnumIter, EnumProperty};
+use strum::{Display, EnumIter, EnumProperty, IntoEnumIterator};
 
-#[derive(EnumProperty, EnumIter, Debug, PartialEq, Eq, Hash, Clone, Copy, Ord, PartialOrd)]
+#[derive(
+    EnumProperty, EnumIter, Debug, Display, PartialEq, Eq, Hash, Clone, Copy, Ord, PartialOrd,
+)]
 pub enum AgendaStatus {
     #[strum(props(ja = "新規", emoji = "🆕", id = "1"))]
     New,
