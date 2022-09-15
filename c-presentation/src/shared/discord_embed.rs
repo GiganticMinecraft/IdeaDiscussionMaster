@@ -1,18 +1,16 @@
-use crate::{
-    serenity::builder,
-    shared::ext::{CreateEmbedExt, UseFormattedId, UseStatusJa},
-};
+use crate::shared::ext::{CreateEmbedExt, UseFormattedId, UseStatusJa};
 use c_domain::status::AgendaStatus;
 use c_usecase::model::{AgendaDto, RecordDto};
 
 use itertools::Itertools;
+use poise::serenity_prelude::CreateEmbed;
 use regex::Regex;
 
 pub fn next_agenda_embed<'a>(
-    embed: &'a mut builder::CreateEmbed,
+    embed: &'a mut CreateEmbed,
     record: &RecordDto,
     next_agenda: &AgendaDto,
-) -> &'a mut builder::CreateEmbed {
+) -> &'a mut CreateEmbed {
     let reg = Regex::new(r"^\[.*]\s").unwrap();
     let subject = reg.replace(&next_agenda.title, "");
 
@@ -28,10 +26,7 @@ pub fn next_agenda_embed<'a>(
         .custom_field("説明", next_agenda.description.clone(), false)
 }
 
-pub fn no_next_agenda<'a>(
-    embed: &'a mut builder::CreateEmbed,
-    record: &RecordDto,
-) -> &'a mut builder::CreateEmbed {
+pub fn no_next_agenda<'a>(embed: &'a mut CreateEmbed, record: &RecordDto) -> &'a mut CreateEmbed {
     embed
         .custom_default(record)
         .failure_color()
@@ -40,10 +35,10 @@ pub fn no_next_agenda<'a>(
 }
 
 pub fn agendas_result(
-    embed: &mut builder::CreateEmbed,
+    embed: &mut CreateEmbed,
     record: RecordDto,
     agenda_list: Vec<(AgendaStatus, Vec<AgendaDto>)>,
-) -> &mut builder::CreateEmbed {
+) -> &mut CreateEmbed {
     let agenda_fields = agenda_list
         .iter()
         .map(|(status, agendas)| {
@@ -69,11 +64,11 @@ pub fn agendas_result(
 }
 
 pub fn vote_result<'a>(
-    embed: &'a mut builder::CreateEmbed,
+    embed: &'a mut CreateEmbed,
     record: &RecordDto,
     current_agenda_id: &u16,
     vote_result: &AgendaStatus,
-) -> &'a mut builder::CreateEmbed {
+) -> &'a mut CreateEmbed {
     match vote_result {
         AgendaStatus::Approved => embed.success_color(),
         AgendaStatus::Declined => embed.failure_color(),

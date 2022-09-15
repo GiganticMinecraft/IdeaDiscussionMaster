@@ -1,10 +1,8 @@
-use crate::{
-    serenity::{builder, utils::Color},
-    shared::ext::UseFormattedId,
-};
+use crate::shared::ext::UseFormattedId;
 use c_usecase::model::RecordDto;
 
 use chrono::Utc;
+use poise::serenity_prelude::{utils::Color, CreateEmbed};
 
 pub trait CreateEmbedExt {
     fn custom_default(&mut self, record: &RecordDto) -> &mut Self;
@@ -26,7 +24,7 @@ pub trait CreateEmbedExt {
     fn is_empty(&self) -> bool;
 }
 
-impl CreateEmbedExt for builder::CreateEmbed {
+impl CreateEmbedExt for CreateEmbed {
     fn custom_default(&mut self, record: &RecordDto) -> &mut Self {
         self.current_timestamp().with_record_id(record)
     }

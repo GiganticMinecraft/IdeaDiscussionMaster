@@ -1,7 +1,6 @@
 use super::shared::end_votes;
 use crate::{
     commands::{CommandResult, Context},
-    serenity::{CreateButton, InteractionResponseType},
     shared::{
         ext::{CreateEmbedExt, UseFormattedId, UseFormattedUserName, UseStatusEmoji, UseStatusJa},
         CommandError,
@@ -12,7 +11,10 @@ use c_domain::{id::RecordId, status::AgendaStatus};
 use anyhow::ensure;
 use itertools::Itertools;
 use log::{debug, error, info};
-use poise::{futures_util::StreamExt, serenity_prelude::Message};
+use poise::{
+    futures_util::StreamExt,
+    serenity_prelude::{CreateButton, InteractionResponseType, Message},
+};
 use std::{collections::HashMap, time::Duration};
 use strum::IntoEnumIterator;
 

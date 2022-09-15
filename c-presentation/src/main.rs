@@ -1,9 +1,9 @@
-use c_presentation::{commands, serenity, shared::Data};
+use c_presentation::{commands, shared::Data};
 use crate_shared::Env;
 
 use argh::FromArgs;
 use log::{debug, error, info};
-use poise::{FrameworkError, PrefixFrameworkOptions};
+use poise::{serenity_prelude::GatewayIntents, FrameworkError, PrefixFrameworkOptions};
 
 #[derive(FromArgs)]
 /// CLI arg
@@ -116,10 +116,7 @@ async fn main() {
             ..Default::default()
         })
         .token(Env::new().discord_token)
-        .intents(
-            serenity::GatewayIntents::non_privileged()
-                .union(serenity::GatewayIntents::MESSAGE_CONTENT),
-        )
+        .intents(GatewayIntents::non_privileged().union(GatewayIntents::MESSAGE_CONTENT))
         .user_data_setup(move |_, _, _| {
             Box::pin(async move { Ok(Data::new("https://redmine.seichi.click".to_string())) })
         });
