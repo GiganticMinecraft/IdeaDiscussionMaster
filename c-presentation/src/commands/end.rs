@@ -1,16 +1,16 @@
 use crate::{
     commands::{CommandResult, Context},
     shared::{
+        discord_embed,
         ext::{SortAgendasExt, UseFormattedId, UseStatusJa},
         CommandError,
     },
 };
 use c_domain::id::{AgendaId, RecordId};
 
-use crate::shared::discord_embed;
-use futures::future;
 use itertools::Itertools;
 use log::{debug, info};
+use poise::futures_util::future;
 
 /// 会議を終了します
 #[poise::command(slash_command)]

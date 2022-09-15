@@ -375,7 +375,6 @@ dependencies = [
  "crate-shared",
  "derive-new",
  "fern",
- "futures",
  "itertools",
  "log",
  "once_cell",

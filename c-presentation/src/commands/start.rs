@@ -8,9 +8,9 @@ use crate::{
 use c_domain::id::{AgendaId, RecordId};
 
 use anyhow::ensure;
-use futures::future;
 use itertools::Itertools;
 use log::{debug, info};
+use poise::futures_util::future;
 
 /// 会議を開始します
 #[poise::command(slash_command)]
