@@ -58,16 +58,7 @@ pub async fn start(
         )
         .await;
 
-        future::join_all(
-            relations
-                .iter()
-                .map(|id| async move { agenda_use_case.find_new(id).await }),
-        )
-        .await
-        .into_iter()
-        .filter_map(|agenda| agenda.ok())
-        .collect_vec()
-        .sort_by_id()
+        agenda_use_case.list_new(&relations).await.sort_by_id()
     };
 
     info!(
