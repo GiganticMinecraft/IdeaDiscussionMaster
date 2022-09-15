@@ -395,6 +395,7 @@ dependencies = [
  "chrono",
  "crate-shared",
  "derive-new",
+ "futures",
  "regex",
  "test-case",
  "tokio",
