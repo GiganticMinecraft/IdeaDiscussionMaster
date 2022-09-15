@@ -1,4 +1,3 @@
-use c_domain::id::{AgendaId, RecordId};
 use std::fmt::Display;
 
 pub trait UseFormattedId {
