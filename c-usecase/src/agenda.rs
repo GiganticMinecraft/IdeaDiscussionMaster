@@ -3,6 +3,7 @@ use c_domain::{id::AgendaId, repository::AgendaRepository};
 
 use anyhow::{ensure, Context as _};
 use derive_new::new;
+use futures::future;
 use std::sync::Arc;
 
 #[derive(new, Clone)]
@@ -24,6 +25,18 @@ impl AgendaUseCase {
         ensure!(issue.status.is_new());
 
         Ok(issue)
+    }
+
+    pub async fn list_new(&self, agendas: &[AgendaId]) -> Vec<AgendaDto> {
+        future::join_all(
+            agendas
+                .iter()
+                .map(|id| async move { self.find_new(id).await }),
+        )
+        .await
+        .into_iter()
+        .filter_map(|agenda| agenda.ok())
+        .collect()
     }
 
     pub async fn init(&self, id: &AgendaId) -> anyhow::Result<()> {
