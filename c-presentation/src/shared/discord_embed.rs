@@ -67,3 +67,22 @@ pub fn agendas_result(
         .record_url_field(&record)
         .custom_fields(agenda_fields)
 }
+
+pub fn vote_result<'a>(
+    embed: &'a mut builder::CreateEmbed,
+    record: &RecordDto,
+    current_agenda_id: &u16,
+    vote_result: &AgendaStatus,
+) -> &'a mut builder::CreateEmbed {
+    match vote_result {
+        AgendaStatus::Approved => embed.success_color(),
+        AgendaStatus::Declined => embed.failure_color(),
+        _ => embed,
+    };
+
+    embed.custom_default(record).failure_color().title(format!(
+        "投票終了: {}は{}されました",
+        current_agenda_id.as_formatted_id(),
+        vote_result.ja()
+    ))
+}
