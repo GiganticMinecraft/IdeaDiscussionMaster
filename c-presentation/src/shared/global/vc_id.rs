@@ -1,7 +1,7 @@
 use derive_new::new;
 use once_cell::sync::Lazy;
-use std::sync::{Arc, Mutex};
 use poise::serenity_prelude::ChannelId;
+use std::sync::{Arc, Mutex};
 
 #[derive(new)]
 pub struct GlobalVcId(#[new(default)] Lazy<Arc<Mutex<Option<ChannelId>>>>);
