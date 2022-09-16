@@ -23,6 +23,10 @@ impl AgendaStatus {
         *self == Self::Declined || *self == Self::Approved
     }
 
+    pub fn closed() -> Vec<Self> {
+        Self::iter().filter(|status| status.is_closed()).collect()
+    }
+
     pub fn from_string(str: &str) -> Option<Self> {
         Self::iter().find(|status| str == status.to_string())
     }
