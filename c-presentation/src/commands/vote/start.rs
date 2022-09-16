@@ -92,7 +92,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
     match result_status {
         Some(status) => {
             info!("Vote finished: {:?}", result_status);
-            let _ = end_votes(&ctx, status).await;
+            end_votes(&ctx, status).await?;
         }
         None => {
             error!("Interaction is timed out.");
