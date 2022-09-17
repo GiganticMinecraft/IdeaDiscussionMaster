@@ -120,10 +120,10 @@ mod test {
             .relations
             .clone()
             .into_iter()
-            .map(|id| id.into())
+            .map(|id| id.0)
             .collect();
         let expected_dto = RecordDto {
-            id: record.id.into(),
+            id: record.id.0,
             title: record.title,
             status: record.status,
             relations,

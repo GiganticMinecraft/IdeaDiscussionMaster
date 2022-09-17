@@ -32,7 +32,7 @@ mod test {
         let agenda = Agenda::default();
         let dto: AgendaDto = agenda.clone().into();
         let expected_dto = AgendaDto {
-            id: agenda.id.into(),
+            id: agenda.id.0,
             title: agenda.title,
             description: agenda.description,
             status: agenda.status,
