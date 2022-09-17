@@ -1,6 +1,3 @@
-mod register;
-pub use register::register;
-
 mod start;
 pub use start::start;
 

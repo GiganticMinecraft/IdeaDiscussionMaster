@@ -2,8 +2,13 @@ use c_presentation::{commands, shared::Data};
 use crate_shared::Env;
 
 use argh::FromArgs;
+use itertools::Itertools;
 use log::{debug, error, info};
-use poise::{serenity_prelude::GatewayIntents, FrameworkError, PrefixFrameworkOptions};
+use poise::{
+    builtins::create_application_commands,
+    serenity_prelude::{Context, GatewayIntents, GuildId},
+    Event, FrameworkContext, FrameworkError, PrefixFrameworkOptions,
+};
 
 #[derive(FromArgs)]
 /// CLI arg
@@ -57,12 +62,7 @@ async fn main() {
         debug!("Logging level is debug")
     };
 
-    let commands = vec![
-        commands::register(),
-        commands::start(),
-        commands::end(),
-        commands::vote(),
-    ];
+    let commands = vec![commands::start(), commands::end(), commands::vote()];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands,
@@ -101,16 +101,55 @@ async fn main() {
             },
             on_error: |err: FrameworkError<_, anyhow::Error>| {
                 Box::pin(async move {
-                    if let FrameworkError::Command { error, ctx } = err {
-                        let message = format!(
-                            "コマンド(/{})の処理中にエラーが発生しました: {:?}",
-                            ctx.command().qualified_name,
-                            error
-                        );
+                    match err {
+                        FrameworkError::Command { error, ctx } => {
+                            let message = format!(
+                                "コマンド(/{})の処理中にエラーが発生しました: {:?}",
+                                ctx.command().qualified_name,
+                                error
+                            );
 
-                        error!("{}", message);
-                        let _ = ctx.say(message).await;
+                            error!("{}", message);
+                            let _ = ctx.say(message).await;
+                        }
+                        FrameworkError::Listener {
+                            error,
+                            event: Event::Ready { .. },
+                            ..
+                        } => {
+                            error!("Botの起動処理中にエラーが発生しました: {:?}", error);
+                        }
+                        _ => {}
+                    };
+                })
+            },
+            listener: |ctx: &Context, event, framework_ctx: FrameworkContext<_, _>, _| {
+                Box::pin(async move {
+                    if let Event::Ready { .. } = event {
+                        // region register commands
+                        let create_commands =
+                            create_application_commands(&framework_ctx.options().commands);
+                        let guild_id = GuildId::from(Env::new().discord_guild_id);
+                        let registered_commands = guild_id
+                            .set_application_commands(&ctx.http, |b| {
+                                *b = create_commands;
+                                b
+                            })
+                            .await?;
+                        info!(
+                            "以下のコマンドを登録しました: {}",
+                            registered_commands
+                                .into_iter()
+                                .map(|cmd| cmd.name)
+                                .collect_vec()
+                                .join(", ")
+                        );
+                        // endregion
+
+                        info!("Botが正常に起動しました");
                     }
+
+                    Ok(())
                 })
             },
             ..Default::default()
