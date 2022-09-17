@@ -15,6 +15,7 @@ use itertools::Itertools;
 use log::info;
 
 pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Result<()> {
+    info!("Vote finished: {:?}", status);
     let record_id = ctx
         .data()
         .record_id

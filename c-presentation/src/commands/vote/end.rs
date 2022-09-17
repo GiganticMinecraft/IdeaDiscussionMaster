@@ -37,7 +37,6 @@ pub async fn end(
                 .join("、")
         )
     })?;
-    info!("Vote finished: {:?}", status);
     end_votes(&ctx, status).await?;
 
     Ok(())

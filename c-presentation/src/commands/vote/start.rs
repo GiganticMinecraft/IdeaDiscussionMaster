@@ -91,7 +91,6 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
     let result_status = make_response_and_get_votes_result(&ctx, &vote_msg).await;
     match result_status {
         Some(status) => {
-            info!("Vote finished: {:?}", result_status);
             end_votes(&ctx, status).await?;
         }
         None => {
