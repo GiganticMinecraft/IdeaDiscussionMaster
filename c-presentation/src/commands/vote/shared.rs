@@ -27,6 +27,7 @@ pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Resul
         .data()
         .current_agenda_id
         .get()
+        .map(AgendaId::new)
         .ok_or(CommandError::AgendaIsNotFound)?;
 
     // 投票結果のEmbedを送信
@@ -34,18 +35,16 @@ pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Resul
         let _ = ctx
             .channel_id()
             .send_message(&ctx.discord().http, |c| {
-                c.embed(|e| discord_embed::vote_result(e, &record, &current_agenda_id, &status))
+                c.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &status))
             })
             .await;
     } else {
         let _ = ctx
             .send(|r| {
-                r.embed(|e| discord_embed::vote_result(e, &record, &current_agenda_id, &status))
+                r.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &status))
             })
             .await;
     }
-
-    let current_agenda_id = AgendaId::new(current_agenda_id);
 
     // ステータスに応じてRedmineを更新
     match status {
@@ -96,14 +95,14 @@ pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Resul
         .send_message(&ctx.discord().http, |c| {
             c.embed(|e| match next_agenda {
                 Some(agenda) => {
-                    info!("Next Agenda: {}", agenda.id.as_formatted_id());
+                    info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());
 
-                    discord_embed::next_agenda_embed(e, &record, agenda)
+                    discord_embed::next_agenda_embed(e, &record_id, agenda)
                 }
                 None => {
                     info!("No next agenda");
 
-                    discord_embed::no_next_agenda(e, &record)
+                    discord_embed::no_next_agenda(e, &record_id)
                 }
             })
         })

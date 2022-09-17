@@ -40,8 +40,9 @@ pub async fn start(
         Some(id) => record_use_case.find_new(&id).await,
         None => record_use_case.find_latest_new().await,
     }?;
+    let record_id = RecordId::new(record.id);
     ctx.data().record_id.save(record.id);
-    info!("Discussion started: {}", record.id.as_formatted_id());
+    info!("Discussion started: {}", record_id.formatted());
 
     let agendas = {
         let relations = record
@@ -66,26 +67,26 @@ pub async fn start(
         agendas.len(),
         agendas
             .iter()
-            .map(|agenda| agenda.id.as_formatted_id())
+            .map(|agenda| AgendaId::new(agenda.id).formatted())
             .join(", ")
     );
 
     let next_agenda = agendas.first();
     if let Some(agenda) = next_agenda {
-        info!("Next Agenda: {}", agenda.id.as_formatted_id());
+        info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());
         ctx.data().current_agenda_id.save(agenda.id);
     };
 
     let _ = ctx
         .send(|r| {
             r.embed(|e| {
-                e.custom_default(&record)
+                e.custom_default(&record_id)
                     .title("会議を開始しました")
                     .custom_field("議事録チケット", record.url(), false)
             })
             .embed(|e| match next_agenda {
-                Some(agenda) => discord_embed::next_agenda_embed(e, &record, agenda),
-                None => discord_embed::no_next_agenda(e, &record),
+                Some(agenda) => discord_embed::next_agenda_embed(e, &record_id, agenda),
+                None => discord_embed::no_next_agenda(e, &record_id),
             })
         })
         .await;

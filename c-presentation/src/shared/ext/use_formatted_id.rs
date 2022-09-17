@@ -1,12 +1,17 @@
-use std::fmt::Display;
+use c_domain::id::{AgendaId, RecordId};
 
 pub trait UseFormattedId {
-    fn as_formatted_id(&self) -> String
-    where
-        Self: Display,
-    {
-        format!("#{}", self)
+    fn formatted(&self) -> String;
+}
+
+impl UseFormattedId for AgendaId {
+    fn formatted(&self) -> String {
+        format!("#{}", self.0)
     }
 }
 
-impl UseFormattedId for u16 {}
+impl UseFormattedId for RecordId {
+    fn formatted(&self) -> String {
+        format!("#{}", self.0)
+    }
+}

@@ -19,12 +19,7 @@ impl AgendaDto {
 
 impl From<Agenda> for AgendaDto {
     fn from(agenda: Agenda) -> Self {
-        Self::new(
-            agenda.id.into(),
-            agenda.title,
-            agenda.description,
-            agenda.status,
-        )
+        Self::new(agenda.id.0, agenda.title, agenda.description, agenda.status)
     }
 }
 

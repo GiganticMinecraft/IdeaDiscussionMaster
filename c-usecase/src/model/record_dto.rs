@@ -47,10 +47,10 @@ impl RecordDto {
 
 impl From<Record> for RecordDto {
     fn from(record: Record) -> Self {
-        let relations: Vec<u16> = record.relations.into_iter().map(|id| id.into()).collect();
+        let relations = record.relations.into_iter().map(|id| id.0).collect();
 
         Self::new(
-            record.id.into(),
+            record.id.0,
             record.title,
             record.status,
             relations,

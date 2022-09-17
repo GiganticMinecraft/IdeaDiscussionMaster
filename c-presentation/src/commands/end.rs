@@ -22,7 +22,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
         .map(RecordId::new)
         .ok_or(CommandError::DiscussionHasBeenStarted)?;
     let record = ctx.data().use_cases.record.find(&record_id).await?;
-    debug!("record_id: {}", record.id.as_formatted_id());
+    debug!("record_id: {}", record_id.formatted());
     let result = {
         let agenda_ids = record
             .relations
@@ -47,7 +47,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
                 status.ja(),
                 agendas
                     .iter()
-                    .map(|agenda| agenda.id.as_formatted_id())
+                    .map(|agenda| AgendaId::new(agenda.id).formatted())
                     .join(", ")
             )
         })
@@ -58,7 +58,7 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
     //     .await?;
     ctx.data().use_cases.record.close(&record_id).await?;
 
-    info!("Discussion finished: {}", record.id.as_formatted_id());
+    info!("Discussion finished: {}", record_id.formatted());
     info!("Result:\n {}", result_strings);
 
     ctx.data().record_id.clear();

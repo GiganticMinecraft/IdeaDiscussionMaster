@@ -1,13 +1,14 @@
 use crate::shared::ext::UseFormattedId;
+use c_domain::id::RecordId;
 use c_usecase::model::RecordDto;
 
 use chrono::Utc;
 use poise::serenity_prelude::{utils::Color, CreateEmbed};
 
 pub trait CreateEmbedExt {
-    fn custom_default(&mut self, record: &RecordDto) -> &mut Self;
+    fn custom_default(&mut self, record_id: &RecordId) -> &mut Self;
     fn current_timestamp(&mut self) -> &mut Self;
-    fn with_record_id(&mut self, record: &RecordDto) -> &mut Self;
+    fn with_record_id(&mut self, record_id: &RecordId) -> &mut Self;
     fn simple_color(&mut self) -> &mut Self;
     fn success_color(&mut self) -> &mut Self;
     fn failure_color(&mut self) -> &mut Self;
@@ -25,16 +26,16 @@ pub trait CreateEmbedExt {
 }
 
 impl CreateEmbedExt for CreateEmbed {
-    fn custom_default(&mut self, record: &RecordDto) -> &mut Self {
-        self.current_timestamp().with_record_id(record)
+    fn custom_default(&mut self, record_id: &RecordId) -> &mut Self {
+        self.current_timestamp().with_record_id(record_id)
     }
 
     fn current_timestamp(&mut self) -> &mut Self {
         self.timestamp(Utc::now().to_rfc3339())
     }
 
-    fn with_record_id(&mut self, record: &RecordDto) -> &mut Self {
-        self.footer(|footer| footer.text(format!("アイデア会議: {}", record.id.as_formatted_id())))
+    fn with_record_id(&mut self, record_id: &RecordId) -> &mut Self {
+        self.footer(|footer| footer.text(format!("アイデア会議: {}", record_id.formatted())))
     }
 
     fn simple_color(&mut self) -> &mut Self {

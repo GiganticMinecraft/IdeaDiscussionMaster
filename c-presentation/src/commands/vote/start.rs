@@ -6,7 +6,10 @@ use crate::{
         CommandError,
     },
 };
-use c_domain::{id::RecordId, status::AgendaStatus};
+use c_domain::{
+    id::{AgendaId, RecordId},
+    status::AgendaStatus,
+};
 
 use anyhow::ensure;
 use itertools::Itertools;
@@ -31,18 +34,18 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
         .get()
         .map(RecordId::new)
         .ok_or(CommandError::DiscussionHasBeenStarted)?;
-    let record = ctx.data().use_cases.record.find(&record_id).await?;
     let current_agenda_id = ctx
         .data()
         .current_agenda_id
         .get()
+        .map(AgendaId::new)
         .ok_or(CommandError::AgendaIsNotFound)?;
     ensure!(
         ctx.data().vote_message_id.get().is_none(),
         "すでに投票を開始しています。ログを確認してください"
     );
 
-    info!("Vote started: {}", current_agenda_id.as_formatted_id());
+    info!("Vote started: {}", current_agenda_id.formatted());
 
     let embed_description = vec![
         "提起されている議題についての投票を行います。",
@@ -60,8 +63,8 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
             reply
                 .embed(|embed| {
                     embed
-                        .custom_default(&record)
-                        .title(format!("投票: {}", record.id.as_formatted_id()))
+                        .custom_default(&record_id)
+                        .title(format!("投票: {}", record_id.formatted()))
                         .description(embed_description)
                 })
                 .components(|c| {

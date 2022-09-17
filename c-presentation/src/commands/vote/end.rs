@@ -4,7 +4,6 @@ use c_domain::status::AgendaStatus;
 use crate::commands::vote::shared::end_votes;
 use anyhow::anyhow;
 use itertools::Itertools;
-use log::info;
 use poise::futures_util::{future, stream, Stream, StreamExt};
 
 async fn autocomplete_agenda_status_string<'a>(
