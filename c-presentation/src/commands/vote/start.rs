@@ -153,7 +153,7 @@ async fn make_response_and_get_votes_result(
             .await;
 
         let vc_members_count = {
-            let vc_id = data.vc_id.get().unwrap();
+            let vc_id = ctx.data().vc_id.get().unwrap();
 
             ctx.guild()
                 .unwrap()
