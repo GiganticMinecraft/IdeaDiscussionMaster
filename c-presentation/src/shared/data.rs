@@ -1,9 +1,12 @@
 use crate::shared::global::{
     GlobalCurrentAgendaId, GlobalRecordId, GlobalVcId, GlobalVoteMessageId,
 };
-use c_domain::redmine::{
-    model::{Agenda, Record},
-    repository::{AgendaRepository, RecordRepository},
+use c_domain::{
+    github::{model::Issue, repository::GitHubIssueRepository},
+    redmine::{
+        model::{Agenda, Record},
+        repository::{AgendaRepository, RecordRepository},
+    },
 };
 use c_infra::redmine::repository::RedmineRepositoryImpl;
 use c_usecase::redmine::{AgendaUseCase, RecordUseCase};
@@ -14,6 +17,7 @@ use std::sync::Arc;
 pub struct Repos {
     pub agenda: Arc<dyn AgendaRepository + Sync + Send>,
     pub record: Arc<dyn RecordRepository + Sync + Send>,
+    pub issue: Arc<dyn GitHubIssueRepository + Sync + Send>,
 }
 
 impl Repos {
@@ -21,6 +25,7 @@ impl Repos {
         Self {
             agenda: Arc::new(RedmineRepositoryImpl::<Agenda>::new(redmine_url.clone())),
             record: Arc::new(RedmineRepositoryImpl::<Record>::new(redmine_url)),
+            issue: Arc::new(GitHubIssueRepositoryImpl::<Issue>::new()),
         }
     }
 }
