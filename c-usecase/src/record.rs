@@ -3,7 +3,6 @@ use c_domain::{
     id::{AgendaId, RecordId},
     repository::RecordRepository,
     status::RecordStatus,
-    Record,
 };
 
 use anyhow::{ensure, Context as _};
@@ -17,18 +16,8 @@ pub struct RecordUseCase {
 
 impl RecordUseCase {
     pub async fn add(&self, param: CreateRecordParam) -> anyhow::Result<RecordDto> {
-        let new_record = Record::new(
-            RecordId::default(),
-            param.title,
-            param.description,
-            RecordStatus::New,
-            vec![],
-            param.start_date,
-            param.due_date,
-        );
-
         self.repo
-            .add(new_record)
+            .add(param.into())
             .await
             .map(|record| record.into())
             .context("議事録の作成に失敗しました")
