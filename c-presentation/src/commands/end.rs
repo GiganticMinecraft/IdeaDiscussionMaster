@@ -7,6 +7,7 @@ use crate::{
     },
 };
 use c_domain::id::{AgendaId, RecordId};
+use c_usecase::model::CreateNoteParam;
 
 use itertools::Itertools;
 use log::{debug, info};
@@ -51,15 +52,20 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
                     .join(", ")
             )
         })
-        .join("\n");
-    // TODO: fix
-    // ctx.data().use_cases.record
-    //     .add_note(record_id, Note::from_string_content(result_strings.clone()))
-    //     .await?;
-    ctx.data().use_cases.record.close(&record_id).await?;
+        .collect_vec();
 
     info!("Discussion finished: {}", record_id.formatted());
-    info!("Result:\n {}", result_strings);
+    info!("Result:\n {}", result_strings.join("\n"));
+
+    ctx.data()
+        .use_cases
+        .record
+        .add_note(
+            &record_id,
+            CreateNoteParam::from_multi_line_string(result_strings),
+        )
+        .await?;
+    ctx.data().use_cases.record.close(&record_id).await?;
 
     ctx.data().record_id.clear();
     ctx.data().vc_id.clear();
