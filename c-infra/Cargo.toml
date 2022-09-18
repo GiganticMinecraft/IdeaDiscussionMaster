@@ -18,6 +18,7 @@ derive-new = "0.5"
 itertools = "0.10"
 surf = "2.3"
 strum = "0.24"
+create-github-app-token = "2.0.0"
 
 [dev-dependencies]
 test-case = "2.2"
