@@ -1,7 +1,10 @@
 mod agenda_fixture;
 use agenda_fixture::AgendaFixture;
 
-use c_domain::{id::AgendaId, repository::MockAgendaRepository, Agenda};
+use c_domain::redmine::{
+    model::{id::AgendaId, Agenda},
+    repository::MockAgendaRepository,
+};
 use c_usecase::AgendaUseCase;
 
 use std::sync::Arc;

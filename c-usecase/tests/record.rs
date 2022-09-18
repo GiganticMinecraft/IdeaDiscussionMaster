@@ -1,7 +1,10 @@
 mod record_fixture;
 use record_fixture::RecordFixture;
 
-use c_domain::{id::RecordId, repository::MockRecordRepository, status::RecordStatus, Record};
+use c_domain::redmine::{
+    model::{id::RecordId, status::RecordStatus, Record},
+    repository::MockRecordRepository,
+};
 use c_usecase::RecordUseCase;
 
 use std::sync::Arc;

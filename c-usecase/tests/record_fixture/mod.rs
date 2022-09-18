@@ -1,6 +1,6 @@
-use std::vec;
+use c_domain::redmine::model::{id::RecordId, status::RecordStatus, Record};
 
-use c_domain::{id::RecordId, status::RecordStatus, Record};
+use std::vec;
 
 pub trait RecordFixture {
     fn new1() -> Record {

@@ -1,6 +1,6 @@
-use std::vec;
+use c_domain::redmine::model::{id::AgendaId, status::AgendaStatus, Agenda};
 
-use c_domain::{id::AgendaId, status::AgendaStatus, Agenda};
+use std::vec;
 
 pub trait AgendaFixture {
     fn new1() -> Agenda {
