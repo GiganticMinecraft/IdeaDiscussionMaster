@@ -1,6 +1,6 @@
 use crate::shared::ext::UseFormattedId;
 use c_domain::redmine::model::id::RecordId;
-use c_usecase::model::RecordDto;
+use c_usecase::redmine::model::RecordDto;
 
 use chrono::Utc;
 use poise::serenity_prelude::{utils::Color, CreateEmbed};

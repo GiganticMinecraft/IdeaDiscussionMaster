@@ -1,19 +1,19 @@
-use serde::Deserialize;
-
 mod issue;
-pub use issue::RedmineIssue;
+pub use issue::*;
 
 mod create_note;
-pub use create_note::CreateNote;
+pub use create_note::*;
 
 mod create_record;
-pub use create_record::CreateRecord;
+pub use create_record::*;
 
 mod update_agenda;
-pub use update_agenda::UpdateAgenda;
+pub use update_agenda::*;
 
 mod update_record;
-pub use update_record::UpdateRecord;
+pub use update_record::*;
+
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Default, PartialEq, Eq)]
 pub struct RedmineProject {

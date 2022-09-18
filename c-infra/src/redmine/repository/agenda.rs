@@ -1,5 +1,5 @@
 use super::RedmineRepositoryImpl;
-use crate::model::redmine::{CreateNote, UpdateAgenda};
+use crate::redmine::model::{CreateNote, UpdateAgenda};
 use c_domain::redmine::{
     model::{id::AgendaId, Agenda, Note},
     repository::AgendaRepository,

@@ -1,7 +1,7 @@
 mod agenda;
 mod record;
 
-use crate::client::RedmineClient;
+use super::client::RedmineClient;
 
 use std::marker::PhantomData;
 

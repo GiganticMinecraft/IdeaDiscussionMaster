@@ -1,5 +1,5 @@
 use super::RedmineUrlInterpreter;
-use crate::model::redmine::{RedmineIssueResult, RedmineIssuesResult};
+use crate::redmine::model::{RedmineIssueResult, RedmineIssuesResult};
 
 use std::{collections::HashMap, sync::Arc};
 use surf::{Client, Response};

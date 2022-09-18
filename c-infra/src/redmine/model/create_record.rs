@@ -1,4 +1,4 @@
-use crate::{serde_opt_naive_date, UseStatusId};
+use crate::redmine::{serde_opt_naive_date, UseStatusId};
 use c_domain::redmine::model::Record;
 
 use chrono::NaiveDate;

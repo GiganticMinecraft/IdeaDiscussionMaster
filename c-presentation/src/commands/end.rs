@@ -7,7 +7,7 @@ use crate::{
     },
 };
 use c_domain::redmine::model::id::{AgendaId, RecordId};
-use c_usecase::model::CreateNoteParam;
+use c_usecase::redmine::model::CreateNoteParam;
 
 use itertools::Itertools;
 use log::{debug, info};

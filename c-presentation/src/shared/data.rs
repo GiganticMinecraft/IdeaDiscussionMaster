@@ -5,8 +5,8 @@ use c_domain::redmine::{
     model::{Agenda, Record},
     repository::{AgendaRepository, RecordRepository},
 };
-use c_infra::repository::RedmineRepositoryImpl;
-use c_usecase::{AgendaUseCase, RecordUseCase};
+use c_infra::redmine::repository::RedmineRepositoryImpl;
+use c_usecase::redmine::{AgendaUseCase, RecordUseCase};
 
 use derive_new::new;
 use std::sync::Arc;

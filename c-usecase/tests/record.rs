@@ -5,7 +5,7 @@ use c_domain::redmine::{
     model::{id::RecordId, status::RecordStatus, Record},
     repository::MockRecordRepository,
 };
-use c_usecase::RecordUseCase;
+use c_usecase::redmine::RecordUseCase;
 
 use std::sync::Arc;
 

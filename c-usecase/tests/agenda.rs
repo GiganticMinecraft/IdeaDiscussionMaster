@@ -5,7 +5,7 @@ use c_domain::redmine::{
     model::{id::AgendaId, Agenda},
     repository::MockAgendaRepository,
 };
-use c_usecase::AgendaUseCase;
+use c_usecase::redmine::AgendaUseCase;
 
 use std::sync::Arc;
 

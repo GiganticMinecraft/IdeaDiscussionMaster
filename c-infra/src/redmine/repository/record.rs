@@ -1,6 +1,6 @@
 use super::RedmineRepositoryImpl;
-use crate::{
-    model::redmine::{CreateNote, CreateRecord, UpdateRecord},
+use crate::redmine::{
+    model::{CreateNote, CreateRecord, UpdateRecord},
     UseStatusId,
 };
 use c_domain::redmine::{

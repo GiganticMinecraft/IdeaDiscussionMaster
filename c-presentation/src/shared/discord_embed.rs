@@ -3,7 +3,7 @@ use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
 };
-use c_usecase::model::{AgendaDto, RecordDto};
+use c_usecase::redmine::model::{AgendaDto, RecordDto};
 
 use itertools::Itertools;
 use poise::serenity_prelude::CreateEmbed;

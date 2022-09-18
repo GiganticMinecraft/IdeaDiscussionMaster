@@ -1,5 +1,7 @@
-use super::{RedmineIssueRelations, RedmineIssueStatus, RedmineIssueTracker, RedmineProject};
-use crate::{serde_opt_naive_date, UseStatusId};
+use crate::redmine::{
+    model::{RedmineIssueRelations, RedmineIssueStatus, RedmineIssueTracker, RedmineProject},
+    serde_opt_naive_date, UseStatusId,
+};
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::{AgendaStatus, RecordStatus},

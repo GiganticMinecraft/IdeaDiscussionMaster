@@ -1,4 +1,4 @@
-use crate::UseStatusId;
+use crate::redmine::UseStatusId;
 use c_domain::redmine::model::Record;
 
 use derive_new::new;

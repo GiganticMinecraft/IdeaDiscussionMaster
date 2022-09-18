@@ -1,5 +1,5 @@
 use c_domain::redmine::model::status::AgendaStatus;
-use c_usecase::model::AgendaDto;
+use c_usecase::redmine::model::AgendaDto;
 
 use itertools::Itertools;
 
