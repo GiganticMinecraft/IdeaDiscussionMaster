@@ -1,13 +1,21 @@
+use c_domain::Note;
+
 use derive_new::new;
 
 #[derive(new)]
 pub struct CreateNoteParam {
-    pub contents: Vec<String>,
+    pub contents: String,
 }
 
 impl CreateNoteParam {
-    pub fn from_single_line_string(contents: String) -> Self {
-        Self::new(contents.split('\n').map(|s| s.to_owned()).collect())
+    pub fn from_multi_line_string(contents: Vec<String>) -> Self {
+        Self::new(contents.join("\n"))
+    }
+}
+
+impl From<CreateNoteParam> for Note {
+    fn from(param: CreateNoteParam) -> Self {
+        Self::new(param.contents)
     }
 }
 
@@ -15,24 +23,24 @@ impl CreateNoteParam {
 mod test {
     use super::*;
 
-    use itertools::Itertools;
-
     #[test]
     fn from_single_line_string() {
-        let contents = "contents".to_string();
+        let contents = vec!["contents".to_string()];
         assert_eq!(
-            CreateNoteParam::from_single_line_string(contents.clone()).contents,
-            vec![contents]
+            &CreateNoteParam::from_multi_line_string(contents.clone()).contents,
+            contents.first().unwrap()
         );
     }
 
     #[test]
     fn from_multi_line_string() {
-        let contents = vec!["contents", "contents2", "contents3"];
-        let joined_contents = contents.iter().join("\n");
+        let contents: Vec<_> = vec!["contents", "contents2", "contents3"]
+            .into_iter()
+            .map(|str| str.to_string())
+            .collect();
         assert_eq!(
-            CreateNoteParam::from_single_line_string(joined_contents).contents,
-            contents
+            CreateNoteParam::from_multi_line_string(contents.clone()).contents,
+            contents.join("\n")
         );
     }
 }

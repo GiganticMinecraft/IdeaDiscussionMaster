@@ -1,4 +1,4 @@
-use super::model::{CreateRecordParam, RecordDto};
+use super::model::{CreateNoteParam, CreateRecordParam, RecordDto};
 use c_domain::{
     id::{AgendaId, RecordId},
     repository::RecordRepository,
@@ -83,5 +83,9 @@ impl RecordUseCase {
             .add_relation(id, relation)
             .await
             .context("議事録にチケットを関連付けできませんでした")
+    }
+
+    pub async fn add_note(&self, id: &RecordId, note: CreateNoteParam) -> anyhow::Result<()> {
+        self.repo.add_note(id, note.into()).await
     }
 }

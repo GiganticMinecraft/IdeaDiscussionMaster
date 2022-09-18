@@ -1,4 +1,4 @@
-use super::model::AgendaDto;
+use super::model::{AgendaDto, CreateNoteParam};
 use c_domain::{id::AgendaId, repository::AgendaRepository};
 
 use anyhow::{ensure, Context as _};
@@ -65,5 +65,9 @@ impl AgendaUseCase {
         let agenda = agenda.decline()?;
 
         self.repo.save(agenda).await
+    }
+
+    pub async fn add_note(&self, id: &AgendaId, param: CreateNoteParam) -> anyhow::Result<()> {
+        self.repo.add_note(id, param.into()).await
     }
 }
