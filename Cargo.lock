@@ -395,6 +395,7 @@ dependencies = [
  "crate-shared",
  "derive-new",
  "futures",
+ "itertools",
  "regex",
  "test-case",
  "tokio",
