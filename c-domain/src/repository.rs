@@ -1,7 +1,7 @@
 use crate::{
     id::{AgendaId, RecordId},
     status::RecordStatus,
-    Agenda, Record,
+    Agenda, Note, Record,
 };
 
 use async_trait::async_trait;
@@ -11,6 +11,7 @@ use async_trait::async_trait;
 pub trait AgendaRepository {
     async fn find(&self, id: &AgendaId) -> anyhow::Result<Agenda>;
     async fn save(&self, agenda: Agenda) -> anyhow::Result<()>;
+    async fn add_note(&self, id: &AgendaId, note: Note) -> anyhow::Result<()>;
 }
 
 #[cfg_attr(feature = "mock", mockall::automock)]
@@ -25,4 +26,5 @@ pub trait RecordRepository {
     ) -> anyhow::Result<Vec<Record>>;
     async fn save(&self, record: Record) -> anyhow::Result<()>;
     async fn add_relation(&self, id: &RecordId, relate_id: &AgendaId) -> anyhow::Result<()>;
+    async fn add_note(&self, id: &RecordId, note: Note) -> anyhow::Result<()>;
 }

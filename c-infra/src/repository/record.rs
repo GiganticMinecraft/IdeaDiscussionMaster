@@ -1,13 +1,13 @@
 use super::RedmineRepositoryImpl;
 use crate::{
-    model::redmine::{CreateRecord, UpdateRecord},
+    model::redmine::{CreateNote, CreateRecord, UpdateRecord},
     UseStatusId,
 };
 use c_domain::{
     id::{AgendaId, RecordId},
     repository::RecordRepository,
     status::RecordStatus,
-    Record,
+    Note, Record,
 };
 
 use anyhow::{anyhow, ensure};
@@ -99,6 +99,13 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
                 &value,
             )
             .await?;
+
+        Ok(())
+    }
+
+    async fn add_note(&self, id: &RecordId, note: Note) -> anyhow::Result<()> {
+        let value = CreateNote::new(note.into());
+        let _ = self.client.put(id.0, &value).await?;
 
         Ok(())
     }

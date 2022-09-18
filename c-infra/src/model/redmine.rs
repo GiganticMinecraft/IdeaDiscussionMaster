@@ -3,6 +3,9 @@ use serde::Deserialize;
 mod issue;
 pub use issue::RedmineIssue;
 
+mod create_note;
+pub use create_note::CreateNote;
+
 mod create_record;
 pub use create_record::CreateRecord;
 

@@ -1,6 +1,6 @@
 use super::RedmineRepositoryImpl;
-use crate::model::redmine::UpdateAgenda;
-use c_domain::{id::AgendaId, repository::AgendaRepository, Agenda};
+use crate::model::redmine::{CreateNote, UpdateAgenda};
+use c_domain::{id::AgendaId, repository::AgendaRepository, Agenda, Note};
 
 use anyhow::ensure;
 use async_trait::async_trait;
@@ -21,6 +21,13 @@ impl AgendaRepository for RedmineRepositoryImpl<Agenda> {
         let agenda_id = agenda.id.clone();
         let value = UpdateAgenda::new(agenda.into());
         let _ = self.client.put(agenda_id.0, &value).await?;
+
+        Ok(())
+    }
+
+    async fn add_note(&self, id: &AgendaId, note: Note) -> anyhow::Result<()> {
+        let value = CreateNote::new(note.into());
+        let _ = self.client.put(id.0, &value).await?;
 
         Ok(())
     }
