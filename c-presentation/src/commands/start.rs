@@ -20,8 +20,9 @@ pub async fn start(
     #[min = 1]
     record_id: Option<u16>,
 ) -> CommandResult {
+    let data = ctx.data();
     ensure!(
-        ctx.data().record_id.get().is_none(),
+        data.record_id.get().is_none(),
         "すでに会議が開始されているため、新しく会議を開始することはできません"
     );
 
@@ -31,17 +32,17 @@ pub async fn start(
         .and_then(|map| map.get(&ctx.author().id).cloned())
         .and_then(|state| state.channel_id)
         .ok_or_else(|| anyhow::anyhow!("会議を開始するにはVCに参加してください"))?;
-    ctx.data().vc_id.save(vc_id);
+    data.vc_id.save(vc_id);
     debug!("vc_id: {}", vc_id);
 
-    let record_use_case = &ctx.data().use_cases.record;
+    let record_use_case = &data.use_cases.record;
 
     let record = match record_id.map(RecordId::new) {
         Some(id) => record_use_case.find_new(&id).await,
         None => record_use_case.find_latest_new().await,
     }?;
     let record_id = RecordId::new(record.id);
-    ctx.data().record_id.save(record.id);
+    data.record_id.save(record.id);
     info!("Discussion started: {}", record_id.formatted());
 
     let agendas = {
@@ -50,7 +51,7 @@ pub async fn start(
             .iter()
             .map(|id| AgendaId::new(id.to_owned()))
             .collect_vec();
-        let agenda_use_case = &ctx.data().use_cases.agenda;
+        let agenda_use_case = &data.use_cases.agenda;
 
         let _ = future::join_all(
             relations
@@ -74,7 +75,7 @@ pub async fn start(
     let next_agenda = agendas.first();
     if let Some(agenda) = next_agenda {
         info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());
-        ctx.data().current_agenda_id.save(agenda.id);
+        data.current_agenda_id.save(agenda.id);
     };
 
     let _ = ctx

@@ -28,20 +28,19 @@ const VOTES_TIMEOUT_MINUTES: u64 = 13;
 /// 採決を開始します
 #[poise::command(slash_command)]
 pub async fn start(ctx: Context<'_>) -> CommandResult {
-    let record_id = ctx
-        .data()
+    let data = ctx.data();
+    let record_id = data
         .record_id
         .get()
         .map(RecordId::new)
         .ok_or(CommandError::DiscussionHasBeenStarted)?;
-    let current_agenda_id = ctx
-        .data()
+    let current_agenda_id = data
         .current_agenda_id
         .get()
         .map(AgendaId::new)
         .ok_or(CommandError::AgendaIsNotFound)?;
     ensure!(
-        ctx.data().vote_message_id.get().is_none(),
+        data.vote_message_id.get().is_none(),
         "すでに投票を開始しています。ログを確認してください"
     );
 
@@ -88,7 +87,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
         .await?
         .into_message()
         .await?;
-    ctx.data().vote_message_id.save(vote_msg.id.0);
+    data.vote_message_id.save(vote_msg.id.0);
     debug!("vote_msg_id: {}", vote_msg.id);
 
     let result_status = make_response_and_get_votes_result(&ctx, &vote_msg).await;
@@ -154,7 +153,7 @@ async fn make_response_and_get_votes_result(
             .await;
 
         let vc_members_count = {
-            let vc_id = ctx.data().vc_id.get().unwrap();
+            let vc_id = data.vc_id.get().unwrap();
 
             ctx.guild()
                 .unwrap()

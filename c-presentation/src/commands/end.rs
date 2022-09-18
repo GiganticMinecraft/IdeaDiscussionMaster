@@ -16,13 +16,14 @@ use poise::futures_util::future;
 /// 会議を終了します
 #[poise::command(slash_command)]
 pub async fn end(ctx: Context<'_>) -> CommandResult {
-    let record_id = ctx
-        .data()
+    let data = ctx.data();
+    let record_use_case = &data.use_cases.record;
+    let record_id = data
         .record_id
         .get()
         .map(RecordId::new)
         .ok_or(CommandError::DiscussionHasBeenStarted)?;
-    let record = ctx.data().use_cases.record.find(&record_id).await?;
+    let record = record_use_case.find(&record_id).await?;
     debug!("record_id: {}", record_id.formatted());
     let result = {
         let agenda_ids = record
@@ -30,13 +31,11 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
             .iter()
             .map(|id| AgendaId::new(id.to_owned()));
 
-        future::join_all(
-            agenda_ids.map(|id| async move { ctx.data().use_cases.agenda.find(&id).await }),
-        )
-        .await
-        .into_iter()
-        .filter_map(|agenda| agenda.ok())
-        .collect_vec()
+        future::join_all(agenda_ids.map(|id| async move { data.use_cases.agenda.find(&id).await }))
+            .await
+            .into_iter()
+            .filter_map(|agenda| agenda.ok())
+            .collect_vec()
     }
     .sort_and_grouping_by_status();
 
@@ -57,19 +56,17 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
     info!("Discussion finished: {}", record_id.formatted());
     info!("Result:\n {}", result_strings.join("\n"));
 
-    ctx.data()
-        .use_cases
-        .record
+    record_use_case
         .add_note(
             &record_id,
             CreateNoteParam::from_multi_line_string(result_strings),
         )
         .await?;
-    ctx.data().use_cases.record.close(&record_id).await?;
+    record_use_case.close(&record_id).await?;
 
-    ctx.data().record_id.clear();
-    ctx.data().vc_id.clear();
-    ctx.data().current_agenda_id.clear();
+    data.record_id.clear();
+    data.vc_id.clear();
+    data.current_agenda_id.clear();
 
     let _ = ctx
         .send(|r| {
