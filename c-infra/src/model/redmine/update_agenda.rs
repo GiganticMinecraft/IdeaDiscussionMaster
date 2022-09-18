@@ -1,5 +1,5 @@
 use crate::UseStatusId;
-use c_domain::Agenda;
+use c_domain::redmine::model::Agenda;
 
 use derive_new::new;
 use serde::Serialize;

@@ -1,4 +1,4 @@
-use c_domain::{status::AgendaStatus, Agenda};
+use c_domain::redmine::model::{status::AgendaStatus, Agenda};
 use crate_shared::REDMINE_URL;
 
 use derive_new::new;

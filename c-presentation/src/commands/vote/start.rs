@@ -6,7 +6,7 @@ use crate::{
         CommandError,
     },
 };
-use c_domain::{
+use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
 };

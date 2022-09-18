@@ -1,5 +1,5 @@
 use crate::UseStatusId;
-use c_domain::Record;
+use c_domain::redmine::model::Record;
 
 use derive_new::new;
 use serde::Serialize;

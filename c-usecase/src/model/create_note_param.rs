@@ -1,4 +1,4 @@
-use c_domain::Note;
+use c_domain::redmine::model::Note;
 
 use derive_new::new;
 

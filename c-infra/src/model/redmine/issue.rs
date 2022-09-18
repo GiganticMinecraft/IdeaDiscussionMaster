@@ -1,9 +1,9 @@
 use super::{RedmineIssueRelations, RedmineIssueStatus, RedmineIssueTracker, RedmineProject};
 use crate::{serde_opt_naive_date, UseStatusId};
-use c_domain::{
+use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::{AgendaStatus, RecordStatus},
-    {Agenda, Record},
+    Agenda, Record,
 };
 
 use chrono::NaiveDate;

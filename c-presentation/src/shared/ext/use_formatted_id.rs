@@ -1,4 +1,4 @@
-use c_domain::id::{AgendaId, RecordId};
+use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 pub trait UseFormattedId {
     fn formatted(&self) -> String;

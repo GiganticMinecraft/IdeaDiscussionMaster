@@ -5,7 +5,7 @@ use crate::{
         CommandError,
     },
 };
-use c_domain::id::{AgendaId, RecordId};
+use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use crate::shared::discord_embed;
 use log::info;

@@ -1,4 +1,4 @@
-use c_domain::status::{AgendaStatus, RecordStatus};
+use c_domain::redmine::model::status::{AgendaStatus, RecordStatus};
 
 use strum::EnumProperty;
 

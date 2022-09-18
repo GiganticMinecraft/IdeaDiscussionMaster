@@ -1,8 +1,10 @@
 use super::model::{CreateNoteParam, CreateRecordParam, RecordDto};
-use c_domain::{
-    id::{AgendaId, RecordId},
+use c_domain::redmine::{
+    model::{
+        id::{AgendaId, RecordId},
+        status::RecordStatus,
+    },
     repository::RecordRepository,
-    status::RecordStatus,
 };
 
 use anyhow::{ensure, Context as _};

@@ -1,5 +1,5 @@
 use crate::{serde_opt_naive_date, UseStatusId};
-use c_domain::Record;
+use c_domain::redmine::model::Record;
 
 use chrono::NaiveDate;
 use derive_new::new;

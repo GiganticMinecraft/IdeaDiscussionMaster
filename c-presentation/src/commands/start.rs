@@ -5,7 +5,7 @@ use crate::{
         ext::{CreateEmbedExt, SortAgendasExt, UseFormattedId},
     },
 };
-use c_domain::id::{AgendaId, RecordId};
+use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use anyhow::ensure;
 use itertools::Itertools;

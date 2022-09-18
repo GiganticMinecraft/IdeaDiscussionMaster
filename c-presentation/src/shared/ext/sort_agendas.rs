@@ -1,4 +1,4 @@
-use c_domain::status::AgendaStatus;
+use c_domain::redmine::model::status::AgendaStatus;
 use c_usecase::model::AgendaDto;
 
 use itertools::Itertools;

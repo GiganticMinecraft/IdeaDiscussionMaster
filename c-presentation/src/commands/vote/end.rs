@@ -1,7 +1,6 @@
-use crate::commands::{CommandResult, Context};
-use c_domain::status::AgendaStatus;
+use crate::commands::{vote::shared::end_votes, CommandResult, Context};
+use c_domain::redmine::model::status::AgendaStatus;
 
-use crate::commands::vote::shared::end_votes;
 use anyhow::anyhow;
 use itertools::Itertools;
 use poise::futures_util::{future, stream, Stream, StreamExt};

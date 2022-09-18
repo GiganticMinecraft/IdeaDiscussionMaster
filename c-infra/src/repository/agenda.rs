@@ -1,6 +1,9 @@
 use super::RedmineRepositoryImpl;
 use crate::model::redmine::{CreateNote, UpdateAgenda};
-use c_domain::{id::AgendaId, repository::AgendaRepository, Agenda, Note};
+use c_domain::redmine::{
+    model::{id::AgendaId, Agenda, Note},
+    repository::AgendaRepository,
+};
 
 use anyhow::ensure;
 use async_trait::async_trait;

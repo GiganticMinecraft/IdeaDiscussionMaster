@@ -1,5 +1,5 @@
 use crate::shared::ext::UseFormattedId;
-use c_domain::id::RecordId;
+use c_domain::redmine::model::id::RecordId;
 use c_usecase::model::RecordDto;
 
 use chrono::Utc;

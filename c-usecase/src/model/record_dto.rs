@@ -1,4 +1,4 @@
-use c_domain::{status::RecordStatus, Record};
+use c_domain::redmine::model::{status::RecordStatus, Record};
 use crate_shared::REDMINE_URL;
 
 use anyhow::anyhow;

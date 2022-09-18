@@ -1,7 +1,10 @@
 use crate::shared::global::{
     GlobalCurrentAgendaId, GlobalRecordId, GlobalVcId, GlobalVoteMessageId,
 };
-use c_domain::repository::{AgendaRepository, RecordRepository};
+use c_domain::redmine::{
+    model::{Agenda, Record},
+    repository::{AgendaRepository, RecordRepository},
+};
 use c_infra::repository::RedmineRepositoryImpl;
 use c_usecase::{AgendaUseCase, RecordUseCase};
 
@@ -16,10 +19,8 @@ pub struct Repos {
 impl Repos {
     pub fn new(redmine_url: String) -> Self {
         Self {
-            agenda: Arc::new(RedmineRepositoryImpl::<c_domain::Agenda>::new(
-                redmine_url.clone(),
-            )),
-            record: Arc::new(RedmineRepositoryImpl::<c_domain::Record>::new(redmine_url)),
+            agenda: Arc::new(RedmineRepositoryImpl::<Agenda>::new(redmine_url.clone())),
+            record: Arc::new(RedmineRepositoryImpl::<Record>::new(redmine_url)),
         }
     }
 }

@@ -3,11 +3,13 @@ use crate::{
     model::redmine::{CreateNote, CreateRecord, UpdateRecord},
     UseStatusId,
 };
-use c_domain::{
-    id::{AgendaId, RecordId},
+use c_domain::redmine::{
+    model::{
+        id::{AgendaId, RecordId},
+        status::RecordStatus,
+        Note, Record,
+    },
     repository::RecordRepository,
-    status::RecordStatus,
-    Note, Record,
 };
 
 use anyhow::{anyhow, ensure};

@@ -1,5 +1,5 @@
 use super::model::{AgendaDto, CreateNoteParam};
-use c_domain::{id::AgendaId, repository::AgendaRepository};
+use c_domain::redmine::{model::id::AgendaId, repository::AgendaRepository};
 
 use anyhow::{ensure, Context as _};
 use derive_new::new;

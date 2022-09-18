@@ -1,4 +1,4 @@
-use c_domain::{id::RecordId, status::RecordStatus, Record};
+use c_domain::redmine::model::{id::RecordId, status::RecordStatus, Record};
 
 use chrono::NaiveDate;
 use derive_new::new;

@@ -67,6 +67,7 @@ async fn main() {
         commands::end(),
         commands::vote(),
         commands::agenda(),
+        commands::create(),
     ];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {

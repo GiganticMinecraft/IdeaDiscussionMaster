@@ -1,4 +1,4 @@
-use crate::{id::RecordId, status::RecordStatus};
+use super::{id::RecordId, status::RecordStatus};
 
 use chrono::NaiveDate;
 use derive_new::new;

@@ -1,4 +1,4 @@
-use crate::{
+use super::model::{
     id::{AgendaId, RecordId},
     status::RecordStatus,
     Agenda, Note, Record,
