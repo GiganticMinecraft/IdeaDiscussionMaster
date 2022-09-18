@@ -22,21 +22,28 @@ impl AgendaUseCase {
 
     pub async fn find_new(&self, id: &AgendaId) -> anyhow::Result<AgendaDto> {
         let issue = self.find(id).await?;
-        ensure!(issue.status.is_new());
+        ensure!(
+            issue.status.is_new(),
+            "議題のステータスが新規ではありません"
+        );
 
         Ok(issue)
     }
 
+    pub async fn list(&self, agendas: &[AgendaId]) -> Vec<AgendaDto> {
+        future::join_all(agendas.iter().map(|id| async move { self.find(id).await }))
+            .await
+            .into_iter()
+            .filter_map(|agenda| agenda.ok())
+            .collect()
+    }
+
     pub async fn list_new(&self, agendas: &[AgendaId]) -> Vec<AgendaDto> {
-        future::join_all(
-            agendas
-                .iter()
-                .map(|id| async move { self.find_new(id).await }),
-        )
-        .await
-        .into_iter()
-        .filter_map(|agenda| agenda.ok())
-        .collect()
+        self.list(agendas)
+            .await
+            .into_iter()
+            .filter(|dto| dto.status.is_new())
+            .collect()
     }
 
     pub async fn init(&self, id: &AgendaId) -> anyhow::Result<()> {
