@@ -1,4 +1,4 @@
-use super::model::{RecordDto, RecordParam};
+use super::model::{CreateRecordParam, RecordDto};
 use c_domain::{
     id::{AgendaId, RecordId},
     repository::RecordRepository,
@@ -16,7 +16,7 @@ pub struct RecordUseCase {
 }
 
 impl RecordUseCase {
-    pub async fn add(&self, param: RecordParam) -> anyhow::Result<RecordDto> {
+    pub async fn add(&self, param: CreateRecordParam) -> anyhow::Result<RecordDto> {
         let new_record = Record::new(
             RecordId::default(),
             param.title,
