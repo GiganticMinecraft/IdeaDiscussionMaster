@@ -19,4 +19,5 @@ futures = "0.3"
 c-domain = { path = "../c-domain", features = ["mock"] }
 
 itertools = "0.10"
+test-case = "2.2"
 tokio = { version = "1.20", features = ["rt", "macros"] }

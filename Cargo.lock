@@ -398,6 +398,7 @@ dependencies = [
  "futures",
  "itertools",
  "regex",
+ "test-case",
  "tokio",
 ]
 
