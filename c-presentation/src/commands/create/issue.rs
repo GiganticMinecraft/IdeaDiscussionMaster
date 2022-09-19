@@ -6,7 +6,6 @@ use crate::{
 use c_domain::redmine::model::id::{AgendaId, RecordId};
 use c_usecase::{github::model::CreateIssueParam, redmine::model::CreateNoteParam};
 
-use anyhow::ensure;
 use itertools::Itertools;
 use log::info;
 use poise::{futures_util::future, serenity_prelude::CreateEmbed};
