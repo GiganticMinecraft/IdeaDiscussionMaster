@@ -2,9 +2,8 @@ use crate::github::{model::CreateIssueResponse, GitHubClient};
 use c_domain::github::{model::Issue, repository::GitHubIssueRepository};
 use crate_shared::GITHUB_URL;
 
-use anyhow::{anyhow, ensure, Context as _};
+use anyhow::{ensure, Context as _};
 use async_trait::async_trait;
-use derive_new::new;
 use serde_json::json;
 use std::marker::PhantomData;
 
