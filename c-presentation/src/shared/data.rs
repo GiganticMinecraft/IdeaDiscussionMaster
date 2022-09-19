@@ -8,8 +8,13 @@ use c_domain::{
         repository::{AgendaRepository, RecordRepository},
     },
 };
-use c_infra::redmine::repository::RedmineRepositoryImpl;
-use c_usecase::redmine::{AgendaUseCase, RecordUseCase};
+use c_infra::{
+    github::repository::GitHubRepositoryImpl, redmine::repository::RedmineRepositoryImpl,
+};
+use c_usecase::{
+    github::IssueUseCase,
+    redmine::{AgendaUseCase, RecordUseCase},
+};
 
 use derive_new::new;
 use std::sync::Arc;
@@ -21,11 +26,11 @@ pub struct Repos {
 }
 
 impl Repos {
-    pub fn new(redmine_url: String) -> Self {
+    pub async fn new(redmine_url: String) -> Self {
         Self {
             agenda: Arc::new(RedmineRepositoryImpl::<Agenda>::new(redmine_url.clone())),
             record: Arc::new(RedmineRepositoryImpl::<Record>::new(redmine_url)),
-            issue: Arc::new(GitHubIssueRepositoryImpl::<Issue>::new()),
+            issue: Arc::new(GitHubRepositoryImpl::<Issue>::new().await),
         }
     }
 }
@@ -34,6 +39,7 @@ impl Repos {
 pub struct UseCases {
     pub agenda: AgendaUseCase,
     pub record: RecordUseCase,
+    pub issue: IssueUseCase,
 }
 
 pub struct Data {
@@ -45,11 +51,12 @@ pub struct Data {
 }
 
 impl Data {
-    pub fn new(redmine_url: String) -> Self {
-        let repos = Repos::new(redmine_url);
+    pub async fn new(redmine_url: String) -> Self {
+        let repos = Repos::new(redmine_url).await;
         let use_cases = UseCases::new(
             AgendaUseCase::new(repos.agenda),
             RecordUseCase::new(repos.record),
+            IssueUseCase::new(repos.issue),
         );
 
         Self {

@@ -11,7 +11,7 @@ pub struct GitHubClient {
 }
 
 impl GitHubClient {
-    pub fn new() -> Self {
+    pub async fn new() -> Self {
         Self {
             client: Arc::new(Client::new()),
             token: format!("token {}", Self::create_token().await.unwrap()),
