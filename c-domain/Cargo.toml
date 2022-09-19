@@ -1,0 +1,18 @@
+[package]
+name = "c-domain"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+mock = ["mockall"]
+
+[dependencies]
+anyhow = "1.0"
+async-trait = "0.1"
+derive-new = "0.5"
+strum = { version = "0.24", features = ["derive"] }
+chrono = "0.4"
+mockall = {version = "0.11", optional = true}
+
+[dev-dependencies]
+test-case = "2.2"

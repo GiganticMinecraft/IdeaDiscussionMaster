@@ -19,6 +19,6 @@ RUN cargo build --target x86_64-unknown-linux-musl --release
 ### Runner ###
 FROM gcr.io/distroless/cc
 USER nonroot
-COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/crate-presentation /idea-discussion-master
+COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/c-presentation /idea-discussion-master
 
 CMD ["/idea-discussion-master"]
