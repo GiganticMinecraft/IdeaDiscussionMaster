@@ -2,7 +2,7 @@ use c_domain::redmine::model::Note;
 
 use derive_new::new;
 
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct CreateNoteParam {
     pub contents: String,
 }
