@@ -1,2 +1,2 @@
-pub mod redmine;
 pub mod github;
+pub mod redmine;
