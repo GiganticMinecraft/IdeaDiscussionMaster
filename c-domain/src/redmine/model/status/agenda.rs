@@ -19,8 +19,12 @@ impl AgendaStatus {
         *self == Self::New
     }
 
+    pub fn is_approved(&self) -> bool {
+        *self == Self::Approved
+    }
+
     pub fn is_closed(&self) -> bool {
-        *self == Self::Declined || *self == Self::Approved
+        *self == Self::Declined || self.is_approved()
     }
 
     pub fn closed() -> Vec<Self> {
