@@ -8,10 +8,18 @@ use derive_new::new;
 use serde_json::json;
 use std::marker::PhantomData;
 
-#[derive(new)]
 pub struct GitHubRepositoryImpl<T> {
     pub client: GitHubClient,
     _marker: PhantomData<T>,
+}
+
+impl<T> GitHubRepositoryImpl<T> {
+    pub async fn new() -> Self {
+        Self {
+            client: GitHubClient::new().await,
+            _marker: PhantomData::default(),
+        }
+    }
 }
 
 #[async_trait]
