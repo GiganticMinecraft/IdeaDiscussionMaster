@@ -3,10 +3,7 @@ use crate::{
     commands::{CommandResult, Context},
     shared::ext::{CreateEmbedExt, SortAgendasExt, UseFormattedId},
 };
-use c_domain::redmine::model::{
-    id::{AgendaId, RecordId},
-    status::AgendaStatus,
-};
+use c_domain::redmine::model::id::{AgendaId, RecordId};
 use c_usecase::{github::model::CreateIssueParam, redmine::model::CreateNoteParam};
 
 use anyhow::ensure;
@@ -79,7 +76,7 @@ pub async fn issue(
         )
         .await
         .into_iter()
-        .filter(|dto| dto.status == AgendaStatus::Approved)
+        .filter(|dto| dto.status.is_approved())
         .collect_vec()
         .sort_by_id();
     info!(
