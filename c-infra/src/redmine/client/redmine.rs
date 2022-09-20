@@ -9,7 +9,6 @@ pub struct RedmineClient {
     pub url_interpreter: RedmineUrlInterpreter,
 }
 
-// TODO: use custom error
 impl RedmineClient {
     pub fn new(url: String) -> Self {
         Self {
