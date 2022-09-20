@@ -21,7 +21,6 @@ use serde_json::json;
 impl RecordRepository for RedmineRepositoryImpl<Record> {
     async fn add(&self, record: Record) -> anyhow::Result<Record> {
         let new_record = CreateRecord::new(record.clone().into());
-        // FIXME: postの結果を読み込んでRecordを返す（getし直さない）
         self.client
             .post_with_url(self.client.url_interpreter.issues_url(), &new_record)
             .await?;
