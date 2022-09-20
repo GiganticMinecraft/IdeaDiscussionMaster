@@ -29,4 +29,4 @@ USER nonroot
 COPY --from=prepare-runner --link /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 COPY --from=build --link /app/target/x86_64-unknown-linux-musl/release/c-presentation /idea-discussion-master
 
-CMD ["/idea-discussion-master"]
+ENTRYPOINT ["/idea-discussion-master"]
