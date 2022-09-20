@@ -11,7 +11,8 @@ pub trait SortAgendasExt {
 impl SortAgendasExt for Vec<AgendaDto> {
     fn sort_and_grouping_by_status(&self) -> Vec<(AgendaStatus, Vec<AgendaDto>)> {
         // ソート
-        let agendas = self
+        let agendas = self.sort_by_id();
+        let agendas = agendas
             .iter()
             .sorted_by_cached_key(|agenda| agenda.status)
             .collect_vec();
