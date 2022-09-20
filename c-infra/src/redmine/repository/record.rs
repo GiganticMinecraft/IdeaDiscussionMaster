@@ -49,9 +49,7 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         status: Vec<RecordStatus>,
     ) -> anyhow::Result<Vec<Record>> {
         let limit = limit.unwrap_or(20).to_string();
-        // TODO: ProjectIdやTrackerIdをまとめておく
         let mut queries = vec![
-            // TODO: ProjectIdやTrackerIdをまとめておく
             ("project_id", "18"),
             ("tracker_id", "34"),
             ("limit", &limit),
