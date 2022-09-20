@@ -51,12 +51,7 @@ pub async fn thread(
             .join(", ")
     );
 
-    let base_message = ctx
-        .channel_id()
-        .say(
-            &ctx.discord().http,
-            format!("{}件のスレッドを作成します", agendas.len()),
-        )
+    ctx.say(format!("議題{}件のスレッドを作成します", agendas.len()))
         .await?;
 
     info!("Start to create threads per each idea");
@@ -64,9 +59,17 @@ pub async fn thread(
         let formatted_agenda_id = AgendaId::new(agenda.id).formatted();
         debug!("Create a thread for {}", formatted_agenda_id);
 
+        let msg = ctx
+            .channel_id()
+            .say(
+                &ctx.discord().http,
+                format!("{}についてのスレッドを作成しました", formatted_agenda_id),
+            )
+            .await
+            .unwrap();
         if let Ok(th) = ctx
             .channel_id()
-            .create_public_thread(&ctx.discord().http, base_message.id, |b| {
+            .create_public_thread(&ctx.discord().http, msg.id, |b| {
                 // Threads will be archived in 24 hours automatically
                 b.name(format!(
                     "{}: {}",
@@ -81,8 +84,9 @@ pub async fn thread(
             let _ = th
                 .send_message(&ctx.discord().http, |b|
                     b.content(format!(
-                        "このスレッドは、{}にて承認されたアイデアについて個別に議論を行うためのものです。",
-                        record.discussion_title()
+                        "このスレッドは、{}にて承認されたアイデア{}について個別に議論を行うためのものです。",
+                        record.discussion_title(),
+                        formatted_agenda_id
                     )).embed(|e|
                         discord_embed::next_agenda_embed(e, &record_id, agenda)
                             .title(format!("このスレッドで議論を行う議題は{}です", formatted_agenda_id))
