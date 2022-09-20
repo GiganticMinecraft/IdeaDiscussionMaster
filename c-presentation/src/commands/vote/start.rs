@@ -136,7 +136,7 @@ async fn make_response_and_get_votes_result(
                 .map(|member| member.user.to_owned())
                 .filter(|user| !user.bot)
                 .map(|user| user.id)
-                .unwrap(), // TODO: command from guild only!
+                .unwrap(),
             status,
         );
         let _ = interaction
