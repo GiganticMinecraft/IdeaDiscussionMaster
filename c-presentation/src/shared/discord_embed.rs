@@ -78,12 +78,9 @@ pub fn vote_result<'a>(
         _ => embed,
     };
 
-    embed
-        .custom_default(record_id)
-        .failure_color()
-        .title(format!(
-            "投票終了: {}は{}されました",
-            current_agenda_id.formatted(),
-            vote_result.ja()
-        ))
+    embed.custom_default(record_id).title(format!(
+        "投票終了: {}は{}されました",
+        current_agenda_id.formatted(),
+        vote_result.ja()
+    ))
 }
