@@ -124,6 +124,7 @@ async fn make_response_and_get_votes_result(
         .next()
         .await
     {
+        let _ = interaction.defer(&ctx.discord().http).await;
         let reacted_member = interaction.member.as_ref();
         debug!(
             "Interaction is sent by {}",
