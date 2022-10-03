@@ -9,13 +9,6 @@ on:
       - ".github/workflows/**"
       - "!.github/workflows/ci-and-cd.yml"
   pull_request:
-    paths-ignore:
-      - ".env.example"
-      - "LICENSE"
-      - "README.md"
-      - "renovate.json"
-      - ".github/workflows/**"
-      - "!.github/workflows/ci-and-cd.yml"
 
 jobs:
   lint-and-test:
