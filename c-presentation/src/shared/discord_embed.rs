@@ -1,4 +1,4 @@
-use crate::shared::ext::{CreateEmbedExt, UseFormattedId, UseStatusJa};
+use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusJa};
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
@@ -15,7 +15,9 @@ pub fn next_agenda_embed<'a>(
     next_agenda: &AgendaDto,
 ) -> &'a mut CreateEmbed {
     let reg = Regex::new(r"^\[.*]\s").unwrap();
-    let subject = reg.replace(&next_agenda.title, "");
+    let subject = reg.replace(&next_agenda.title, "").to_string();
+    let subject = subject.cut_at(100);
+    let description = next_agenda.description.cut_at(1500);
 
     embed
         .custom_default(record_id)
@@ -26,7 +28,7 @@ pub fn next_agenda_embed<'a>(
         ))
         .custom_field("議題チケット", next_agenda.url(), false)
         .custom_field("タイトル", subject, false)
-        .custom_field("説明", next_agenda.description.clone(), false)
+        .custom_field("説明", description, false)
 }
 
 pub fn no_next_agenda<'a>(embed: &'a mut CreateEmbed, record_id: &RecordId) -> &'a mut CreateEmbed {
