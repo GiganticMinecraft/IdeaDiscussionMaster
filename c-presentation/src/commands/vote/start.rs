@@ -97,6 +97,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
         }
         None => {
             error!("Interaction is timed out.");
+            data.vote_message_id.clear();
             let _ = ctx
                 .channel_id()
                 .send_message(&ctx.discord().http, |b| b.content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
