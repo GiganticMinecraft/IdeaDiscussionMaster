@@ -91,6 +91,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
     debug!("vote_msg_id: {}", vote_msg.id);
 
     let result_status = make_response_and_get_votes_result(&ctx, &vote_msg).await;
+    let _ = vote_msg.delete(&ctx.discord().http).await;
     match result_status {
         Some(status) => {
             end_votes(&ctx, status).await?;
@@ -104,8 +105,6 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
                 .await;
         }
     };
-
-    let _ = vote_msg.delete(&ctx.discord().http).await;
 
     Ok(())
 }
