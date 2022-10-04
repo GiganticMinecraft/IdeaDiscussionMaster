@@ -125,16 +125,19 @@ async fn make_response_and_get_votes_result(
         .await
     {
         let _ = interaction.defer(&ctx.discord().http).await;
-        let reacted_member = interaction.member.as_ref();
+
+        let reacted_user = interaction
+            .member
+            .as_ref()
+            .map(|member| member.user.to_owned());
         debug!(
             "Interaction is sent by {}",
-            reacted_member.unwrap().user.formatted_user_name()
+            reacted_user.as_ref().unwrap().formatted_user_name()
         );
         let status = AgendaStatus::from_string(&interaction.data.custom_id).unwrap();
         debug!("Vote: {:?}", status);
         vote_map.insert(
-            reacted_member
-                .map(|member| member.user.to_owned())
+            reacted_user
                 .filter(|user| !user.bot)
                 .map(|user| user.id)
                 .unwrap(),
