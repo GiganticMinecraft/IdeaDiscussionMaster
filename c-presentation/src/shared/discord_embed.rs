@@ -68,6 +68,25 @@ pub fn agendas_result(
         .custom_fields(agenda_fields)
 }
 
+pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<AgendaStatus>) -> &mut CreateEmbed {
+    let votes = votes
+        .into_iter()
+        .counts()
+        .into_iter()
+        .map(|(st, count)| format!("{}: {}", st.ja(), count))
+        .join("\n");
+
+    embed
+        .simple_color()
+        .current_timestamp()
+        .title("投票状況")
+        .description(if votes.is_empty() {
+            "票はありません".to_string()
+        } else {
+            votes
+        })
+}
+
 pub fn vote_result<'a>(
     embed: &'a mut CreateEmbed,
     record_id: &RecordId,
