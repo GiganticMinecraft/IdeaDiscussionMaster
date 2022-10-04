@@ -67,7 +67,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
                 .embed(|embed| {
                     embed
                         .custom_default(&record_id)
-                        .title(format!("投票: {}", record_id.formatted()))
+                        .title(format!("投票: {}", current_agenda_id.formatted()))
                         .description(embed_description)
                 })
                 .components(|c| {
