@@ -1,4 +1,4 @@
-use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusJa};
+use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusEmoji, UseStatusJa};
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
@@ -66,6 +66,24 @@ pub fn agendas_result(
         .custom_default(&RecordId::new(record.id))
         .record_url_field(&record)
         .custom_fields(agenda_fields)
+}
+
+pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<AgendaStatus>) -> &mut CreateEmbed {
+    let votes = votes
+        .into_iter()
+        .counts()
+        .into_iter()
+        .map(|(st, count)| format!("{} {}: {}", st.emoji(), st.ja(), count))
+        .join("\n");
+
+    embed
+        .current_timestamp()
+        .title("投票状況")
+        .description(if votes.is_empty() {
+            "票はありません".to_string()
+        } else {
+            votes
+        })
 }
 
 pub fn vote_result<'a>(
