@@ -73,7 +73,7 @@ pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<AgendaStatus>) -> &mut 
         .into_iter()
         .counts()
         .into_iter()
-        .map(|(st, count)| format!("{}: {}", st.ja(), count))
+        .map(|(st, count)| format!("{} {}: {}", st.emoji(), st.ja(), count))
         .join("\n");
 
     embed
