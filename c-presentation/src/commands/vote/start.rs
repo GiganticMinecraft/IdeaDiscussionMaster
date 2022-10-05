@@ -3,7 +3,7 @@ use crate::{
     commands::{CommandResult, Context},
     shared::{
         discord_embed,
-        ext::{CreateEmbedExt, UseFormattedId, UseFormattedUserName, UseStatusEmoji, UseStatusJa},
+        ext::{CreateEmbedExt, UseFormattedId, UseStatusEmoji, UseStatusJa},
         CommandError,
     },
 };
@@ -17,7 +17,7 @@ use itertools::Itertools;
 use log::{debug, error, info};
 use poise::{
     futures_util::StreamExt,
-    serenity_prelude::{CreateButton, InteractionResponseType, Message, VoiceState},
+    serenity_prelude::{CreateButton, InteractionResponseType, Message},
 };
 use std::{collections::HashMap, time::Duration};
 use strum::IntoEnumIterator;
