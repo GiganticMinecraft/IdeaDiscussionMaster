@@ -2,6 +2,7 @@ use super::shared::end_votes;
 use crate::{
     commands::{CommandResult, Context},
     shared::{
+        discord_embed,
         ext::{CreateEmbedExt, UseFormattedId, UseFormattedUserName, UseStatusEmoji, UseStatusJa},
         CommandError,
     },
@@ -16,10 +17,11 @@ use itertools::Itertools;
 use log::{debug, error, info};
 use poise::{
     futures_util::StreamExt,
-    serenity_prelude::{CreateButton, InteractionResponseType, Message},
+    serenity_prelude::{CreateButton, InteractionResponseType, Message, VoiceState},
 };
 use std::{collections::HashMap, time::Duration};
 use strum::IntoEnumIterator;
+use tokio::sync::{broadcast, mpsc};
 
 /// 投票が無効になる制限時間
 /// SlashCommandのdeferが15分なので、それよりも少し短い程度に
@@ -94,7 +96,7 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
     data.vote_message_id.save(vote_msg.id.0);
     debug!("vote_msg_id: {}", vote_msg.id);
 
-    let result_status = make_response_and_get_votes_result(&ctx, &vote_msg).await;
+    let result_status = make_response_and_get_votes_result(ctx, vote_msg.clone()).await;
     let _ = vote_msg.delete(&ctx.discord().http).await;
     match result_status {
         Some(status) => {
@@ -115,73 +117,112 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
 
 /// 「投票メッセージへのインタラクションを受け取り、レスポンスをDiscordに送信した後、投票結果を計算する」を繰り返す
 async fn make_response_and_get_votes_result(
-    ctx: &Context<'_>,
-    msg: &Message,
+    ctx: Context<'_>,
+    msg: Message,
 ) -> Option<AgendaStatus> {
     debug!("Start to response.");
-    let mut res = None;
-    let mut vote_map = HashMap::new();
-    while let Some(interaction) = msg
-        .await_component_interactions(&ctx.discord())
-        .timeout(Duration::from_secs(VOTES_TIMEOUT_MINUTES * 60))
-        .build()
-        .next()
-        .await
-    {
-        let _ = interaction.defer(&ctx.discord().http).await;
+    let (update_votes_snd, mut update_votes_recv) = broadcast::channel(20);
+    let mut sub_update_votes_recv = update_votes_snd.subscribe();
 
-        let reacted_user = interaction
-            .member
-            .as_ref()
-            .map(|member| member.user.to_owned());
-        debug!(
-            "Interaction is sent by {}",
-            reacted_user.as_ref().unwrap().formatted_user_name()
-        );
-        let status = AgendaStatus::from_string(&interaction.data.custom_id).unwrap();
-        debug!("Vote: {:?}", status);
-        vote_map.insert(
-            reacted_user
-                .filter(|user| !user.bot)
-                .map(|user| user.id)
-                .unwrap(),
-            status,
-        );
-        let _ = interaction
-            .create_interaction_response(&ctx.discord(), |r| {
-                r.kind(InteractionResponseType::ChannelMessageWithSource)
-                    .interaction_response_data(|d| {
-                        d.content(format!(
-                            "「{}」に投票しました。2度目以降は最後の投票が有効になります",
-                            status.ja()
-                        ))
-                        .ephemeral(true)
-                    })
+    let serenity_ctx = ctx.discord().clone();
+    let wait_reactions = tokio::spawn(async move {
+        debug!("Wait for reactions");
+        let mut vote_map = HashMap::new();
+
+        while let Some(interaction) = msg
+            .await_component_interactions(&serenity_ctx)
+            .timeout(Duration::from_secs(VOTES_TIMEOUT_MINUTES * 60))
+            .build()
+            .next()
+            .await
+        {
+            let _ = interaction.defer(&serenity_ctx.http).await;
+
+            debug!("Receive interaction");
+            let status = AgendaStatus::from_string(&interaction.data.custom_id).unwrap();
+            debug!("Vote: {:?}", status);
+            let _ = interaction
+                .create_interaction_response(&serenity_ctx.http, |r| {
+                    r.kind(InteractionResponseType::ChannelMessageWithSource)
+                        .interaction_response_data(|d| {
+                            d.content(format!(
+                                "「{}」に投票しました。2度目以降は最後の投票が有効になります",
+                                status.ja()
+                            ))
+                            .ephemeral(true)
+                        })
+                })
+                .await;
+            vote_map.insert(
+                interaction
+                    .member
+                    .as_ref()
+                    .filter(|member| !member.user.bot)
+                    .map(|member| member.user.id)
+                    .unwrap(),
+                status,
+            );
+            debug!("Send vote_map update");
+            let _ = update_votes_snd.send(vote_map.clone().into_values().collect_vec());
+        }
+
+        debug!("Interaction is timeout");
+    });
+
+    let ch_id = ctx.channel_id();
+    let serenity_ctx = ctx.discord().clone();
+    tokio::spawn(async move {
+        let mut msg = ch_id
+            .send_message(&serenity_ctx.http, |c| {
+                c.embed(|e| discord_embed::vote_progress(e, vec![]))
             })
-            .await;
+            .await
+            .unwrap();
 
-        let vc_members_count = {
-            let vc_id = ctx.data().vc_id.get().unwrap();
+        while let Ok(votes) = sub_update_votes_recv.recv().await {
+            debug!("Update vote progress");
+            let _ = msg
+                .edit(&serenity_ctx.http, |c| {
+                    c.embed(|e| discord_embed::vote_progress(e, votes))
+                })
+                .await;
+        }
+        let _ = msg.delete(&serenity_ctx.http).await;
+    });
 
-            ctx.guild()
-                .unwrap()
-                .voice_states
+    let (votes_result_snd, mut votes_result_recv) = mpsc::channel(1);
+    let voice_states = ctx.guild().unwrap().voice_states;
+    let vc_id = ctx.data().vc_id.get().unwrap();
+    let calculate_votes = tokio::spawn(async move {
+        while let Ok(votes) = update_votes_recv.recv().await {
+            debug!("Receive vote_map update");
+            let vc_members_count = voice_states
                 .iter()
                 .filter(|(_, s)| s.channel_id.filter(|id| id == &vc_id).is_some())
-                .count()
-        };
-        debug!("vc_members_count: {}", vc_members_count);
+                .count();
+            debug!("vc_members_count: {}", vc_members_count);
 
-        let maybe_vote_result =
-            total_votes(vote_map.clone().into_values().collect(), vc_members_count);
-        debug!("maybe_vote_result: {:?}", maybe_vote_result);
-        if maybe_vote_result.is_some() {
-            res = maybe_vote_result;
-            break;
+            let maybe_vote_result = total_votes(votes, vc_members_count);
+            debug!("maybe_vote_result: {:?}", maybe_vote_result);
+
+            if let Some(res) = maybe_vote_result {
+                debug!("Send found vote_result");
+                let _ = votes_result_snd.send(res).await;
+            }
+        }
+    });
+
+    while !wait_reactions.is_finished() && !calculate_votes.is_finished() {
+        debug!("Start to receive votes_result");
+        if let Some(result) = votes_result_recv.recv().await {
+            calculate_votes.abort();
+            wait_reactions.abort();
+
+            return Some(result);
         }
     }
 
-    res
+    None
 }
 
 /// AgendaStatusの配列とVCの参加人数を受け取り、人数の過半数を超える票が集まったものがないかを返す
