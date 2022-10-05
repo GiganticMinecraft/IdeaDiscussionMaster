@@ -1,4 +1,4 @@
-use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusJa};
+use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusEmoji, UseStatusJa};
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
@@ -77,7 +77,6 @@ pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<AgendaStatus>) -> &mut 
         .join("\n");
 
     embed
-        .simple_color()
         .current_timestamp()
         .title("投票状況")
         .description(if votes.is_empty() {
