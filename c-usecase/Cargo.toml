@@ -9,15 +9,15 @@ edition.workspace = true
 c-domain = { path = "../c-domain" }
 crate-shared = { path = "../crate-shared" }
 
-anyhow = "1.0"
-derive-new = "0.5"
-chrono = "0.4"
-regex = "1.6"
-futures = "0.3"
+anyhow.workspace = true
+chrono.workspace = true
+derive-new.workspace = true
+futures.workspace = true
+regex.workspace = true
 
 [dev-dependencies]
 c-domain = { path = "../c-domain", features = ["mock"] }
 
-itertools = "0.10"
-test-case = "2.2"
-tokio = { version = "1.21", features = ["rt", "macros"] }
+itertools.workspace = true
+test-case.workspace = true
+tokio.workspace = true
