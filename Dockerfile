@@ -8,7 +8,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ### Builder ###
-FROM clux/muslrust:1.63.0 AS chef
+# TODO: clux/muslrust haven't released 1.64.0 yet, so use nightly build
+FROM clux/muslrust:1.64.0-nightly-2022-08-06 AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
