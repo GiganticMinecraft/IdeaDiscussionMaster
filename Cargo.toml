@@ -6,3 +6,6 @@ members = [
   "c-infra",
   "c-presentation"
 ]
+
+[workspace.package]
+edition = "2021"
