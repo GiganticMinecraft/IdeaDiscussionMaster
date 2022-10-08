@@ -18,6 +18,7 @@ pub async fn add(
     #[min = 1]
     new_agenda_id: u16,
 ) -> CommandResult {
+    let _ = ctx.defer().await;
     let new_agenda_id = AgendaId::new(new_agenda_id);
     let new_agenda = ctx.data().use_cases.agenda.find_new(&new_agenda_id).await?;
     let record_id = ctx

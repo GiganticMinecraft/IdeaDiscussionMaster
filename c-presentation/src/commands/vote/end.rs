@@ -25,6 +25,7 @@ pub async fn end(
     #[autocomplete = "autocomplete_agenda_status_string"]
     status: String,
 ) -> CommandResult {
+    let _ = ctx.defer().await;
     let status = AgendaStatus::from_string(&status).ok_or_else(|| {
         anyhow!(
             "議題のステータスは{}のうちいずれか1つのみ指定できます",

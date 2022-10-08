@@ -92,7 +92,6 @@ async fn main() {
                         ctx.author().discriminator,
                         ctx.command().qualified_name
                     );
-                    let _ = ctx.defer().await;
                 })
             },
             post_command: |ctx| {

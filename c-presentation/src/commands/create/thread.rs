@@ -21,6 +21,7 @@ pub async fn thread(
     #[description = "スレッドを作成する議題のチケット番号群(半角スペース区切り)"]
     idea_issue_numbers: String,
 ) -> CommandResult {
+    let _ = ctx.defer().await;
     let record_id = RecordId::new(record_issue_number);
     let record = ctx.data().use_cases.record.find(&record_id).await?;
     info!("record_id: {}", record_id.formatted());
