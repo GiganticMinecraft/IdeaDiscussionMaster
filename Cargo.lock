@@ -339,6 +339,7 @@ dependencies = [
  "chrono",
  "derive-new",
  "mockall",
+ "serde",
  "strum",
  "test-case",
 ]

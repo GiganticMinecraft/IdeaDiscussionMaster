@@ -1,7 +1,19 @@
+use serde::Serialize;
 use strum::{Display, EnumIter, EnumProperty, IntoEnumIterator};
 
 #[derive(
-    EnumProperty, EnumIter, Debug, Display, PartialEq, Eq, Hash, Clone, Copy, Ord, PartialOrd,
+    EnumProperty,
+    EnumIter,
+    Debug,
+    Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Clone,
+    Copy,
+    Ord,
+    PartialOrd,
+    Serialize,
 )]
 pub enum AgendaStatus {
     #[strum(props(ja = "新規", emoji = "🆕", id = "1"))]
