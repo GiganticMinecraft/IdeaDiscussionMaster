@@ -383,6 +383,8 @@ dependencies = [
  "once_cell",
  "poise",
  "regex",
+ "serde",
+ "serde_json",
  "strum",
  "thiserror",
  "tokio",
