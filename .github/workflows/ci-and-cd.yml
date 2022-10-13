@@ -30,7 +30,7 @@ jobs:
       - name: Cargo clippy
         uses: actions-rs/cargo@v1
         with:
-          command: clippy -- -D warnings
+          command: clippy
       - name: Cargo test
         uses: actions-rs/cargo@v1
         with:
