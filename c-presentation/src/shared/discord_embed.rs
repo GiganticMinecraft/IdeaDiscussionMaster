@@ -76,6 +76,8 @@ pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<VoteChoiceWithId>) -> &
         .into_iter()
         .counts()
         .into_iter()
+        .sorted_by_key(|value| value.1)
+        .rev()
         .map(|((id, choice), count)| format!("{} {}: {}", id, choice.status.ja(), count))
         .join("\n");
 
