@@ -62,7 +62,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
             .map(|s| VoteChoice::new(s, s.to_string()))
             .unique()
             .enumerate()
-            .collect()
+            .collect(),
     };
     ensure!(
         votes.len() <= VOTE_CHOICES_LIMIT.into(),
