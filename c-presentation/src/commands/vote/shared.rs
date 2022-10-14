@@ -11,7 +11,6 @@ use c_domain::redmine::model::{
     status::AgendaStatus,
 };
 
-
 use c_usecase::redmine::model::CreateNoteParam;
 use itertools::Itertools;
 use log::info;
