@@ -4,7 +4,7 @@ use crate::{
     shared::{
         discord_embed,
         ext::{CreateEmbedExt, UseFormattedId, UseStatusEmoji, UseStatusJa},
-        CommandError,
+        CommandError, VoteChoice, VoteChoiceWithId,
     },
 };
 use c_domain::redmine::model::{
@@ -12,13 +12,17 @@ use c_domain::redmine::model::{
     status::AgendaStatus,
 };
 
-use anyhow::ensure;
+use anyhow::{ensure, Context as _};
+use derive_new::new;
 use itertools::Itertools;
 use log::{debug, error, info};
+use poise::serenity_prelude::{CreateActionRow, ReactionType};
 use poise::{
     futures_util::StreamExt,
-    serenity_prelude::{CreateButton, InteractionResponseType, Message},
+    serenity_prelude::{Attachment, CreateButton, InteractionResponseType, Message},
 };
+use serde::Deserialize;
+use std::fmt::{Display, Formatter};
 use std::{collections::HashMap, time::Duration};
 use strum::IntoEnumIterator;
 use tokio::sync::{broadcast, mpsc};
@@ -27,9 +31,47 @@ use tokio::sync::{broadcast, mpsc};
 /// SlashCommandのdeferが15分なので、それよりも少し短い程度に
 const VOTES_TIMEOUT_MINUTES: u64 = 13;
 
+const VOTE_CHOICES_LIMIT: u8 = 5 * 5;
+
 /// 採決を開始します
 #[poise::command(slash_command)]
-pub async fn start(ctx: Context<'_>) -> CommandResult {
+pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandResult {
+    let _ = ctx.defer_ephemeral().await;
+    let votes: Vec<VoteChoiceWithId> = match attachment {
+        Some(attachment) => {
+            ensure!(
+                attachment
+                    .content_type
+                    .as_ref()
+                    .filter(|t| t.to_lowercase().contains("application/json"))
+                    .is_some(),
+                "The attachment must be json"
+            );
+            let attachment = attachment
+                .download()
+                .await
+                .context("Failed to download the attachment")?;
+
+            serde_json::from_slice::<Vec<VoteChoice>>(&attachment)
+                .context("Failed to deserialize the attachment")?
+                .into_iter()
+                .unique()
+                .enumerate()
+                .collect()
+        }
+        None => AgendaStatus::closed()
+            .into_iter()
+            .map(|s| VoteChoice::new(s, s.to_string()))
+            .unique()
+            .enumerate()
+            .collect(),
+    };
+    ensure!(
+        votes.len() <= VOTE_CHOICES_LIMIT.into(),
+        "A vote can have up to {} choices",
+        VOTE_CHOICES_LIMIT
+    );
+
     let data = ctx.data();
     let record_id = data
         .record_id
@@ -72,22 +114,45 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
                         .title(format!("投票: {}", current_agenda_id.formatted()))
                         .description(embed_description)
                 })
-                .components(|c| {
-                    c.create_action_row(|row| {
-                        AgendaStatus::iter()
-                            .filter(|status| status.is_closed())
-                            .map(|status| {
-                                CreateButton::default()
-                                    .custom_id(status.to_string())
-                                    .label(format!("{}: {}", status.emoji(), status.ja()))
-                                    .to_owned()
-                            })
-                            .for_each(|button| {
-                                row.add_button(button);
-                            });
+                .embed(|embed| {
+                    embed
+                        .custom_default(&record_id)
+                        .title("投票選択肢")
+                        .description(
+                            votes
+                                .iter()
+                                .map(|(id, choice)| format!("{} {}", id, choice))
+                                .join("\n"),
+                        )
+                })
+                .components(|component| {
+                    votes
+                        .clone()
+                        .into_iter()
+                        .chunks(5)
+                        .into_iter()
+                        .map(|chunk| {
+                            let mut row = CreateActionRow::default();
 
-                        row
-                    })
+                            chunk
+                                .map(|(id, choice)| {
+                                    CreateButton::default()
+                                        .custom_id(id)
+                                        .label(id)
+                                        .emoji(ReactionType::from(choice.status.emoji()))
+                                        .to_owned()
+                                })
+                                .for_each(|button| {
+                                    row.add_button(button);
+                                });
+
+                            row
+                        })
+                        .for_each(|row| {
+                            component.add_action_row(row);
+                        });
+
+                    component
                 })
         })
         .await?
@@ -96,11 +161,11 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
     data.vote_message_id.save(vote_msg.id.0);
     debug!("vote_msg_id: {}", vote_msg.id);
 
-    let result_status = make_response_and_get_votes_result(ctx, vote_msg.clone()).await;
+    let votes_result = make_response_and_get_votes_result(ctx, vote_msg.clone(), votes).await;
     let _ = vote_msg.delete(&ctx.discord().http).await;
-    match result_status {
-        Some(status) => {
-            end_votes(&ctx, status).await?;
+    match votes_result {
+        Some(choice) => {
+            end_votes(&ctx, choice).await?;
         }
         None => {
             error!("Interaction is timed out.");
@@ -119,7 +184,8 @@ pub async fn start(ctx: Context<'_>) -> CommandResult {
 async fn make_response_and_get_votes_result(
     ctx: Context<'_>,
     msg: Message,
-) -> Option<AgendaStatus> {
+    vote_choices: Vec<VoteChoiceWithId>,
+) -> Option<VoteChoice> {
     debug!("Start to response.");
     let (update_votes_snd, mut update_votes_recv) = broadcast::channel(20);
     let mut sub_update_votes_recv = update_votes_snd.subscribe();
@@ -139,15 +205,19 @@ async fn make_response_and_get_votes_result(
             let _ = interaction.defer(&serenity_ctx.http).await;
 
             debug!("Receive interaction");
-            let status = AgendaStatus::from_string(&interaction.data.custom_id).unwrap();
-            debug!("Vote: {:?}", status);
+            let choice = vote_choices
+                .iter()
+                .find(|(id, _)| id == &interaction.data.custom_id.parse::<usize>().unwrap())
+                .unwrap()
+                .to_owned();
+            debug!("Vote: {} {}", choice.0, choice.1);
             let _ = interaction
                 .create_interaction_response(&serenity_ctx.http, |r| {
                     r.kind(InteractionResponseType::ChannelMessageWithSource)
                         .interaction_response_data(|d| {
                             d.content(format!(
                                 "「{}」に投票しました。2度目以降は最後の投票が有効になります",
-                                status.ja()
+                                choice.1
                             ))
                             .ephemeral(true)
                         })
@@ -160,7 +230,7 @@ async fn make_response_and_get_votes_result(
                     .filter(|member| !member.user.bot)
                     .map(|member| member.user.id)
                     .unwrap(),
-                status,
+                choice,
             );
             debug!("Send vote_map update");
             let _ = update_votes_snd.send(vote_map.clone().into_values().collect_vec());
@@ -207,7 +277,7 @@ async fn make_response_and_get_votes_result(
 
             if let Some(res) = maybe_vote_result {
                 debug!("Send found vote_result");
-                let _ = votes_result_snd.send(res).await;
+                let _ = votes_result_snd.send(res.1).await;
             }
         }
     });
@@ -225,9 +295,9 @@ async fn make_response_and_get_votes_result(
     None
 }
 
-/// AgendaStatusの配列とVCの参加人数を受け取り、人数の過半数を超える票が集まったものがないかを返す
-fn total_votes(vec: Vec<AgendaStatus>, vc_members_count: usize) -> Option<AgendaStatus> {
-    let counts = vec.into_iter().counts();
+/// 票の配列とVCの参加人数を受け取り、人数の過半数を超える票が集まったものがないかを返す
+fn total_votes(votes: Vec<VoteChoiceWithId>, vc_members_count: usize) -> Option<VoteChoiceWithId> {
+    let counts = votes.into_iter().counts();
     debug!("votes_count_map: {:?}", counts);
     let half_of_total = vc_members_count / 2;
     debug!("half_of_total_members: {}", half_of_total);

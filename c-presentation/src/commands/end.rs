@@ -16,6 +16,7 @@ use poise::futures_util::future;
 /// 会議を終了します
 #[poise::command(slash_command)]
 pub async fn end(ctx: Context<'_>) -> CommandResult {
+    let _ = ctx.defer().await;
     let data = ctx.data();
     let record_use_case = &data.use_cases.record;
     let record_id = data

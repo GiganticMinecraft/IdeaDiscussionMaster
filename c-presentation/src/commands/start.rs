@@ -20,6 +20,7 @@ pub async fn start(
     #[min = 1]
     record_id: Option<u16>,
 ) -> CommandResult {
+    let _ = ctx.defer().await;
     let data = ctx.data();
     ensure!(
         data.record_id.get().is_none(),
