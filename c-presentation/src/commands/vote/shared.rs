@@ -3,19 +3,21 @@ use crate::{
     shared::{
         discord_embed,
         ext::{SortAgendasExt, UseFormattedId},
-        CommandError,
+        CommandError, VoteChoice,
     },
 };
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
 };
+use std::fmt::format;
 
+use c_usecase::redmine::model::CreateNoteParam;
 use itertools::Itertools;
 use log::info;
 
-pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Result<()> {
-    info!("Vote finished: {:?}", status);
+pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<()> {
+    info!("Vote finished: {}", choice);
     let data = ctx.data();
     let agenda_use_case = &data.use_cases.agenda;
     let record_id = data
@@ -35,19 +37,25 @@ pub async fn end_votes(ctx: &Context<'_>, status: AgendaStatus) -> anyhow::Resul
         let _ = ctx
             .channel_id()
             .send_message(&ctx.discord().http, |c| {
-                c.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &status))
+                c.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &choice))
             })
             .await;
     } else {
         let _ = ctx
             .send(|r| {
-                r.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &status))
+                r.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &choice))
             })
             .await;
     }
 
     // ステータスに応じてRedmineを更新
-    match status {
+    let _ = agenda_use_case
+        .add_note(
+            &current_agenda_id,
+            CreateNoteParam::new(format!("{}", choice)),
+        )
+        .await;
+    match choice.status {
         AgendaStatus::Approved => {
             agenda_use_case.approve(&current_agenda_id).await?;
         }

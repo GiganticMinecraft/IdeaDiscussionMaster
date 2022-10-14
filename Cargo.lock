@@ -339,6 +339,7 @@ dependencies = [
  "chrono",
  "derive-new",
  "mockall",
+ "serde",
  "strum",
  "test-case",
 ]
@@ -382,6 +383,8 @@ dependencies = [
  "once_cell",
  "poise",
  "regex",
+ "serde",
+ "serde_json",
  "strum",
  "thiserror",
  "tokio",

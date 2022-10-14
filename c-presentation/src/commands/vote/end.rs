@@ -1,4 +1,7 @@
-use crate::commands::{vote::shared::end_votes, CommandResult, Context};
+use crate::{
+    commands::{vote::shared::end_votes, CommandResult, Context},
+    shared::{ext::UseStatusJa, VoteChoice},
+};
 use c_domain::redmine::model::status::AgendaStatus;
 
 use anyhow::anyhow;
@@ -25,6 +28,7 @@ pub async fn end(
     #[autocomplete = "autocomplete_agenda_status_string"]
     status: String,
 ) -> CommandResult {
+    let _ = ctx.defer().await;
     let status = AgendaStatus::from_string(&status).ok_or_else(|| {
         anyhow!(
             "議題のステータスは{}のうちいずれか1つのみ指定できます",
@@ -35,7 +39,8 @@ pub async fn end(
                 .join("、")
         )
     })?;
-    end_votes(&ctx, status).await?;
+    let choice = VoteChoice::new(status, status.ja());
+    end_votes(&ctx, choice).await?;
 
     Ok(())
 }

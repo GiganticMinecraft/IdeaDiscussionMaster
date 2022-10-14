@@ -1,4 +1,7 @@
-use crate::shared::ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusEmoji, UseStatusJa};
+use crate::shared::{
+    ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusEmoji, UseStatusJa},
+    VoteChoice, VoteChoiceWithId,
+};
 use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
@@ -68,12 +71,12 @@ pub fn agendas_result(
         .custom_fields(agenda_fields)
 }
 
-pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<AgendaStatus>) -> &mut CreateEmbed {
+pub fn vote_progress(embed: &mut CreateEmbed, votes: Vec<VoteChoiceWithId>) -> &mut CreateEmbed {
     let votes = votes
         .into_iter()
         .counts()
         .into_iter()
-        .map(|(st, count)| format!("{} {}: {}", st.emoji(), st.ja(), count))
+        .map(|((id, choice), count)| format!("{} {}: {}", id, choice.status.ja(), count))
         .join("\n");
 
     embed
@@ -90,17 +93,20 @@ pub fn vote_result<'a>(
     embed: &'a mut CreateEmbed,
     record_id: &RecordId,
     current_agenda_id: &AgendaId,
-    vote_result: &AgendaStatus,
+    choice: &VoteChoice,
 ) -> &'a mut CreateEmbed {
-    match vote_result {
+    match choice.status {
         AgendaStatus::Approved => embed.success_color(),
         AgendaStatus::Declined => embed.failure_color(),
         _ => embed,
     };
 
-    embed.custom_default(record_id).title(format!(
-        "投票終了: {}は{}されました",
-        current_agenda_id.formatted(),
-        vote_result.ja()
-    ))
+    embed
+        .custom_default(record_id)
+        .title(format!(
+            "投票終了: {}は{}されました",
+            current_agenda_id.formatted(),
+            choice.status.ja()
+        ))
+        .description(format!("{}", choice))
 }
