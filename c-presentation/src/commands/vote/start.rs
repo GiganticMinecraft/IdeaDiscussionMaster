@@ -35,7 +35,7 @@ const VOTE_CHOICES_LIMIT: u8 = 5 * 5;
 #[poise::command(slash_command)]
 pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandResult {
     let _ = ctx.defer().await;
-    let votes: Vec<VoteChoiceWithId> = match attachment {
+    let votes = match attachment {
         Some(attachment) => {
             ensure!(
                 attachment
@@ -55,15 +55,18 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
                 .into_iter()
                 .unique()
                 .enumerate()
-                .collect()
+                .collect_vec()
         }
         None => AgendaStatus::closed()
             .into_iter()
             .map(|s| VoteChoice::new(s, s.to_string()))
             .unique()
             .enumerate()
-            .collect(),
-    };
+            .collect_vec(),
+    }
+    .into_iter()
+    .map(|(id, choice)| (id + 1, choice))
+    .collect_vec();
     ensure!(
         votes.len() <= VOTE_CHOICES_LIMIT.into(),
         "A vote can have up to {} choices",
@@ -119,7 +122,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
                         .description(
                             votes
                                 .iter()
-                                .map(|(id, choice)| format!("{} {}", id, choice))
+                                .map(|(id, choice)| format!("選択肢{}: {}", id, choice))
                                 .join("\n"),
                         )
                 })
@@ -136,7 +139,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
                                 .map(|(id, choice)| {
                                     CreateButton::default()
                                         .custom_id(id)
-                                        .label(id)
+                                        .label(format!("選択肢{}", id))
                                         .emoji(ReactionType::from(choice.status.emoji()))
                                         .to_owned()
                                 })
@@ -212,7 +215,8 @@ async fn make_response_and_get_votes_result(
                     r.kind(InteractionResponseType::ChannelMessageWithSource)
                         .interaction_response_data(|d| {
                             d.content(format!(
-                                "「{}」に投票しました。2度目以降は最後の投票が有効になります",
+                                "選択肢{}:「{}」に投票しました。2度目以降は最後の投票が有効になります",
+                                choice.0,
                                 choice.1
                             ))
                             .ephemeral(true)
