@@ -200,8 +200,6 @@ async fn make_response_and_get_votes_result(
             .next()
             .await
         {
-            let _ = interaction.defer(&serenity_ctx.http).await;
-
             debug!("Receive interaction");
             let choice = vote_choices
                 .iter()
