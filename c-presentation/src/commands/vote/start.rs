@@ -3,7 +3,7 @@ use crate::{
     commands::{CommandResult, Context},
     shared::{
         discord_embed,
-        ext::{CreateEmbedExt, UseFormattedId, UseStatusEmoji, UseStatusJa},
+        ext::{CreateEmbedExt, UseFormattedId, UseStatusEmoji},
         CommandError, VoteChoice, VoteChoiceWithId,
     },
 };
@@ -13,7 +13,7 @@ use c_domain::redmine::model::{
 };
 
 use anyhow::{ensure, Context as _};
-use derive_new::new;
+
 use itertools::Itertools;
 use log::{debug, error, info};
 use poise::serenity_prelude::{CreateActionRow, ReactionType};
@@ -21,10 +21,8 @@ use poise::{
     futures_util::StreamExt,
     serenity_prelude::{Attachment, CreateButton, InteractionResponseType, Message},
 };
-use serde::Deserialize;
-use std::fmt::{Display, Formatter};
+
 use std::{collections::HashMap, time::Duration};
-use strum::IntoEnumIterator;
 use tokio::sync::{broadcast, mpsc};
 
 /// 投票が無効になる制限時間

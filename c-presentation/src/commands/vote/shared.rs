@@ -10,7 +10,7 @@ use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
 };
-use std::fmt::format;
+
 
 use c_usecase::redmine::model::CreateNoteParam;
 use itertools::Itertools;

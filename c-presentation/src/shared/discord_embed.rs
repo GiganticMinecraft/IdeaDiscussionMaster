@@ -1,5 +1,5 @@
 use crate::shared::{
-    ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusEmoji, UseStatusJa},
+    ext::{CreateEmbedExt, CutString, UseFormattedId, UseStatusJa},
     VoteChoice, VoteChoiceWithId,
 };
 use c_domain::redmine::model::{
