@@ -34,9 +34,9 @@ const VOTE_CHOICES_LIMIT: u8 = 5 * 5;
 /// 採決を開始します
 #[poise::command(slash_command)]
 pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandResult {
-    let _ = ctx.defer_ephemeral().await;
     let votes: Vec<VoteChoiceWithId> = match attachment {
         Some(attachment) => {
+            let _ = ctx.defer_ephemeral().await;
             ensure!(
                 attachment
                     .content_type
@@ -57,12 +57,16 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
                 .enumerate()
                 .collect()
         }
-        None => AgendaStatus::closed()
-            .into_iter()
-            .map(|s| VoteChoice::new(s, s.to_string()))
-            .unique()
-            .enumerate()
-            .collect(),
+        None => {
+            let _ = ctx.defer().await;
+            
+            AgendaStatus::closed()
+                .into_iter()
+                .map(|s| VoteChoice::new(s, s.to_string()))
+                .unique()
+                .enumerate()
+                .collect()
+        }
     };
     ensure!(
         votes.len() <= VOTE_CHOICES_LIMIT.into(),
