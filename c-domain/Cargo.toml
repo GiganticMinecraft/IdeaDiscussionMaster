@@ -1,17 +1,18 @@
 [package]
 name = "c-domain"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [features]
 mock = ["mockall"]
 
 [dependencies]
-anyhow = "1.0"
+anyhow.workspace = true
+chrono.workspace = true
+derive-new.workspace = true
+
 async-trait = "0.1"
-derive-new = "0.5"
 strum = { version = "0.24", features = ["derive"] }
-chrono = "0.4"
 mockall = {version = "0.11", optional = true}
 serde = { version = "1.0", features = ["derive"] }
 
