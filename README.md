@@ -11,7 +11,6 @@
 |vote start|投票を開始するコマンド。投票を促すメッセージを投稿し、所定のリアクションをそのメッセージに付与する。なお、当該メッセにVCの過半数を超えるリアクションがつくと、自動で`vote end`コマンドと同等の処理を行う。|
 |vote end|議題を終了するコマンド。指定されたステータスで議題チケットを更新・記録して、次の議題を選択・提示する。|
 |agenda add|議題を追加するコマンド。指定されたチケットを議事録チケットに関連付け、現在の議題を再抽選、表示する。|
-|create new_record|次回の議事録チケットを作成するコマンド。|
 |create issue|SeichiAssistにIssueを追加するコマンド。|
 |create thread|承認された議題につき個別の議論をするために各議題ごとにスレッドを作成するコマンド。|
 
@@ -44,10 +43,6 @@
 ## License
 
 [MIT License](./LICENSE)
-
-### Some codes are licensed under the other one
-
-See [this file](./crate-presentation/src/shared/command/README.md).
 
 [1]: https://discord.com/developers/docs
 [2]: https://docs.github.com/ja/developers/apps/building-github-apps/authenticating-with-github-apps
