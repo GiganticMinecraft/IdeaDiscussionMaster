@@ -59,7 +59,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
         }
         None => {
             let _ = ctx.defer().await;
-            
+
             AgendaStatus::closed()
                 .into_iter()
                 .map(|s| VoteChoice::new(s, s.to_string()))
