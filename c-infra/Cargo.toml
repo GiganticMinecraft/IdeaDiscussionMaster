@@ -19,7 +19,7 @@ strum.workspace = true
 
 async-trait = "0.1"
 surf = "2.3"
-create-github-app-token = "2.0.0"
+create-github-app-token = "2.0.1"
 
 [dev-dependencies]
 test-case.workspace = true
