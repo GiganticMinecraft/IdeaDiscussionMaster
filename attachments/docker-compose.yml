@@ -2,6 +2,7 @@ version: '3'
 services:
   bot:
     image: ghcr.io/giganticminecraft/idea-discussion-master:latest
+    container_name: idea-bot
     restart: on-failure:3
     env_file:
       - ./.env
