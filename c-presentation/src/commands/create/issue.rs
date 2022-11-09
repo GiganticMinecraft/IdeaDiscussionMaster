@@ -54,7 +54,7 @@ pub async fn issue(
     #[min = 1]
     record_issue_number: u16,
     #[description = "Issueを作成しない議題のチケット番号群(半角スペース区切り)"]
-    excluded_idea_issue_numbers: String,
+    excluded_idea_issue_numbers: Option<String>,
 ) -> CommandResult {
     let _ = ctx.defer().await;
     let record_id = RecordId::new(record_issue_number);
