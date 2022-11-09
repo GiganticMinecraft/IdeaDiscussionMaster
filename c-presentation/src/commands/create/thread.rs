@@ -25,7 +25,7 @@ pub async fn thread(
     let record_id = RecordId::new(record_issue_number);
     let record = ctx.data().use_cases.record.find(&record_id).await?;
     info!("record_id: {}", record_id.formatted());
-    let idea_ids = parse_string_as_agenda_ids(idea_issue_numbers)?;
+    let idea_ids = parse_string_as_agenda_ids(Some(idea_issue_numbers))?;
     let agendas = ctx
         .data()
         .use_cases
