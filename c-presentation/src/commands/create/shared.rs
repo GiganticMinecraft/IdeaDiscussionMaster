@@ -6,7 +6,7 @@ use itertools::Itertools;
 pub fn parse_string_as_agenda_ids(idea_arg: Option<String>) -> anyhow::Result<Vec<AgendaId>> {
     let idea_args = match idea_arg {
         Some(args) => args,
-        None => return Ok(Vec::new())
+        None => return Ok(Vec::new()),
     };
     let ideas = idea_arg
         .split(' ')
