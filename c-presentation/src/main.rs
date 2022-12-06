@@ -6,8 +6,8 @@ use itertools::Itertools;
 use log::{debug, error, info};
 use poise::{
     builtins::create_application_commands,
-    serenity_prelude::{Context, GatewayIntents, GuildId},
-    Event, FrameworkContext, FrameworkError, PrefixFrameworkOptions,
+    serenity_prelude::{GatewayIntents, GuildId},
+    Event, FrameworkError, PrefixFrameworkOptions,
 };
 
 #[derive(FromArgs)]
@@ -117,7 +117,7 @@ async fn main() {
                             error!("{}", message);
                             let _ = ctx.say(message).await;
                         }
-                        FrameworkError::Listener {
+                        FrameworkError::EventHandler {
                             error,
                             event: Event::Ready { .. },
                             ..
@@ -128,7 +128,7 @@ async fn main() {
                     };
                 })
             },
-            listener: |ctx: &Context, event, framework_ctx: FrameworkContext<_, _>, _| {
+            event_handler: |ctx, event, framework_ctx, _| {
                 Box::pin(async move {
                     if let Event::Ready { .. } = event {
                         // region register commands
@@ -161,7 +161,7 @@ async fn main() {
         })
         .token(Env::new().discord_token)
         .intents(GatewayIntents::non_privileged().union(GatewayIntents::MESSAGE_CONTENT))
-        .user_data_setup(move |_, _, _| {
+        .setup(move |_, _, _| {
             Box::pin(async move { Ok(Data::new("https://redmine.seichi.click".to_string()).await) })
         });
 

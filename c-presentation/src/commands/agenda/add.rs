@@ -1,14 +1,15 @@
 use crate::{
     commands::{CommandResult, Context},
     shared::{
+        discord_embed,
         ext::{CreateEmbedExt, UseFormattedId},
         CommandError,
     },
 };
 use c_domain::redmine::model::id::{AgendaId, RecordId};
 
-use crate::shared::discord_embed;
 use log::info;
+use poise::serenity_prelude::CacheHttp;
 
 /// 議題を追加します
 #[poise::command(slash_command)]
@@ -55,7 +56,7 @@ pub async fn add(
         ctx.data().current_agenda_id.save(new_agenda.id);
         let _ = ctx
             .channel_id()
-            .send_message(&ctx.discord().http, |c| {
+            .send_message(&ctx.http(), |c| {
                 c.embed(|e| discord_embed::next_agenda_embed(e, &record_id, &new_agenda))
             })
             .await?;

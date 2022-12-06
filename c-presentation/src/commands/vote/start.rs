@@ -13,15 +13,15 @@ use c_domain::redmine::model::{
 };
 
 use anyhow::{ensure, Context as _};
-
 use itertools::Itertools;
 use log::{debug, error, info};
-use poise::serenity_prelude::{CreateActionRow, ReactionType};
 use poise::{
     futures_util::StreamExt,
-    serenity_prelude::{Attachment, CreateButton, InteractionResponseType, Message},
+    serenity_prelude::{
+        Attachment, CacheHttp, CreateActionRow, CreateButton, InteractionResponseType, Message,
+        ReactionType,
+    },
 };
-
 use std::{collections::HashMap, time::Duration};
 use tokio::sync::{broadcast, mpsc};
 
@@ -163,7 +163,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
     debug!("vote_msg_id: {}", vote_msg.id);
 
     let votes_result = make_response_and_get_votes_result(ctx, vote_msg.clone(), votes).await;
-    let _ = vote_msg.delete(&ctx.discord().http).await;
+    let _ = vote_msg.delete(&ctx.http()).await;
     match votes_result {
         Some(choice) => {
             end_votes(&ctx, choice).await?;
@@ -173,7 +173,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
             data.vote_message_id.clear();
             let _ = ctx
                 .channel_id()
-                .send_message(&ctx.discord().http, |b| b.content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
+                .send_message(&ctx.http(), |b| b.content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
                 .await;
         }
     };
@@ -191,7 +191,7 @@ async fn make_response_and_get_votes_result(
     let (update_votes_snd, mut update_votes_recv) = broadcast::channel(20);
     let mut sub_update_votes_recv = update_votes_snd.subscribe();
 
-    let serenity_ctx = ctx.discord().clone();
+    let serenity_ctx = ctx.serenity_context().clone();
     let wait_reactions = tokio::spawn(async move {
         debug!("Wait for reactions");
         let mut vote_map = HashMap::new();
@@ -240,7 +240,7 @@ async fn make_response_and_get_votes_result(
     });
 
     let ch_id = ctx.channel_id();
-    let serenity_ctx = ctx.discord().clone();
+    let serenity_ctx = ctx.serenity_context().clone();
     tokio::spawn(async move {
         let mut msg = ch_id
             .send_message(&serenity_ctx.http, |c| {
