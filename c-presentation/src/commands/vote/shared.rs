@@ -10,10 +10,11 @@ use c_domain::redmine::model::{
     id::{AgendaId, RecordId},
     status::AgendaStatus,
 };
-
 use c_usecase::redmine::model::CreateNoteParam;
+
 use itertools::Itertools;
 use log::info;
+use poise::serenity_prelude::CacheHttp;
 
 pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<()> {
     info!("Vote finished: {}", choice);
@@ -35,7 +36,7 @@ pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<
     if data.vote_message_id.get().is_some() {
         let _ = ctx
             .channel_id()
-            .send_message(&ctx.discord().http, |c| {
+            .send_message(&ctx.http(), |c| {
                 c.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &choice))
             })
             .await;
@@ -86,7 +87,7 @@ pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<
     // 次の議題の存否に応じてEmbedを送信
     let _ = ctx
         .channel_id()
-        .send_message(&ctx.discord().http, |c| {
+        .send_message(&ctx.http(), |c| {
             c.embed(|e| match next_agenda {
                 Some(agenda) => {
                     info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());

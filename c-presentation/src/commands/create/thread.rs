@@ -10,6 +10,7 @@ use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use itertools::Itertools;
 use log::{debug, info};
+use poise::serenity_prelude::CacheHttp;
 
 /// 承認されたアイデアについて追加議論を行うためのスレッドを作成します
 #[poise::command(slash_command)]
@@ -63,14 +64,14 @@ pub async fn thread(
         let msg = ctx
             .channel_id()
             .say(
-                &ctx.discord().http,
+                &ctx.http(),
                 format!("{}についてのスレッドを作成しました", formatted_agenda_id),
             )
             .await
             .unwrap();
         if let Ok(th) = ctx
             .channel_id()
-            .create_public_thread(&ctx.discord().http, msg.id, |b| {
+            .create_public_thread(&ctx.http(), msg.id, |b| {
                 // Threads will be archived in 24 hours automatically
                 b.name(format!(
                     "{}: {}",
@@ -83,7 +84,7 @@ pub async fn thread(
             .await
         {
             let _ = th
-                .send_message(&ctx.discord().http, |b|
+                .send_message(&ctx.http(), |b|
                     b.content(format!(
                         "このスレッドは、{}にて承認されたアイデア{}について個別に議論を行うためのものです。",
                         record.discussion_title(),
