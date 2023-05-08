@@ -57,6 +57,19 @@ fn setup_logger(is_verbose: bool) -> Result<(), fern::InitError> {
 #[tokio::main]
 async fn main() {
     let arg: Arg = argh::from_env();
+
+    // Sentryの初期化
+    let _guard = sentry::init((
+        "https://de155768f0ec466c8f1886da2fc4e0c3@sentry.onp.admin.seichi.click/3",
+        sentry::ClientOptions {
+            release: sentry::release_name!(),
+            environment: Some("".into()),
+            traces_sample_rate: 0.25,
+            ..Default::default()
+        },
+    ));
+    sentry::configure_scope(|scope| scope.set_level(Some(sentry::Level::Warning)));
+
     setup_logger(arg.is_verbose).expect("ログの初期化に失敗しました");
     if arg.is_verbose {
         debug!("Logging level is debug")
