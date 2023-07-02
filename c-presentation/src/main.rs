@@ -6,9 +6,10 @@ use itertools::Itertools;
 use log::{debug, error, info};
 use poise::{
     builtins::create_application_commands,
-    serenity_prelude::{GatewayIntents, GuildId},
+    serenity_prelude::{GatewayIntents, GuildId, UserId},
     Event, FrameworkError, PrefixFrameworkOptions,
 };
+use std::{collections::HashSet, iter::FromIterator};
 
 #[derive(FromArgs)]
 /// CLI arg
@@ -82,9 +83,11 @@ async fn main() {
         commands::agenda(),
         commands::create(),
     ];
+    let owners = vec![UserId(255951609174032385)];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands,
+            owners: HashSet::from_iter(owners.iter().cloned()),
             prefix_options: PrefixFrameworkOptions {
                 prefix: Some("\\".into()),
                 ..Default::default()
