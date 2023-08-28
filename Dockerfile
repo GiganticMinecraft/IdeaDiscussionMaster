@@ -8,7 +8,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 ### Builder ###
-FROM clux/muslrust:1.71.1 AS chef
+FROM clux/muslrust:1.72.0 AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
