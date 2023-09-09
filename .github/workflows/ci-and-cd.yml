@@ -19,7 +19,7 @@ jobs:
     name: Lint and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
       - name: Setup Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -45,7 +45,7 @@ jobs:
     name: Build Docker image, and Publish on main branch
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
@@ -82,7 +82,7 @@ jobs:
       - build-image
     if: ${{ github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Make GitHub App Secret Key
         working-directory: ./attachments
         # 秘密鍵は改行が含まれているのでヒアドキュメントを利用して書き込む
