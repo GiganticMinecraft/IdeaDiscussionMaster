@@ -16,7 +16,7 @@ impl<T> GitHubRepositoryImpl<T> {
     pub async fn new() -> Self {
         Self {
             client: GitHubClient::new().await,
-            _marker: PhantomData::default(),
+            _marker: PhantomData,
         }
     }
 }

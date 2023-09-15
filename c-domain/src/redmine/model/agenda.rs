@@ -37,7 +37,7 @@ impl Agenda {
 
     pub fn approve(self) -> anyhow::Result<Self> {
         anyhow::ensure!(
-            vec![AgendaStatus::New, AgendaStatus::InProgress].contains(&self.status),
+            [AgendaStatus::New, AgendaStatus::InProgress].contains(&self.status),
             "ステータスが「新規」または「進行中」である議題のみ「承認」に変更できます"
         );
 
@@ -49,7 +49,7 @@ impl Agenda {
 
     pub fn decline(self) -> anyhow::Result<Self> {
         anyhow::ensure!(
-            vec![AgendaStatus::New, AgendaStatus::InProgress].contains(&self.status),
+            [AgendaStatus::New, AgendaStatus::InProgress].contains(&self.status),
             "ステータスが「新規」または「進行中」である議題のみ「却下」に変更できます"
         );
 

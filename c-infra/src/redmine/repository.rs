@@ -14,7 +14,7 @@ impl<T> RedmineRepositoryImpl<T> {
     pub fn new(url: String) -> Self {
         Self {
             client: RedmineClient::new(url),
-            _marker: PhantomData::default(),
+            _marker: PhantomData,
         }
     }
 }
