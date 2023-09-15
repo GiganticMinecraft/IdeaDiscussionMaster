@@ -91,8 +91,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
 
     info!("Vote started: {}", current_agenda_id.formatted());
 
-    let embed_description = vec![
-        "提起されている議題についての投票を行います。",
+    let embed_description = ["提起されている議題についての投票を行います。",
         "以下のボタンで投票を行ってください。",
         "",
         "注意事項",
@@ -102,8 +101,7 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
             "・{}分以内に投票が終了しなければ、投票は無効となります。",
             VOTES_TIMEOUT_MINUTES
         ),
-        "・「インタラクションに失敗した」というメッセージが表示されても、投票は正常に行われています。"
-    ]
+        "・「インタラクションに失敗した」というメッセージが表示されても、投票は正常に行われています。"]
     .join("\n");
 
     let vote_msg = ctx

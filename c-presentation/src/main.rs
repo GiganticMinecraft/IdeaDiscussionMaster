@@ -83,7 +83,7 @@ async fn main() {
         commands::agenda(),
         commands::create(),
     ];
-    let owners = vec![UserId(255951609174032385)];
+    let owners = [UserId(255951609174032385)];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands,
