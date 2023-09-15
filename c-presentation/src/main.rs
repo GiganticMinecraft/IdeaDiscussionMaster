@@ -82,6 +82,7 @@ async fn main() {
         commands::vote(),
         commands::agenda(),
         commands::create(),
+        commands::ping(),
     ];
     let owners = [UserId(255951609174032385)];
     let framework = poise::Framework::builder()
