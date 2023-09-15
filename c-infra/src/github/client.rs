@@ -11,9 +11,13 @@ pub struct GitHubClient {
 
 impl GitHubClient {
     pub async fn new() -> Self {
+        let token = Self::create_token()
+            .await
+            .unwrap_or_else(|e| panic!("Error while opening GitHub app secret key: {}", e));
+
         Self {
             client: Arc::new(Client::new()),
-            token: format!("token {}", Self::create_token().await.unwrap()),
+            token: format!("token {}", token),
         }
     }
 
