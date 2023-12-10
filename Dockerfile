@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1.6
 ### Prepare for Runner ###
 # chrono::LocalDate requires TimeZone file
 FROM ubuntu:22.04 AS prepare-runner
