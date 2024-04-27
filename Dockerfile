@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 ### Prepare for Runner ###
 # chrono::LocalDate requires TimeZone file
-FROM ubuntu:22.04 AS prepare-runner
+FROM ubuntu:24.04 AS prepare-runner
 RUN apt-get update \
     && apt-get install -y --no-install-recommends tzdata \
     && apt-get -y clean \
