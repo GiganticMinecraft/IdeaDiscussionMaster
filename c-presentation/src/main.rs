@@ -61,7 +61,7 @@ async fn main() {
 
     // Sentryの初期化
     let _guard = sentry::init((
-        "https://de155768f0ec466c8f1886da2fc4e0c3@sentry.onp.admin.seichi.click/3",
+        "https://0bfbde817741cd7b4ac3719584c2715b@sentry.onp.admin.seichi.click/3",
         sentry::ClientOptions {
             release: sentry::release_name!(),
             environment: Some("".into()),
