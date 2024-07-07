@@ -9,7 +9,6 @@ use crate::{
 use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use log::info;
-use poise::serenity_prelude::CacheHttp;
 
 /// 議題を追加します
 #[poise::command(slash_command)]

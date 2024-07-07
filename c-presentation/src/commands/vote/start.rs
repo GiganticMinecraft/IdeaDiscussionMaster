@@ -18,8 +18,7 @@ use log::{debug, error, info};
 use poise::{
     futures_util::StreamExt,
     serenity_prelude::{
-        Attachment, CacheHttp, CreateActionRow, CreateButton, InteractionResponseType, Message,
-        ReactionType,
+        Attachment, CreateActionRow, CreateButton, InteractionResponseType, Message, ReactionType,
     },
 };
 use std::{collections::HashMap, time::Duration};
