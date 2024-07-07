@@ -54,10 +54,7 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
             ("tracker_id", "34"),
             ("limit", &limit),
         ];
-        let status = status
-            .iter()
-            .map(|status| status.id().to_string())
-            .join(",");
+        let status = status.iter().map(|status| status.id()).join(",");
         if !status.is_empty() {
             queries.push(("status_id", &status));
         }
