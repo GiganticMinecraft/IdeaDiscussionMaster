@@ -10,7 +10,7 @@ use c_domain::redmine::model::id::{AgendaId, RecordId};
 use anyhow::ensure;
 use itertools::Itertools;
 use log::{debug, info};
-use poise::futures_util::future;
+use poise::{futures_util::future, serenity_prelude::CreateEmbed, CreateReply};
 
 /// 会議を開始します
 #[poise::command(slash_command)]
@@ -29,7 +29,7 @@ pub async fn start(
 
     let vc_id = ctx
         .guild()
-        .map(|g| g.voice_states)
+        .map(|g| g.clone().voice_states)
         .and_then(|map| map.get(&ctx.author().id).cloned())
         .and_then(|state| state.channel_id)
         .ok_or_else(|| anyhow::anyhow!("会議を開始するにはVCに参加してください"))?;
@@ -79,19 +79,22 @@ pub async fn start(
         data.current_agenda_id.save(agenda.id);
     };
 
+    let embed = match next_agenda {
+        Some(agenda) => discord_embed::next_agenda_embed(CreateEmbed::new(), &record_id, agenda),
+        None => discord_embed::no_next_agenda(CreateEmbed::new(), &record_id),
+    };
     let _ = ctx
-        .send(|r| {
-            r.embed(|e| {
-                e.custom_default(&record_id)
-                    .title("会議を開始しました")
-                    .custom_field("議事録チケット", record.url(), false)
-            })
-            .embed(|e| match next_agenda {
-                Some(agenda) => discord_embed::next_agenda_embed(e, &record_id, agenda),
-                None => discord_embed::no_next_agenda(e, &record_id),
-            })
-        })
-        .await;
+        .send(
+            CreateReply::default()
+                .embed(
+                    CreateEmbed::new()
+                        .custom_default(&record_id)
+                        .title("会議を開始しました")
+                        .custom_field("議事録チケット", record.url(), false),
+                )
+                .embed(embed),
+        )
+        .await?;
 
     Ok(())
 }

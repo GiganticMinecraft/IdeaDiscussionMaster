@@ -9,6 +9,10 @@ use crate::{
 use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use log::info;
+use poise::{
+    serenity_prelude::{CreateEmbed, CreateMessage},
+    CreateReply,
+};
 
 /// 議題を追加します
 #[poise::command(slash_command)]
@@ -39,14 +43,15 @@ pub async fn add(
         new_agenda_id, record_id
     );
     let _ = ctx
-        .send(|c| {
-            c.embed(|e| {
-                e.custom_default(&record_id)
+        .send(
+            CreateReply::default().embed(
+                CreateEmbed::new()
+                    .custom_default(&record_id)
                     .title("議題を追加しました")
                     .description(format!("追加した議題: {}", new_agenda_id.formatted()))
-                    .success_color()
-            })
-        })
+                    .success_color(),
+            ),
+        )
         .await?;
 
     // 現在進行中の議題がなければ、議題として提示
@@ -55,9 +60,14 @@ pub async fn add(
         ctx.data().current_agenda_id.save(new_agenda.id);
         let _ = ctx
             .channel_id()
-            .send_message(&ctx.http(), |c| {
-                c.embed(|e| discord_embed::next_agenda_embed(e, &record_id, &new_agenda))
-            })
+            .send_message(
+                &ctx.http(),
+                CreateMessage::new().embed(discord_embed::next_agenda_embed(
+                    CreateEmbed::new(),
+                    &record_id,
+                    &new_agenda,
+                )),
+            )
             .await?;
     }
 

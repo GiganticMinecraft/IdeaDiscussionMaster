@@ -14,7 +14,10 @@ use c_usecase::redmine::model::CreateNoteParam;
 
 use itertools::Itertools;
 use log::info;
-use poise::serenity_prelude::CacheHttp;
+use poise::{
+    serenity_prelude::{CacheHttp, CreateEmbed, CreateMessage},
+    CreateReply,
+};
 
 pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<()> {
     info!("Vote finished: {}", choice);
@@ -36,15 +39,24 @@ pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<
     if data.vote_message_id.get().is_some() {
         let _ = ctx
             .channel_id()
-            .send_message(&ctx.http(), |c| {
-                c.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &choice))
-            })
+            .send_message(
+                &ctx.http(),
+                CreateMessage::new().embed(discord_embed::vote_result(
+                    CreateEmbed::new(),
+                    &record_id,
+                    &current_agenda_id,
+                    &choice,
+                )),
+            )
             .await;
     } else {
         let _ = ctx
-            .send(|r| {
-                r.embed(|e| discord_embed::vote_result(e, &record_id, &current_agenda_id, &choice))
-            })
+            .send(CreateReply::default().embed(discord_embed::vote_result(
+                CreateEmbed::new(),
+                &record_id,
+                &current_agenda_id,
+                &choice,
+            )))
             .await;
     }
 
@@ -85,22 +97,19 @@ pub async fn end_votes(ctx: &Context<'_>, choice: VoteChoice) -> anyhow::Result<
         data.current_agenda_id.save(agenda.id);
     }
     // 次の議題の存否に応じてEmbedを送信
+    let embed = match next_agenda {
+        Some(agenda) => {
+            info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());
+            discord_embed::next_agenda_embed(CreateEmbed::new(), &record_id, agenda)
+        }
+        None => {
+            info!("No next agenda");
+            discord_embed::no_next_agenda(CreateEmbed::new(), &record_id)
+        }
+    };
     let _ = ctx
         .channel_id()
-        .send_message(&ctx.http(), |c| {
-            c.embed(|e| match next_agenda {
-                Some(agenda) => {
-                    info!("Next Agenda: {}", AgendaId::new(agenda.id).formatted());
-
-                    discord_embed::next_agenda_embed(e, &record_id, agenda)
-                }
-                None => {
-                    info!("No next agenda");
-
-                    discord_embed::no_next_agenda(e, &record_id)
-                }
-            })
-        })
+        .send_message(&ctx.http(), CreateMessage::new().embed(embed))
         .await;
 
     Ok(())

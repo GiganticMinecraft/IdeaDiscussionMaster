@@ -10,6 +10,7 @@ use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use itertools::Itertools;
 use log::{debug, info};
+use poise::serenity_prelude::{AutoArchiveDuration, CreateEmbed, CreateMessage, CreateThread};
 
 /// 承認されたアイデアについて追加議論を行うためのスレッドを作成します
 #[poise::command(slash_command)]
@@ -68,33 +69,35 @@ pub async fn thread(
             )
             .await
             .unwrap();
-        if let Ok(th) = ctx
+        let thread = ctx
             .channel_id()
-            .create_public_thread(&ctx.http(), msg.id, |b| {
-                // Threads will be archived in 24 hours automatically
-                b.name(format!(
+            .create_thread_from_message(
+                &ctx.http(),
+                msg.id,
+                CreateThread::new(format!(
                     "{}: {}",
                     record.discussion_title(),
                     formatted_agenda_id
                 ))
                 // 24時間でアーカイブされる
-                .auto_archive_duration(60 * 24)
-            })
-            .await
-        {
-            let _ = th
-                .send_message(&ctx.http(), |b|
-                    b.content(format!(
+                .auto_archive_duration(AutoArchiveDuration::OneDay),
+            )
+            .await?;
+        let _ = thread
+            .send_message(
+                &ctx.http(),
+                CreateMessage::new().content(
+                    format!(
                         "このスレッドは、{}にて承認されたアイデア{}について個別に議論を行うためのものです。",
                         record.discussion_title(),
                         formatted_agenda_id
-                    )).embed(|e|
-                        discord_embed::next_agenda_embed(e, &record_id, agenda)
-                            .title(format!("このスレッドで議論を行う議題は{}です", formatted_agenda_id))
                     )
+                ).embed(
+                    discord_embed::next_agenda_embed(CreateEmbed::new(), &record_id, agenda)
+                        .title(format!("このスレッドで議論を行う議題は{}です", formatted_agenda_id))
                 )
-                .await;
-        }
+                )
+            .await?;
     }
 
     Ok(())

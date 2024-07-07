@@ -11,7 +11,7 @@ use c_usecase::redmine::model::CreateNoteParam;
 
 use itertools::Itertools;
 use log::{debug, info};
-use poise::futures_util::future;
+use poise::{futures_util::future, serenity_prelude::CreateEmbed, CreateReply};
 
 /// 会議を終了します
 #[poise::command(slash_command)]
@@ -70,11 +70,12 @@ pub async fn end(ctx: Context<'_>) -> CommandResult {
     data.current_agenda_id.clear();
 
     let _ = ctx
-        .send(|r| {
-            r.embed(|e| {
-                discord_embed::agendas_result(e, record, result).title("会議を終了しました")
-            })
-        })
+        .send(
+            CreateReply::default().embed(
+                discord_embed::agendas_result(CreateEmbed::new(), record, result)
+                    .title("会議を終了しました"),
+            ),
+        )
         .await;
 
     Ok(())
