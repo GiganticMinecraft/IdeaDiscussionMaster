@@ -17,33 +17,22 @@ on:
 jobs:
   lint-and-test:
     name: Lint and Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
       - name: Setup Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt, clippy
+        run: rustup component add rustfmt clippy
       - name: Cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
       - name: Cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        run: cargo clippy --all-features -- -D warnings
       - name: Cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all-features
+        run: cargo test --all
 
   build-image:
     name: Build Docker image, and Publish on main branch
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Buildx
