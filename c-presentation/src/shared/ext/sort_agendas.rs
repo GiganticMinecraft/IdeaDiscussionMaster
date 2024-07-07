@@ -20,7 +20,7 @@ impl SortAgendasExt for Vec<AgendaDto> {
         // グループ化
         agendas
             .into_iter()
-            .group_by(|agenda| agenda.status)
+            .chunk_by(|agenda| agenda.status)
             .into_iter()
             .map(|(status, group)| (status, group.cloned().collect()))
             .collect()
