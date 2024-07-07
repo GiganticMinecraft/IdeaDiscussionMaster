@@ -72,7 +72,7 @@ impl RecordRepository for RedmineRepositoryImpl<Record> {
         Ok(res
             .issues
             .into_iter()
-            .filter_map(|issue| issue.try_into().ok())
+            .map(|issue| issue.into())
             .collect_vec())
     }
 
