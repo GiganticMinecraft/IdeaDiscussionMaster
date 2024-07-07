@@ -18,8 +18,10 @@ use log::{debug, error, info};
 use poise::{
     futures_util::StreamExt,
     serenity_prelude::{
-        Attachment, CreateActionRow, CreateButton, InteractionResponseType, Message, ReactionType,
+        Attachment, CreateActionRow, CreateButton, CreateEmbed, CreateInteractionResponse,
+        CreateInteractionResponseMessage, CreateMessage, EditMessage, Message, ReactionType,
     },
+    CreateReply,
 };
 use std::{collections::HashMap, time::Duration};
 use tokio::sync::{broadcast, mpsc};
@@ -102,18 +104,17 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
         ),
         "・「インタラクションに失敗した」というメッセージが表示されても、投票は正常に行われています。"]
     .join("\n");
+    let vote_embed = CreateEmbed::new()
+        .custom_default(&record_id)
+        .title(format!("投票: {}", current_agenda_id.formatted()))
+        .description(embed_description);
 
     let vote_msg = ctx
-        .send(|reply| {
-            reply
-                .embed(|embed| {
-                    embed
-                        .custom_default(&record_id)
-                        .title(format!("投票: {}", current_agenda_id.formatted()))
-                        .description(embed_description)
-                })
-                .embed(|embed| {
-                    embed
+        .send(
+            CreateReply::default()
+                .embed(vote_embed)
+                .embed(
+                    CreateEmbed::new()
                         .custom_default(&record_id)
                         .title("投票選択肢")
                         .description(
@@ -121,42 +122,32 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
                                 .iter()
                                 .map(|(id, choice)| format!("選択肢{}: {}", id, choice))
                                 .join("\n"),
-                        )
-                })
-                .components(|component| {
+                        ),
+                )
+                .components(
                     votes
                         .clone()
                         .into_iter()
                         .chunks(5)
                         .into_iter()
                         .map(|chunk| {
-                            let mut row = CreateActionRow::default();
-
-                            chunk
-                                .map(|(id, choice)| {
-                                    CreateButton::default()
-                                        .custom_id(id)
-                                        .label(format!("選択肢{}", id))
-                                        .emoji(ReactionType::from(choice.status.emoji()))
-                                        .to_owned()
-                                })
-                                .for_each(|button| {
-                                    row.add_button(button);
-                                });
-
-                            row
+                            CreateActionRow::Buttons(
+                                chunk
+                                    .map(|(id, choice)| {
+                                        CreateButton::new(id.to_string())
+                                            .label(format!("選択肢{}", id))
+                                            .emoji(ReactionType::from(choice.status.emoji()))
+                                    })
+                                    .collect_vec(),
+                            )
                         })
-                        .for_each(|row| {
-                            component.add_action_row(row);
-                        });
-
-                    component
-                })
-        })
+                        .collect_vec(),
+                ),
+        )
         .await?
         .into_message()
         .await?;
-    data.vote_message_id.save(vote_msg.id.0);
+    data.vote_message_id.save(vote_msg.id.get());
     debug!("vote_msg_id: {}", vote_msg.id);
 
     let votes_result = make_response_and_get_votes_result(ctx, vote_msg.clone(), votes).await;
@@ -170,7 +161,8 @@ pub async fn start(ctx: Context<'_>, attachment: Option<Attachment>) -> CommandR
             data.vote_message_id.clear();
             let _ = ctx
                 .channel_id()
-                .send_message(&ctx.http(), |b| b.content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
+                .send_message(&ctx.http(), CreateMessage::new().content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
+                // .send_message(&ctx.http(), |b| b.content(format!("投票が{}分以内に終了しなかったため、投票は無効となりました。再度投票を行うには、`/vote start`コマンドを実行してください", VOTES_TIMEOUT_MINUTES)))
                 .await;
         }
     };
@@ -196,7 +188,7 @@ async fn make_response_and_get_votes_result(
         while let Some(interaction) = msg
             .await_component_interactions(&serenity_ctx)
             .timeout(Duration::from_secs(VOTES_TIMEOUT_MINUTES * 60))
-            .build()
+            .stream()
             .next()
             .await
         {
@@ -208,17 +200,17 @@ async fn make_response_and_get_votes_result(
                 .to_owned();
             debug!("Vote: {} {}", choice.0, choice.1);
             let _ = interaction
-                .create_interaction_response(&serenity_ctx.http, |r| {
-                    r.kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|d| {
-                            d.content(format!(
-                                "選択肢{}:「{}」に投票しました。2度目以降は最後の投票が有効になります",
-                                choice.0,
-                                choice.1
-                            ))
-                            .ephemeral(true)
-                        })
-                })
+                .create_response(
+                    &serenity_ctx.http,
+                    CreateInteractionResponse::Message(
+                        CreateInteractionResponseMessage::new()
+                            .content(format!(
+                            "選択肢{}:「{}」に投票しました。2度目以降は最後の投票が有効になります",
+                            choice.0, choice.1
+                        ))
+                            .ephemeral(true),
+                    ),
+                )
                 .await;
             vote_map.insert(
                 interaction
@@ -240,33 +232,33 @@ async fn make_response_and_get_votes_result(
     let serenity_ctx = ctx.serenity_context().clone();
     tokio::spawn(async move {
         let mut msg = ch_id
-            .send_message(&serenity_ctx.http, |c| {
-                c.embed(|e| discord_embed::vote_progress(e, vec![]))
-            })
+            .send_message(
+                &serenity_ctx.http,
+                CreateMessage::new()
+                    .embed(discord_embed::vote_progress(CreateEmbed::new(), vec![])),
+            )
             .await
             .unwrap();
 
         while let Ok(votes) = sub_update_votes_recv.recv().await {
             debug!("Update vote progress");
             let _ = msg
-                .edit(&serenity_ctx.http, |c| {
-                    c.embed(|e| discord_embed::vote_progress(e, votes))
-                })
+                .edit(
+                    &serenity_ctx.http,
+                    EditMessage::new()
+                        .embed(discord_embed::vote_progress(CreateEmbed::new(), votes)),
+                )
                 .await;
         }
         let _ = msg.delete(&serenity_ctx.http).await;
     });
 
     let (votes_result_snd, mut votes_result_recv) = mpsc::channel(1);
-    let voice_states = ctx.guild().unwrap().voice_states;
-    let vc_id = ctx.data().vc_id.get().unwrap();
+    // TODO: use voice state
     let calculate_votes = tokio::spawn(async move {
         while let Ok(votes) = update_votes_recv.recv().await {
             debug!("Receive vote_map update");
-            let vc_members_count = voice_states
-                .iter()
-                .filter(|(_, s)| s.channel_id.filter(|id| id == &vc_id).is_some())
-                .count();
+            let vc_members_count = 0;
             debug!("vc_members_count: {}", vc_members_count);
 
             let maybe_vote_result = total_votes(votes, vc_members_count);

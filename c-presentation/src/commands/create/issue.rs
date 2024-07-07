@@ -8,7 +8,7 @@ use c_usecase::{github::model::CreateIssueParam, redmine::model::CreateNoteParam
 
 use itertools::Itertools;
 use log::info;
-use poise::{futures_util::future, serenity_prelude::CreateEmbed};
+use poise::{futures_util::future, serenity_prelude::CreateEmbed, CreateReply};
 
 type ErrAgendas = Vec<(AgendaId, anyhow::Error)>;
 
@@ -30,11 +30,11 @@ where
     (succeeded, failed)
 }
 
-fn create_failures_embed<'a>(
-    embed: &'a mut CreateEmbed,
+fn create_failures_embed(
+    embed: CreateEmbed,
     errs: &ErrAgendas,
     record_id: &RecordId,
-) -> &'a mut CreateEmbed {
+) -> CreateEmbed {
     let contents = errs
         .iter()
         .map(|(id, err)| format!("{}\n{:?}", id.formatted(), err))
@@ -122,6 +122,18 @@ pub async fn issue(
         .collect_vec();
     let (gh_issues, err_gh_issues) = group_results::<String>(github_issue_results);
 
+    if !err_gh_issues.is_empty() {
+        ctx.send(
+            CreateReply::default().embed(
+                create_failures_embed(CreateEmbed::new(), &err_gh_issues, &record_id)
+                    .title("GitHubにIssueを起票できなかった議題があります"),
+            ),
+        )
+        .await?;
+
+        return Ok(());
+    }
+
     info!("Add Redmine notes");
     let create_redmine_notes = gh_issues
         .into_iter()
@@ -151,35 +163,32 @@ pub async fn issue(
         .collect_vec();
     let (redmine_notes, err_redmine_notes) = group_results::<()>(redmine_note_results);
 
-    ctx.send(|r| {
-        if !redmine_notes.is_empty() {
-            r.embed(|e| {
-                e.custom_default(&record_id)
-                    .title("GitHubへの起票とRedmineへの注記をどちらも完了した議題は以下の通りです")
-                    .description(
-                        redmine_notes
-                            .iter()
-                            .map(|(id, _)| id.formatted())
-                            .join(", "),
-                    )
-                    .success_color()
-            });
-        }
-        if !err_gh_issues.is_empty() {
-            r.embed(|e| {
-                create_failures_embed(e, &err_gh_issues, &record_id)
-                    .title("GitHubにIssueを起票できなかった議題があります")
-            });
-        }
-        if !err_redmine_notes.is_empty() {
-            r.embed(|e| {
-                create_failures_embed(e, &err_redmine_notes, &record_id)
-                    .title("Redmineに注記をできなかった議題があります")
-            });
-        }
+    if !err_redmine_notes.is_empty() {
+        ctx.send(
+            CreateReply::default().embed(
+                create_failures_embed(CreateEmbed::new(), &err_redmine_notes, &record_id)
+                    .title("Redmineに注記をできなかった議題があります"),
+            ),
+        )
+        .await?;
 
-        r
-    })
+        return Ok(());
+    }
+
+    ctx.send(
+        CreateReply::default().embed(
+            CreateEmbed::new()
+                .custom_default(&record_id)
+                .title("GitHubへの起票とRedmineへの注記をどちらも完了した議題は以下の通りです")
+                .description(
+                    redmine_notes
+                        .iter()
+                        .map(|(id, _)| id.formatted())
+                        .join(", "),
+                )
+                .success_color(),
+        ),
+    )
     .await?;
 
     Ok(())

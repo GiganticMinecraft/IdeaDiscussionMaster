@@ -6,8 +6,8 @@ use itertools::Itertools;
 use log::{debug, error, info};
 use poise::{
     builtins::create_application_commands,
-    serenity_prelude::{GatewayIntents, GuildId, UserId},
-    Event, FrameworkError, PrefixFrameworkOptions,
+    serenity_prelude::{ClientBuilder, FullEvent, GatewayIntents, GuildId, UserId},
+    FrameworkError, PrefixFrameworkOptions,
 };
 use std::{collections::HashSet, iter::FromIterator};
 
@@ -84,7 +84,7 @@ async fn main() {
         commands::create(),
         commands::ping(),
     ];
-    let owners = [UserId(255951609174032385)];
+    let owners = [UserId::new(255951609174032385)];
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands,
@@ -104,9 +104,8 @@ async fn main() {
             pre_command: |ctx| {
                 Box::pin(async move {
                     info!(
-                        "{}#{}さんがコマンド(/{})を実行しました",
+                        "{}さんがコマンド(/{})を実行しました",
                         ctx.author().name,
-                        ctx.author().discriminator,
                         ctx.command().qualified_name
                     );
                 })
@@ -114,9 +113,8 @@ async fn main() {
             post_command: |ctx| {
                 Box::pin(async move {
                     info!(
-                        "{}#{}さんがコマンド(/{})を実行し成功しました",
+                        "{}さんがコマンド(/{})を実行し成功しました",
                         ctx.author().name,
-                        ctx.author().discriminator,
                         ctx.command().qualified_name
                     );
                 })
@@ -124,7 +122,7 @@ async fn main() {
             on_error: |err: FrameworkError<_, anyhow::Error>| {
                 Box::pin(async move {
                     match err {
-                        FrameworkError::Command { error, ctx } => {
+                        FrameworkError::Command { error, ctx, .. } => {
                             let message = format!(
                                 "コマンド(/{})の処理中にエラーが発生しました: {:?}",
                                 ctx.command().qualified_name,
@@ -136,7 +134,7 @@ async fn main() {
                         }
                         FrameworkError::EventHandler {
                             error,
-                            event: Event::Ready { .. },
+                            event: FullEvent::Ready { .. },
                             ..
                         } => {
                             error!("Botの起動処理中にエラーが発生しました: {:?}", error);
@@ -147,17 +145,13 @@ async fn main() {
             },
             event_handler: |ctx, event, framework_ctx, _| {
                 Box::pin(async move {
-                    if let Event::Ready { .. } = event {
+                    if let FullEvent::Ready { .. } = event {
                         // region register commands
                         let create_commands =
                             create_application_commands(&framework_ctx.options().commands);
                         let guild_id = GuildId::from(Env::new().discord_guild_id);
-                        let registered_commands = guild_id
-                            .set_application_commands(&ctx.http, |b| {
-                                *b = create_commands;
-                                b
-                            })
-                            .await?;
+                        let registered_commands =
+                            guild_id.set_commands(&ctx.http, create_commands).await?;
                         info!(
                             "以下のコマンドを登録しました: {}",
                             registered_commands
@@ -176,11 +170,17 @@ async fn main() {
             },
             ..Default::default()
         })
-        .token(Env::new().discord_token)
-        .intents(GatewayIntents::non_privileged().union(GatewayIntents::MESSAGE_CONTENT))
+        // .token(Env::new().discord_token)
+        // .intents(GatewayIntents::non_privileged().union(GatewayIntents::MESSAGE_CONTENT))
         .setup(move |_, _, _| {
             Box::pin(async move { Ok(Data::new("https://redmine.seichi.click".to_string()).await) })
-        });
+        })
+        .build();
+    let bot_token = Env::new().discord_token;
+    let bot_intents = GatewayIntents::non_privileged().union(GatewayIntents::MESSAGE_CONTENT);
+    let client = ClientBuilder::new(bot_token, bot_intents)
+        .framework(framework)
+        .await;
 
-    framework.run().await.unwrap();
+    client.unwrap().start().await.unwrap();
 }
