@@ -10,7 +10,6 @@ use c_domain::redmine::model::id::{AgendaId, RecordId};
 
 use itertools::Itertools;
 use log::{debug, info};
-use poise::serenity_prelude::CacheHttp;
 
 /// 承認されたアイデアについて追加議論を行うためのスレッドを作成します
 #[poise::command(slash_command)]
